@@ -54,8 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-=======
 import javax.annotation.Nullable;
 
 /**
@@ -157,14 +155,6 @@ public class AggregateReduceFunctionsRule
    */
   private boolean containsAvgStddevVarCall(List<AggregateCall> aggCallList) {
     return aggCallList.stream().anyMatch(this::canReduce);
-<<<<<<< HEAD
-  }
-
-  /** Returns whether this rule can reduce a given aggregate function call. */
-  public boolean canReduce(AggregateCall call) {
-    return functionsToReduce.contains(call.getAggregation().getKind());
-=======
->>>>>>> 65c61a11b (DX-34871 AggregateReducefunctionsRule API change)
   }
 
   /** Returns whether this rule can reduce a given aggregate function call. */

@@ -73,7 +73,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
->>>>>>> 6102b7372 ([CALCITE-2858] Improvements in JSON writer and reader for plans)
 
 import static org.apache.calcite.rel.RelDistributions.EMPTY;
 
@@ -685,17 +684,6 @@ public class RelJson {
         SqlNameMatchers.liberal());
     for (SqlOperator operator: operators) {
       if (operator.kind == sqlKind) {
-<<<<<<< HEAD
-=======
-  SqlOperator toOp(RelInput relInput, String op, Map<String, Object> map) {
-    // TODO: build a map, for more efficient lookup
-    // TODO: look up based on SqlKind
-    final List<SqlOperator> operatorList =
-        SqlStdOperatorTable.instance().getOperatorList();
-    for (SqlOperator operator : operatorList) {
-      if (operator.getName().equals(op)) {
-=======
->>>>>>> b1f936dda ([CALCITE-3177]Ensure correct deserialization of relational algebra.)
         return operator;
       }
     }

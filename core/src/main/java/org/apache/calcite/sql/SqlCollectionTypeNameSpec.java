@@ -77,8 +77,6 @@ public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
     return elementTypeName;
   }
 
-<<<<<<< HEAD
-=======
   @Override public RelDataType deriveType(SqlValidator validator) {
     final RelDataType type = elementTypeName.deriveType(validator);
     return createCollectionType(type, validator.getTypeFactory());
@@ -126,9 +124,3 @@ public class SqlCollectionTypeNameSpec extends SqlTypeNameSpec {
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 7dff01713 (Cosmetic changes)
-
-// End SqlCollectionTypeNameSpec.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

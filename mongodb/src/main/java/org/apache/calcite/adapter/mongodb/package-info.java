@@ -19,7 +19,3 @@
  * Query provider based on a MongoDB database.
  */
 package org.apache.calcite.adapter.mongodb;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

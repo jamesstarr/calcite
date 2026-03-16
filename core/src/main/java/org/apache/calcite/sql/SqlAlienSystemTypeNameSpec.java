@@ -89,7 +89,3 @@ public class SqlAlienSystemTypeNameSpec extends SqlBasicTypeNameSpec {
     return super.equalsDeep(node, litmus);
   }
 }
-
-// End SqlAlienSystemTypeNameSpec.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

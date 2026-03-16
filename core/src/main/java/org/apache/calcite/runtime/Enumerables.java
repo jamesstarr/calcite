@@ -68,6 +68,17 @@ public class Enumerables {
   public static com.google.common.base.Supplier<Enumerable<Row>> toRow(
       final com.google.common.base.Supplier<Enumerable<Object[]>> supplier) {
     return () -> toRow(supplier.get());
+  }
+
+  public static <E, TKey, TResult> Enumerable<TResult> match(
+      Enumerable<E> enumerable,
+      final Function1<E, TKey> keySelector,
+      Matcher<E> matcher,
+      Emitter<E, TResult> emitter, int history, int future) {
+    return new AbstractEnumerable<TResult>() {
+      public Enumerator<TResult> enumerator() {
+        return new Enumerator<TResult>() {
+          final Enumerator<E> inputEnumerator = enumerable.enumerator();
 
           // State of each partition.
           final Map<TKey, Matcher.PartitionState<E>> partitionStates =
@@ -181,16 +192,3 @@ public class Enumerables {
         Consumer<TResult> consumer);
   }
 }
-  }
-
-  /** Given a match (a list of rows, and their states) produces a list
-   * of rows to be output.
-   *
-   * @param <E> element type
-   * @param <TResult> result type */
-  public interface Emitter<E, TResult> {
-    void emit(List<E> rows, List<Integer> rowStates, List<String> rowSymbols, int match,
-        Consumer<TResult> consumer);
-  }
-}
-=======

@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.prepare;
 
-import org.apache.calcite.adapter.enumerable.EnumerableBindable;
-=======
 import org.apache.calcite.adapter.enumerable.EnumerableCalc;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
@@ -69,7 +67,6 @@ import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Project;
 import org.apache.calcite.rel.core.Sort;
 import org.apache.calcite.rel.core.TableScan;
->>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
@@ -1160,8 +1157,6 @@ public class CalcitePrepareImpl implements CalcitePrepare {
               ? MaterializationService.instance().query(schema)
               : ImmutableList.of();
       for (Prepare.Materialization materialization : materializations) {
-        prepare.populateMaterializations(context, materialization, cluster);
-=======
         prepare.populateMaterializations(context, cluster, materialization);
       }
       return materializations;

@@ -74,8 +74,6 @@ import org.apache.calcite.sql.SqlJsonEmptyOrError;
 import org.apache.calcite.sql.SqlJsonQueryEmptyOrErrorBehavior;
 import org.apache.calcite.sql.SqlJsonQueryWrapperBehavior;
 import org.apache.calcite.sql.SqlJsonValueEmptyOrErrorBehavior;
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
 import org.apache.calcite.sql.SqlJsonValueReturning;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlLiteral;
@@ -89,16 +87,11 @@ import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlPivot;
 import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.SqlPrefixOperator;
-import org.apache.calcite.sql.SqlRowTypeSpec;
-=======
 import org.apache.calcite.sql.SqlRowTypeNameSpec;
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 import org.apache.calcite.sql.SqlSampleSpec;
 import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.SqlSetOption;
->>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
-=======
 import org.apache.calcite.sql.SqlSnapshot;
 import org.apache.calcite.sql.SqlTableRef;
 import org.apache.calcite.sql.SqlTimeLiteral;
@@ -592,8 +585,6 @@ JAVACODE boolean matchesPrefix(int[] seq, int[][] prefixes)
 SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
 {
     SqlNode e;
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
-=======
     final List<Object> list = new ArrayList<Object>();
 }
 {
@@ -604,7 +595,6 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
         LOOKAHEAD(2)
         e = Query(exprContext)
         e = OrderByLimitOpt(e)
-=======
         { return e; }
     |
         e = TableRef1(ExprContext.ACCEPT_QUERY_OR_JOIN)
@@ -613,7 +603,6 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
         ( AddSetOpQuery(list, exprContext) )*
         { return SqlParserUtil.toTree(list); }
     )
->>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 }
 
 /**
@@ -650,26 +639,6 @@ SqlNode ExprOrJoinOrOrderedQuery(ExprContext exprContext) :
 SqlNode OrderedQueryOrExpr(ExprContext exprContext) :
 {
     SqlNode e;
-<<<<<<< HEAD
-}
-{
-    e = QueryOrExpr(exprContext)
-    e = OrderByLimitOpt(e)
-    { return e; }
-}
-
-/** Reads optional "ORDER BY", "LIMIT", "OFFSET", "FETCH" following a query,
- * {@code e}. If any of them are present, adds them to the query;
- * otherwise returns the query unchanged.
- * Throws if they are present and {@code e} is not a query. */
-SqlNode OrderByLimitOpt(SqlNode e) :
-{
-    SqlNodeList orderBy = null;
-    final Span s = Span.of();
-    SqlNode[] offsetFetch = {null, null};
-}
-{
-=======
 }
 {
     e = QueryOrExpr(exprContext)
@@ -694,7 +663,6 @@ SqlNode OrderByLimitOpt(SqlNode e) :
         orderBy = OrderBy(e.isA(SqlKind.QUERY))
     ]
     [
->>>>>>> fbeadc056 ([CALCITE-5086] SQL parser should allow OFFSET to occur before LIMIT (#143))
         LimitClause(s, offsetFetch)
         [ OffsetClause(s, offsetFetch) ]
         [ FetchClause(offsetFetch) ]
@@ -705,23 +673,6 @@ SqlNode OrderByLimitOpt(SqlNode e) :
                 if (!this.conformance.isOffsetLimitAllowed()) {
                     throw SqlUtil.newContextException(s.end(this),
                         RESOURCE.offsetLimitNotAllowed());
-<<<<<<< HEAD
-=======
-        // Postgres-style syntax. "LIMIT ... OFFSET ..."
-        <LIMIT>
-        (
-            // MySQL-style syntax. "LIMIT start, count"
-            LOOKAHEAD(2)
-            start = UnsignedNumericLiteralOrParam()
-            <COMMA> count = UnsignedNumericLiteralOrParam() {
-                if (!this.conformance.isLimitStartCountAllowed()) {
-<<<<<<< HEAD
-                    throw new ParseException(RESOURCE.limitStartCountNotAllowed().str());
-=======
-                    throw SqlUtil.newContextException(getPos(), RESOURCE.limitStartCountNotAllowed());
->>>>>>> c1eea5150 ([CALCITE-3152] Unify throws in sql parser)
-=======
->>>>>>> fbeadc056 ([CALCITE-5086] SQL parser should allow OFFSET to occur before LIMIT (#143))
                 }
             }
         |
@@ -1210,36 +1161,22 @@ SqlNodeList ParenthesizedKeyValueOptionCommaList() :
 {
     { s = span(); }
     <LPAREN>
-    [
-        KeyValueOption(list)
-        (
-            <COMMA>
-            KeyValueOption(list)
-        )*
-    ]
-=======
     KeyValueOption(list)
     (
         <COMMA>
         KeyValueOption(list)
     )*
->>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
     <RPAREN> {
         return new SqlNodeList(list, s.end(this));
     }
 }
 
 /**
-* Parses an option with format key=val whose key is a simple identifier
-=======
 * Parses an option with format key=val whose key is a simple identifier or string literal
->>>>>>> 583ea566c ([CALCITE-3813] Support hint option key as string literal)
 * and value is a string literal.
 */
 void KeyValueOption(List<SqlNode> list) :
 {
-    final SqlIdentifier id;
-=======
     final SqlNode key;
     final SqlNode value;
 }
@@ -1256,7 +1193,6 @@ void KeyValueOption(List<SqlNode> list) :
     }
 }
 
->>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 /**
 * Parses an option value, it's either a string or a numeric.
 */
@@ -1303,32 +1239,19 @@ SqlNodeList ParenthesizedLiteralOptionCommaList() :
     }
 }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> eec84f876 ([CALCITE-3635] Supports hint option as string or numeric literal)
 void CommaSepatatedSqlHints(List<SqlNode> hints) :
 {
     SqlIdentifier hintName;
     SqlNodeList hintOptions;
->>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
-=======
     SqlNode optionVal;
-=======
->>>>>>> 583ea566c ([CALCITE-3813] Support hint option key as string literal)
+    SqlHint.HintOptionFormat optionFormat;
 }
 {
     hintName = SimpleIdentifier()
     (   LOOKAHEAD(5)
-            hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
-        }
-=======
-        hintOptions = ParenthesizedKeyValueOptionCommaList()
-=======
         hintOptions = ParenthesizedKeyValueOptionCommaList() {
             optionFormat = SqlHint.HintOptionFormat.KV_LIST;
         }
->>>>>>> 583ea566c ([CALCITE-3813] Support hint option key as string literal)
     |
         LOOKAHEAD(3)
         hintOptions = ParenthesizedSimpleIdentifierList() {
@@ -1355,15 +1278,9 @@ void CommaSepatatedSqlHints(List<SqlNode> hints) :
         hintName = SimpleIdentifier()
         (
             LOOKAHEAD(5)
-                hints.add(new SqlHint(Span.of(hintOptions).end(this), hintName, hintOptions));
-            }
-=======
-            hintOptions = ParenthesizedKeyValueOptionCommaList()
-=======
             hintOptions = ParenthesizedKeyValueOptionCommaList() {
                 optionFormat = SqlHint.HintOptionFormat.KV_LIST;
             }
->>>>>>> 583ea566c ([CALCITE-3813] Support hint option key as string literal)
         |
             LOOKAHEAD(3)
             hintOptions = ParenthesizedSimpleIdentifierList() {
@@ -1430,8 +1347,6 @@ SqlSelect SqlSelect() :
     final SqlNodeList groupBy;
     final SqlNode having;
     final SqlNodeList windowDecls;
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
-=======
     final SqlNode qualify;
     final List<SqlNode> hints = new ArrayList<SqlNode>();
     final Span s;
@@ -1484,13 +1399,7 @@ SqlSelect SqlSelect() :
     {
         return new SqlSelect(s.end(this), keywordList,
             new SqlNodeList(selectList, Span.of(selectList).pos()),
-            fromClause, where, groupBy, having, windowDecls, null, null, null,
-=======
-            fromClause, where, groupBy, having, qualify, windowDecls, null, null, null,
->>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
-=======
             fromClause, where, groupBy, having, windowDecls, qualify, null, null, null,
->>>>>>> 47a2def7d (Qualify Fix)
             new SqlNodeList(hints, getPos()));
     }
 }
@@ -2246,10 +2155,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
 {
     (
         LOOKAHEAD(2)
-        tableRef = CompoundIdentifier()
-=======
         tableRef = TableRefWithHintsOpt()
->>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
@@ -2268,13 +2174,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             }
         }
         [
-            snapshot = Snapshot(tableRef) {
-                tableRef = SqlStdOperatorTable.LATERAL.createCall(
-                    getPos(), snapshot);
-            }
-=======
             tableRef = Snapshot(tableRef)
->>>>>>> a506dd01c ([CALCITE-3620] Remove implicit lateral operator for temporal table join)
         ]
         [
             tableRef = MatchRecognize(tableRef)
@@ -2309,18 +2209,8 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             tableRef = unnestOp.createCall(s.end(this), args.toArray());
         }
     |
->>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
         [ LOOKAHEAD(1) <LATERAL> { lateral = true; } ]
         tableRef = TableFunctionCall()
-=======
-        [ <LATERAL> { lateral = true; } ]
-<<<<<<< HEAD
-        <TABLE> { s = span(); } <LPAREN>
-        tableRef = TableFunctionCall(s.pos())
-        <RPAREN>
-=======
-        tableRef = TableFunctionCall()
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
 <#if (parser.tableVersionContextParserMethod!default.parser.tableVersionContextParserMethod)?has_content >
         [
             tableRef = ${parser.tableVersionContextParserMethod}(tableRef)
@@ -2336,7 +2226,6 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         tableRef = ExtendedTableRef()
     )
     [
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
         LOOKAHEAD(2)
         tableRef = Pivot(tableRef)
     ]
@@ -2345,15 +2234,6 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         tableRef = Unpivot(tableRef)
     ]
     [
-<<<<<<< HEAD
-=======
-=======
-        tableRef = Pivot(tableRef)
-    ]
-    [
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
-=======
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
         [ <AS> ] alias = SimpleIdentifier()
         [ columnAliasList = ParenthesizedSimpleIdentifierList() ]
         {
@@ -2382,10 +2262,149 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     {
         return tableRef;
     }
-    final SqlNode call;
-=======
+}
+
+SqlNode Tablesample(SqlNode tableRef) :
+{
+    final Span s;
+    final SqlNode sample;
+    final boolean isBernoulli;
+    final SqlNumericLiteral samplePercentage;
+    boolean isRepeatable = false;
+    int repeatableSeed = 0;
+}
+{
+    <TABLESAMPLE> { s = span(); checkNotJoin(tableRef); }
+    (
+        <SUBSTITUTE> <LPAREN> sample = StringLiteral() <RPAREN>
+        {
+            String sampleName =
+                SqlLiteral.unchain(sample).getValueAs(String.class);
+            SqlSampleSpec sampleSpec = SqlSampleSpec.createNamed(sampleName);
+            final SqlLiteral sampleLiteral =
+                SqlLiteral.createSample(sampleSpec, s.end(this));
+            tableRef = SqlStdOperatorTable.TABLESAMPLE.createCall(
+                s.add(tableRef).end(this), tableRef, sampleLiteral);
+        }
+    |
+        (
+            <BERNOULLI> { isBernoulli = true; }
+        |
+            <SYSTEM> { isBernoulli = false; }
+        )
+        <LPAREN> samplePercentage = UnsignedNumericLiteral() <RPAREN>
+        [
+            <REPEATABLE> <LPAREN> repeatableSeed = IntLiteral() <RPAREN>
+            {
+                isRepeatable = true;
+            }
+        ]
+        {
+            final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100L);
+            BigDecimal rate = samplePercentage.bigDecimalValue();
+            if (rate.compareTo(BigDecimal.ZERO) < 0
+                || rate.compareTo(ONE_HUNDRED) > 0)
+            {
+                throw SqlUtil.newContextException(getPos(), RESOURCE.invalidSampleSize());
+            }
+
+            // Treat TABLESAMPLE(0) and TABLESAMPLE(100) as no table
+            // sampling at all.  Not strictly correct: TABLESAMPLE(0)
+            // should produce no output, but it simplifies implementation
+            // to know that some amount of sampling will occur.
+            // In practice values less than ~1E-43% are treated as 0.0 and
+            // values greater than ~99.999997% are treated as 1.0
+            float fRate = rate.divide(ONE_HUNDRED).floatValue();
+            if (fRate > 0.0f && fRate < 1.0f) {
+                SqlSampleSpec tableSampleSpec =
+                    isRepeatable
+                        ? SqlSampleSpec.createTableSample(
+                            isBernoulli, fRate, repeatableSeed)
+                        : SqlSampleSpec.createTableSample(isBernoulli, fRate);
+
+                SqlLiteral tableSampleLiteral =
+                    SqlLiteral.createSample(tableSampleSpec, s.end(this));
+                tableRef = SqlStdOperatorTable.TABLESAMPLE.createCall(
+                    s.end(this), tableRef, tableSampleLiteral);
+            }
+        }
+    )
+    { return tableRef; }
+
+}
+
+SqlNodeList ExtendList() :
+{
+    final Span s;
+    List<SqlNode> list = new ArrayList<SqlNode>();
+}
+{
+    <LPAREN> { s = span(); }
+    ColumnType(list)
+    (
+        <COMMA> ColumnType(list)
+    )*
+    <RPAREN> {
+        return new SqlNodeList(list, s.end(this));
+    }
+}
+
+void ColumnType(List<SqlNode> list) :
+{
+    SqlIdentifier name;
+    SqlDataTypeSpec type;
+    boolean nullable = true;
+}
+{
+    name = CompoundIdentifier()
+    type = DataType()
+    [
+        <NOT> <NULL> {
+            nullable = false;
+        }
+    ]
+    {
+        list.add(name);
+        list.add(type.withNullable(nullable));
+    }
+}
+
+/**
+ * Parses a compound identifier with optional type.
+ */
+void CompoundIdentifierType(List<SqlNode> list, List<SqlNode> extendList) :
+{
+    final SqlIdentifier name;
+    SqlDataTypeSpec type = null;
+    boolean nullable = true;
+}
+{
+    name = CompoundIdentifier()
+    [
+        type = DataType() {
+            if (!this.conformance.allowExtend()) {
+                throw SqlUtil.newContextException(getPos(), RESOURCE.extendNotAllowed());
+            }
+        }
+        [
+            <NOT> <NULL> {
+                nullable = false;
+            }
+        ]
+    ]
+    {
+       if (type != null) {
+           extendList.add(name);
+           extendList.add(type.withNullable(nullable));
+       }
+       list.add(name);
+    }
+}
+
+SqlNode TableFunctionCall() :
+{
+    final Span s;
     SqlNode call;
->>>>>>> c626742c9 (DX-94459:  Add AT syntax support for calling versioned Tabular UDF)
     SqlFunctionCategory funcType = SqlFunctionCategory.USER_DEFINED_TABLE_FUNCTION;
 }
 {
@@ -2397,16 +2416,11 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
         }
     ]
     call = NamedRoutineCall(funcType, ExprContext.ACCEPT_CURSOR)
->>>>>>> c626742c9 (DX-94459:  Add AT syntax support for calling versioned Tabular UDF)
 <#if (parser.tableFunctionVersionContextParserMethod!default.parser.tableFunctionVersionContextParserMethod)?has_content >
     [
         call = ${parser.tableFunctionVersionContextParserMethod}(call)
     ]
 </#if>
-<<<<<<< HEAD
-=======
-=======
->>>>>>> c626742c9 (DX-94459:  Add AT syntax support for calling versioned Tabular UDF)
     <RPAREN>
     {
         return SqlStdOperatorTable.COLLECTION_TABLE.createCall(s.end(this), call);
@@ -2880,10 +2894,7 @@ SqlNode Pivot(SqlNode tableRef) :
     final SqlNodeList inList;
 }
 {
-    <PIVOT> { s = span(); }
-=======
     <PIVOT> { s = span(); checkNotJoin(tableRef); }
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     <LPAREN>
     PivotAgg(aggList) ( <COMMA> PivotAgg(aggList) )*
     <FOR> axisList = SimpleIdentifierOrList()
@@ -2937,7 +2948,6 @@ void PivotValue(List<SqlNode> list) :
     )
 }
 
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 /** Parses an UNPIVOT clause following a table expression. */
 SqlNode Unpivot(SqlNode tableRef) :
 {
@@ -2950,14 +2960,7 @@ SqlNode Unpivot(SqlNode tableRef) :
     final SqlNodeList inList;
 }
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
     <UNPIVOT> { s = span(); checkNotJoin(tableRef); }
-=======
-    <UNPIVOT> { s = span(); }
-=======
-    <UNPIVOT> { s = span(); checkNotJoin(tableRef); }
->>>>>>> 7de4b15ff ([CALCITE-35] Support parsing parenthesized joins)
     (
         <INCLUDE> <NULLS> { includeNulls = true; }
     |   <EXCLUDE> <NULLS> { includeNulls = false; }
@@ -2996,8 +2999,6 @@ void UnpivotValue(List<SqlNode> list) :
     )
 }
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
-=======
 /**
  * Parses a FOR SYSTEM_TIME clause following a table expression.
  */
@@ -3533,7 +3534,6 @@ SqlNode Query(ExprContext exprContext) :
     }
 }
 
->>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 /** Parses a set operator (e.g. UNION or INTERSECT)
  * followed by a query,
  * and adds both to {@code list}. */
@@ -3563,10 +3563,6 @@ void AddSetOpQuery(List<Object> list, ExprContext exprContext) :
     }
 }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
 SqlNodeList WithList() :
 {
     SqlWithItem withItem;
@@ -3638,13 +3634,7 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
 {
     SqlNode e;
     SqlOperator op;
-    String p;
-=======
-    SqlIdentifier p;
->>>>>>> c4fb4526d ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
-=======
     SqlNode ext;
->>>>>>> c1e47664b ([CALCITE-2721] Support parsing record-type [DOT] member-functions)
 }
 {
     (
@@ -3658,28 +3648,12 @@ void Expression2b(ExprContext exprContext, List<Object> list) :
         list.add(e);
     }
     (
->>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
         LOOKAHEAD(2) <DOT>
         ext = RowExpressionExtension() {
             list.add(
                 new SqlParserUtil.ToTreeListItem(
                     SqlStdOperatorTable.DOT, getPos()));
             list.add(ext);
-=======
-        <DOT>
-        ext = RowExpressionExtension() {
-            list.add(
-                new SqlParserUtil.ToTreeListItem(
-                    SqlStdOperatorTable.DOT, getPos()));
-<<<<<<< HEAD
-<<<<<<< HEAD
-            list.add(new SqlIdentifier(p, getPos()));
-=======
-            list.add(p);
->>>>>>> c4fb4526d ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
-=======
-            list.add(ext);
->>>>>>> c1e47664b ([CALCITE-2721] Support parsing record-type [DOT] member-functions)
         }
     )*
 }
@@ -3794,8 +3768,6 @@ List<Object> Expression2(ExprContext exprContext) :
                 [<NOT> { isNot = true; }]
                 (
                     // str [ NOT ] like { ANY | SOME | ALL } ( [ pattern [, ...] ] )
->>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
-=======
                     LOOKAHEAD(2)
                     (
                         LOOKAHEAD(2)
@@ -3817,15 +3789,19 @@ List<Object> Expression2(ExprContext exprContext) :
                 |
                     // string1 [NOT] (LIKE | SIMILAR TO) string2 [ ESCAPE string3 ]
                     (
-=======
                         LOOKAHEAD(2)
                         <LIKE> { op = isNot ? SqlStdOperatorTable.NOT_LIKE : SqlStdOperatorTable.LIKE; }
                     |
                         LOOKAHEAD(2)
                         <SIMILAR> <TO> { op = isNot ? SqlStdOperatorTable.NOT_SIMILAR_TO : SqlStdOperatorTable.SIMILAR_TO; }
->>>>>>> d192c11b0 (Implement [NOT] LIKE ANY/ALL/SOME as logical rewrites)
-=======
->>>>>>> 2e167f8ed ([CALCITE-3063] Parse and process PostgreSQL posix regular expressions)
+                <#if parser.includePosixOperators>
+                |
+                    <NEGATE> <TILDE> { op = SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_SENSITIVE; }
+                    [ <STAR> { op = SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_INSENSITIVE; } ]
+                |
+                    <TILDE> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_SENSITIVE; }
+                    [ <STAR> { op = SqlStdOperatorTable.POSIX_REGEX_CASE_INSENSITIVE; } ]
+                </#if>
                     )
                     list2 = Expression2(ExprContext.ACCEPT_SUB_QUERY) {
                         list.add(new SqlParserUtil.ToTreeListItem(op, s.pos()));
@@ -3862,10 +3838,7 @@ List<Object> Expression2(ExprContext exprContext) :
                     list.add(e);
                 }
                 (
-                    <DOT>
-=======
                     LOOKAHEAD(2) <DOT>
->>>>>>> 96a990b05 ([CALCITE-2847] Optimize global LOOKAHEAD for SQL parsers)
                     p = SimpleIdentifier() {
                         list.add(
                             new SqlParserUtil.ToTreeListItem(
@@ -4284,14 +4257,13 @@ SqlAlter SqlAlter() :
     <ALTER> { s = span(); }
     scope = Scope()
     (
-        alterNode = SqlSetOption(s, scope)
-
 <#-- additional literal parser methods are included here -->
 <#list (parser.alterStatementParserMethods!default.parser.alterStatementParserMethods) as method>
         alterNode = ${method}(s, scope)
     |
-        alterNode = ${method}(s, scope)
 </#list>
+
+        alterNode = SqlSetOption(s, scope)
     )
     {
         return alterNode;
@@ -4888,28 +4860,8 @@ SqlIntervalQualifier IntervalQualifier() :
 TimeUnit TimeUnit() :
 {}
 {
-    <MICROSECOND> { return TimeUnit.MICROSECOND; }
-|   <MILLISECOND> { return TimeUnit.MILLISECOND; }
-|   <SECOND> { return TimeUnit.SECOND; }
-=======
-    <SECOND> { return TimeUnit.SECOND; }
->>>>>>> c0623737b (Revert "[CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin)")
-=======
-    <MICROSECOND> { return TimeUnit.MICROSECOND; }
-|   <MILLISECOND> { return TimeUnit.MILLISECOND; }
-=======
     <MILLISECOND> { return TimeUnit.MILLISECOND; }
->>>>>>> 491096f5b ([CALCITE-2496] Return 0 in case of extract(milli/micro/nanosecond from datel) (Sergey Nuyanzin, Chunwei Lei))
 |   <SECOND> { return TimeUnit.SECOND; }
->>>>>>> 2fd3f202e (Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
-=======
-    <SECOND> { return TimeUnit.SECOND; }
->>>>>>> e4ce0a986 (Revert "Reapply [CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin)")
-=======
-    <MICROSECOND> { return TimeUnit.MICROSECOND; }
-|   <MILLISECOND> { return TimeUnit.MILLISECOND; }
-|   <SECOND> { return TimeUnit.SECOND; }
->>>>>>> 7f011cb5c ([CALCITE-2303] In EXTRACT function, support MICROSECONDS, MILLISECONDS, EPOCH, ISODOW, ISOYEAR and DECADE time units (Sergey Nuyanzin))
 |   <MINUTE> { return TimeUnit.MINUTE; }
 |   <HOUR> { return TimeUnit.HOUR; }
 |   <DAY> { return TimeUnit.DAY; }
@@ -5101,7 +5053,6 @@ SqlNodeList ParenthesizedSimpleIdentifierList() :
     }
 }
 
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 /** List of simple identifiers in parentheses or one simple identifier.
  *
  * <ul>Examples:
@@ -5124,17 +5075,7 @@ SqlNodeList SimpleIdentifierOrList() :
     }
 }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> ebe036aed (DX-7801 [CALCITE-3752] Add PIVOT operator to SQL)
 <#if (parser.includeCompoundIdentifier!default.parser.includeCompoundIdentifier) >
-=======
-<#if parser.includeCompoundIdentifier >
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
-=======
-<#if (parser.includeCompoundIdentifier!default.parser.includeCompoundIdentifier) >
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 /**
  * Parses a compound identifier.
  */
@@ -5267,173 +5208,16 @@ int IntLiteral() :
 // Type name with optional scale and precision.
 SqlDataTypeSpec DataType() :
 {
-    final SqlTypeNameSpec typeName;
-    SqlIdentifier collectionTypeName = null;
-=======
     SqlTypeNameSpec typeName;
->>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
     final Span s;
 }
 {
     typeName = TypeName() {
         s = span();
     }
-    final SqlTypeName sqlTypeName;
-    final SqlIdentifier typeName; // typeName can be a SqlIdentifier or SqlTypeNameSpec
-    final Span s = Span.of();
-}
-{
-    (
-<#-- additional types are included here -->
-<#list (parser.dataTypeParserMethods!default.parser.dataTypeParserMethods) as method>
-=======
-<#list parser.dataTypeParserMethods as method>
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
-=======
-<#list (parser.dataTypeParserMethods!default.parser.dataTypeParserMethods) as method>
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
-    |
-</#list>
-</#if>
-        typeNameSpec = SqlTypeName(s)
-    |
-        typeNameSpec = RowTypeName()
-    |
-        typeName = RowTypeName()
-    |
-        typeName = CompoundIdentifier()
-    )
-    {
-        return typeNameSpec;
-    }
-}
-
-// Types used for JDBC and ODBC scalar conversion function
-SqlTypeNameSpec SqlTypeName(Span s) :
-{
-    final SqlTypeNameSpec sqlTypeNameSpec;
-}
-{
-    (
-        sqlTypeNameSpec = SqlTypeName1(s)
-    |
-        sqlTypeNameSpec = SqlTypeName2(s)
-    |
-        sqlTypeNameSpec = SqlTypeName3(s)
-    |
-        sqlTypeNameSpec = CharacterTypeName(s)
-    |
-        sqlTypeNameSpec = DateTimeTypeName()
-    )
-    {
-        return sqlTypeNameSpec;
-    }
-}
-
-// Parse sql type name that don't allow any extra specifications except the type name.
-// For extra specification, we mean precision, scale, charSet, etc.
-SqlTypeNameSpec SqlTypeName1(Span s) :
-{
-    final SqlTypeName sqlTypeName;
-}
-{
-    (
-        <GEOMETRY> {
-            if (!this.conformance.allowGeometry()) {
-                throw SqlUtil.newContextException(getPos(), RESOURCE.geometryDisabled());
-            }
-            sqlTypeName = SqlTypeName.GEOMETRY;
-        }
-    |
-        <BOOLEAN> { sqlTypeName = SqlTypeName.BOOLEAN; }
-    |
-        ( <INTEGER> | <INT> ) { sqlTypeName = SqlTypeName.INTEGER; }
-    |
-        <TINYINT> { sqlTypeName = SqlTypeName.TINYINT; }
-    |
-        <SMALLINT> { sqlTypeName = SqlTypeName.SMALLINT; }
-    |
-        <BIGINT> { sqlTypeName = SqlTypeName.BIGINT; }
-    |
-        <REAL> { sqlTypeName = SqlTypeName.REAL; }
-    |
-        <FLOAT> { sqlTypeName = SqlTypeName.FLOAT; }
-    |
-        <VARIANT> { s.add(this); sqlTypeName = SqlTypeName.VARIANT; }
-    |
-        <UUID> { sqlTypeName = SqlTypeName.UUID; }
-    )
-    {
-        return new SqlBasicTypeNameSpec(sqlTypeName, s.end(this));
-    }
-}
-
-// Parse sql type name that allows precision specification.
-SqlTypeNameSpec SqlTypeName2(Span s) :
-{
-    final SqlTypeName sqlTypeName;
-    int precision = -1;
-}
-{
-    (
-        <BINARY> { s.add(this); }
-        (
-            <VARYING> { sqlTypeName = SqlTypeName.VARBINARY; }
-        |
-            { sqlTypeName = SqlTypeName.BINARY; }
-        )
-    |
-        <VARBINARY> { sqlTypeName = SqlTypeName.VARBINARY; }
-    )
-    precision = PrecisionOpt()
-    {
-        return new SqlBasicTypeNameSpec(sqlTypeName, precision, s.end(this));
-    }
-}
-
-// Parse sql type name that allows precision and scale specifications.
-SqlTypeNameSpec SqlTypeName3(Span s) :
-{
-    final SqlTypeName sqlTypeName;
-    int precision = -1;
-    int scale = -1;
-}
-{
-    (
-        (
-            (<DECIMAL> | <DEC> | <NUMERIC>) { sqlTypeName = SqlTypeName.DECIMAL; }
-        |
-            <ANY> { sqlTypeName = SqlTypeName.ANY; }
-        )
-        [
-            <LPAREN>
-            precision = UnsignedIntLiteral()
-            [
-                <COMMA>
-                scale = UnsignedIntLiteral()
-            ]
-            <RPAREN>
-        ]
-        |
-        (
-            <DOUBLE> { s.add(this); }
-            [ <PRECISION> ] { sqlTypeName = SqlTypeName.DOUBLE; }
-        )
-    )
-    {
-        return new SqlBasicTypeNameSpec(sqlTypeName, precision, scale, s.end(this));
-    }
-}
-
-=======
-    [
-        collectionTypeName = CollectionsTypeName()
-    ]
-=======
     (
         typeName = CollectionsTypeName(typeName)
     )*
->>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
     {
         return new SqlDataTypeSpec(
             typeName,
@@ -5595,7 +5379,6 @@ SqlTypeNameSpec SqlTypeName3(Span s) :
     }
 }
 
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 // Types used for for JDBC and ODBC scalar conversion function
 SqlJdbcDataTypeName JdbcOdbcDataTypeName() :
 {
@@ -5657,35 +5440,10 @@ SqlTypeNameSpec CollectionsTypeName(SqlTypeNameSpec elementTypeName) :
     |
         <ARRAY> { collectionTypeName = SqlTypeName.ARRAY; }
     )
->>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
     {
         return new SqlCollectionTypeNameSpec(elementTypeName,
                 collectionTypeName, getPos());
     }
-<<<<<<< HEAD
-}
-
-/**
-* Parse a nullable option, default is true.
-*/
-boolean NullableOptDefaultTrue() :
-{
-    final SqlTypeName collectionTypeName;
-}
-{
-<<<<<<< HEAD
-=======
-    (
-        <MULTISET> { collectionTypeName = SqlTypeName.MULTISET; }
-    |
-        <ARRAY> { collectionTypeName = SqlTypeName.ARRAY; }
-    )
-    {
-        return new SqlIdentifier(collectionTypeName.getName(), getPos());
-    }
-=======
-=======
->>>>>>> 68925eecb ([CALCITE-3250] Support nested collection type for SqlDataTypeSpec)
 }
 
 /**
@@ -5695,7 +5453,6 @@ boolean NullableOptDefaultTrue() :
 {
 }
 {
->>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
     <NULL> { return true; }
 |
     <NOT> <NULL> { return false; }
@@ -5736,7 +5493,6 @@ void FieldNameTypeCommaList(
     {
         fieldNames.add(fName);
         fieldTypes.add(fType.withNullable(nullable));
-        return new SqlRowTypeNameSpec(getPos(), fieldNames, fieldTypes);
     }
     (
         <COMMA>
@@ -5825,7 +5581,6 @@ SqlTypeNameSpec DateTimeTypeName() :
         }
         return new SqlBasicTypeNameSpec(typeName, precision, getPos());
         }
->>>>>>> d625a4bcc ([CALCITE-3231] Support ARRAY type for SqlDataTypeSpec)
 |
     <TIMESTAMP>
     precision = PrecisionOpt()
@@ -5934,15 +5689,6 @@ SqlNode BuiltinFunctionCall() :
         }
         <LPAREN>
         (
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
-        |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
-=======
-=======
-            LOOKAHEAD(2)
             <NANOSECOND> { unit = TimeUnit.NANOSECOND; }
         |   <MICROSECOND> { unit = TimeUnit.MICROSECOND; }
         |   unit = TimeUnit()
@@ -6135,8 +5881,6 @@ SqlNode BuiltinFunctionCall() :
         node = JsonArrayFunctionCall() { return node; }
     |
         node = JsonArrayAggFunctionCall() { return node; }
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
     |
         node = GroupByWindowingCall() { return node; }
     )
@@ -6150,10 +5894,7 @@ SqlJsonEncoding JsonRepresentation() :
     <JSON>
     [
         // Encoding is currently ignored.
-        <ENCODING>
-=======
         LOOKAHEAD(2) <ENCODING>
->>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
         (
             <UTF8> { return SqlJsonEncoding.UTF8; }
             |
@@ -6197,32 +5938,6 @@ SqlDataTypeSpec JsonOutputClause() :
     }
 }
 
-SqlNode JsonValueExpression(boolean implicitFormatJson) :
-{
-    SqlNode e;
-    List<SqlNode> args = new ArrayList<SqlNode>();
-    Span span;
-}
-{
-    e = Expression(ExprContext.ACCEPT_NON_QUERY) {
-        args.add(e);
-        span = Span.of(e);
-    }
-    [
-        JsonInputClause() {
-            return SqlStdOperatorTable.JSON_VALUE_EXPRESSION.createCall(span.end(this), args);
-        }
-    ]
-    {
-        if (implicitFormatJson) {
-            return SqlStdOperatorTable.JSON_VALUE_EXPRESSION.createCall(span.end(this), args);
-        }
-        return SqlStdOperatorTable.JSON_STRUCTURED_VALUE_EXPRESSION.createCall(span.end(this), args);
-    }
-}
-
-=======
->>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
 SqlNode JsonPathSpec() :
 {
     SqlNode e;
@@ -6233,12 +5948,7 @@ SqlNode JsonPathSpec() :
     }
 }
 
-SqlNode JsonApiCommonSyntax() :
-=======
-SqlNode JsonApiCommonSyntax(boolean acceptNonPath) :
-=======
 List<SqlNode> JsonApiCommonSyntax() :
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 {
     SqlNode e;
     List<SqlNode> args = new ArrayList<SqlNode>();
@@ -6272,19 +5982,8 @@ List<SqlNode> JsonApiCommonSyntax() :
         )*
     ]
     {
-        return SqlStdOperatorTable.JSON_API_COMMON_SYNTAX.createCall(span.end(this), args);
-=======
         return args;
     }
-
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
-        return op.createCall(span.end(this), args);
-=======
-        return SqlStdOperatorTable.JSON_API_COMMON_SYNTAX.createCall(span.end(this), args);
->>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
-    }
->>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
 }
 
 SqlJsonExistsErrorBehavior JsonExistsErrorBehavior() :
@@ -6303,39 +6002,18 @@ SqlJsonExistsErrorBehavior JsonExistsErrorBehavior() :
 
 SqlCall JsonExistsFunctionCall() :
 {
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
     List<SqlNode> args = new ArrayList<SqlNode>();
     List<SqlNode> commonSyntax;
-=======
-    List<SqlNode> args;
-<<<<<<< HEAD
-    SqlNode e;
-=======
-    List<SqlNode> commonSyntax;
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     final Span span;
     SqlJsonExistsErrorBehavior errorBehavior;
 }
 {
     <JSON_EXISTS> { span = span(); }
-    <LPAREN> e = JsonApiCommonSyntax() {
-=======
-    <LPAREN> e = JsonApiCommonSyntax(false) {
-=======
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
-        args = new ArrayList<SqlNode>();
-        args.addAll(commonSyntax);
-    }
-    [
-        errorBehavior = JsonExistsErrorBehavior() { args.add(SqlLiteral.createSymbol(errorBehavior, getPos())); }
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
         args.addAll(commonSyntax);
     }
     [
         errorBehavior = JsonExistsErrorBehavior() { args.add(errorBehavior.symbol(getPos())); }
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
         <ON> <ERROR>
     ]
     <RPAREN> {
@@ -6345,19 +6023,13 @@ SqlCall JsonExistsFunctionCall() :
 
 List<SqlNode> JsonValueEmptyOrErrorBehavior() :
 {
-    List<SqlNode> list = new ArrayList<SqlNode>();
-    SqlNode e;
-=======
     final List<SqlNode> list = new ArrayList<SqlNode>();
     final SqlNode e;
 }
 {
     (
         <ERROR> {
-            list.add(SqlLiteral.createSymbol(SqlJsonValueEmptyOrErrorBehavior.ERROR, getPos()));
-            list.add(SqlLiteral.createNull(getPos()));
-=======
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
+            list.add(SqlJsonValueEmptyOrErrorBehavior.ERROR.symbol(getPos()));
         }
     |
         <NULL> {
@@ -6371,13 +6043,8 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
     )
     <ON>
     (
-        <EMPTY>
-        {
-=======
         <EMPTY> {
-            list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.EMPTY, getPos()));
-=======
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
+            list.add(SqlJsonEmptyOrError.EMPTY.symbol(getPos()));
         }
     |
         <ERROR> {
@@ -6389,27 +6056,14 @@ List<SqlNode> JsonValueEmptyOrErrorBehavior() :
 
 SqlCall JsonValueFunctionCall() :
 {
-    SqlNode[] args;
-    SqlNode e;
-=======
-    final SqlNode[] args = new SqlNode[7];
-=======
     final List<SqlNode> args = new ArrayList<SqlNode>(7);
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
     SqlNode e;
     List<SqlNode> commonSyntax;
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     final Span span;
     List<SqlNode> behavior;
 }
 {
     <JSON_VALUE> { span = span(); }
-    <LPAREN> e = JsonApiCommonSyntax() {
-=======
-    <LPAREN> e = JsonApiCommonSyntax(false) {
-        args = new SqlNode[6];
-        args[0] = e;
-=======
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
         args.addAll(commonSyntax);
     }
@@ -6431,17 +6085,11 @@ SqlCall JsonValueFunctionCall() :
 
 List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
 {
-    List<SqlNode> list = new ArrayList<SqlNode>();
-=======
     final List<SqlNode> list = new ArrayList<SqlNode>();
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
 }
 {
     (
-        <ERROR>
-        {
-=======
         <ERROR> {
             list.add(SqlLiteral.createSymbol(SqlJsonQueryEmptyOrErrorBehavior.ERROR, getPos()));
         }
@@ -6461,9 +6109,6 @@ List<SqlNode> JsonQueryEmptyOrErrorBehavior() :
     )
     <ON>
     (
-        <EMPTY>
-        {
-=======
         <EMPTY> {
             list.add(SqlLiteral.createSymbol(SqlJsonEmptyOrError.EMPTY, getPos()));
         }
@@ -6480,57 +6125,33 @@ SqlNode JsonQueryWrapperBehavior() :
     SqlNode e;
 }
 {
-    <WITHOUT> [<ARRAY>]
-    {
-=======
     <WITHOUT> [<ARRAY>] {
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITHOUT_ARRAY, getPos());
     }
     |
     LOOKAHEAD(2)
-    <WITH> <CONDITIONAL> [<ARRAY>]
-    {
-        return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITH_CONDITIONAL_ARRAY, getPos());
-    }
-    |
-    <WITH> [<UNCONDITIONAL>] [<ARRAY>]
-    {
-=======
     <WITH> <CONDITIONAL> [<ARRAY>] {
         return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITH_CONDITIONAL_ARRAY, getPos());
     }
     |
     <WITH> [<UNCONDITIONAL>] [<ARRAY>] {
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         return SqlLiteral.createSymbol(SqlJsonQueryWrapperBehavior.WITH_UNCONDITIONAL_ARRAY, getPos());
     }
 }
 
 SqlCall JsonQueryFunctionCall() :
 {
-    SqlNode[] args;
-    SqlNode e;
-=======
     final SqlNode[] args = new SqlNode[5];
     SqlNode e;
     List<SqlNode> commonSyntax;
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     final Span span;
     List<SqlNode> behavior;
 }
 {
     <JSON_QUERY> { span = span(); }
-    <LPAREN> e = JsonApiCommonSyntax() {
-=======
-    <LPAREN> e = JsonApiCommonSyntax(false) {
-        args = new SqlNode[4];
-        args[0] = e;
-=======
     <LPAREN> commonSyntax = JsonApiCommonSyntax() {
         args[0] = commonSyntax.get(0);
         args[1] = commonSyntax.get(1);
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     }
     [
         e = JsonQueryWrapperBehavior() <WRAPPER> {
@@ -6558,10 +6179,7 @@ SqlCall JsonQueryFunctionCall() :
 
 SqlNode JsonName() :
 {
-    SqlNode e;
-=======
     final SqlNode e;
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 }
 {
      e = Expression(ExprContext.ACCEPT_NON_QUERY) {
@@ -6571,24 +6189,15 @@ SqlNode JsonName() :
 
 List<SqlNode> JsonNameAndValue() :
 {
-    List<SqlNode> list = new ArrayList<SqlNode>();
-=======
     final List<SqlNode> list = new ArrayList<SqlNode>();
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
     boolean kvMode = false;
 }
 {
->>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     [
         LOOKAHEAD(2, <KEY> JsonName())
         <KEY> { kvMode = true; }
     ]
-<<<<<<< HEAD
-=======
-    [ <KEY> { kvMode = true; } ]
-=======
->>>>>>> 82a7f9ddf ([CALCITE-2993] ParseException may be thrown for legal SQL queries due to incorrect "LOOKAHEAD(1)" hints)
     e = JsonName() {
         list.add(e);
     }
@@ -6601,10 +6210,7 @@ List<SqlNode> JsonNameAndValue() :
             }
         }
     )
-    e =JsonValueExpression(false) {
-=======
     e = Expression(ExprContext.ACCEPT_NON_QUERY) {
->>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
         list.add(e);
     }
     {
@@ -6614,8 +6220,6 @@ List<SqlNode> JsonNameAndValue() :
 
 SqlNode JsonConstructorNullClause() :
 {
-    SqlNode e;
-=======
 }
 {
     <NULL> <ON> <NULL> {
@@ -6629,23 +6233,13 @@ SqlNode JsonConstructorNullClause() :
 
 SqlCall JsonObjectFunctionCall() :
 {
-    List<SqlNode> nvArgs;
-    SqlNode[] otherArgs;
-=======
     final List<SqlNode> nvArgs = new ArrayList<SqlNode>();
     final SqlNode[] otherArgs = new SqlNode[1];
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
     List<SqlNode> list;
     final Span span;
 }
 {
-    <JSON_OBJECT> {
-        span = span();
-        nvArgs = new ArrayList<SqlNode>();
-        otherArgs = new SqlNode[1];
-    }
-=======
     <JSON_OBJECT> { span = span(); }
     <LPAREN> [
         LOOKAHEAD(2)
@@ -6665,10 +6259,7 @@ SqlCall JsonObjectFunctionCall() :
         }
     ]
     <RPAREN> {
-        List<SqlNode> args = new ArrayList();
-=======
         final List<SqlNode> args = new ArrayList();
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         args.addAll(Arrays.asList(otherArgs));
         args.addAll(nvArgs);
         return SqlStdOperatorTable.JSON_OBJECT.createCall(span.end(this), args);
@@ -6677,8 +6268,6 @@ SqlCall JsonObjectFunctionCall() :
 
 SqlCall JsonObjectAggFunctionCall() :
 {
-    SqlNode[] args;
-=======
     final SqlNode[] args = new SqlNode[2];
     List<SqlNode> list;
     final Span span;
@@ -6698,39 +6287,19 @@ SqlCall JsonObjectAggFunctionCall() :
         }
     ]
     <RPAREN> {
-        switch (nullClause) {
-        case ABSENT_ON_NULL:
-          return SqlStdOperatorTable.JSON_OBJECTAGG_ABSENT_ON_NULL.createCall(span.end(this), args);
-        case NULL_ON_NULL:
-          return SqlStdOperatorTable.JSON_OBJECTAGG_NULL_ON_NULL.createCall(span.end(this), args);
-        default:
-          return SqlStdOperatorTable.JSON_OBJECTAGG_NULL_ON_NULL.createCall(span.end(this), args);
-        }
-=======
         return SqlStdOperatorTable.JSON_OBJECTAGG.with(nullClause)
             .createCall(span.end(this), args);
->>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
     }
 }
 
 SqlCall JsonArrayFunctionCall() :
 {
-    List<SqlNode> elements;
-    SqlNode[] otherArgs;
-=======
     final List<SqlNode> elements = new ArrayList<SqlNode>();
     final SqlNode[] otherArgs = new SqlNode[1];
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
     SqlNode e;
     final Span span;
 }
 {
-    <JSON_ARRAY> {
-        span = span();
-        elements = new ArrayList<SqlNode>();
-        otherArgs = new SqlNode[1];
-    }
-=======
     <JSON_ARRAY> { span = span(); }
     <LPAREN> [
         LOOKAHEAD(2)
@@ -6739,10 +6308,7 @@ SqlCall JsonArrayFunctionCall() :
         }
         (
             <COMMA>
-            e = JsonValueExpression(false) {
-=======
             e = Expression(ExprContext.ACCEPT_NON_QUERY) {
->>>>>>> dd1f38d26 ([CALCITE-3010] In SQL parser, move JsonValueExpression into Expression)
                 elements.add(e);
             }
         )*
@@ -6753,17 +6319,13 @@ SqlCall JsonArrayFunctionCall() :
         }
     ]
     <RPAREN> {
-        List<SqlNode> args = new ArrayList();
-=======
         final List<SqlNode> args = new ArrayList();
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
         args.addAll(Arrays.asList(otherArgs));
         args.addAll(elements);
         return SqlStdOperatorTable.JSON_ARRAY.createCall(span.end(this), args);
     }
 }
 
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 SqlNodeList JsonArrayAggOrderByClause() :
 {
     final SqlNodeList orderList;
@@ -6779,26 +6341,6 @@ SqlNodeList JsonArrayAggOrderByClause() :
     }
 }
 
-<<<<<<< HEAD
-SqlCall JsonArrayAggFunctionCall() :
-{
-    final SqlNode valueExpr;
-    SqlNodeList orderList = null;
-    List<SqlNode> list;
-    final Span span;
-    SqlJsonConstructorNullClause nullClause =
-        SqlJsonConstructorNullClause.ABSENT_ON_NULL;
-    SqlNode e = null;
-    final SqlNode aggCall;
-}
-{
-    <JSON_ARRAYAGG> { span = span(); }
-    <LPAREN> e = Expression(ExprContext.ACCEPT_NON_QUERY) {
-        valueExpr = e;
-    }
-    orderList = JsonArrayAggOrderByClause()
-=======
-=======
 SqlCall JsonArrayAggFunctionCall() :
 {
     final SqlNode valueExpr;
@@ -6821,7 +6363,6 @@ SqlCall JsonArrayAggFunctionCall() :
             nullClause = (SqlJsonConstructorNullClause) ((SqlLiteral) e).getValue();
         }
     ]
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
     <RPAREN>
     {
         aggCall = SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
@@ -6841,28 +6382,8 @@ SqlCall JsonArrayAggFunctionCall() :
             return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
                 .createCall(span.end(this), valueExpr);
         }
-<<<<<<< HEAD
         return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
             .createCall(span.end(this), valueExpr, orderList);
-=======
-    <RPAREN> {
-<<<<<<< HEAD
-        switch (nullClause) {
-        case ABSENT_ON_NULL:
-          return SqlStdOperatorTable.JSON_ARRAYAGG_ABSENT_ON_NULL.createCall(span.end(this), arg);
-        case NULL_ON_NULL:
-          return SqlStdOperatorTable.JSON_ARRAYAGG_NULL_ON_NULL.createCall(span.end(this), arg);
-        default:
-          return SqlStdOperatorTable.JSON_ARRAYAGG_ABSENT_ON_NULL.createCall(span.end(this), arg);
-        }
-=======
-        return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
-            .createCall(span.end(this), args);
->>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
-=======
-        return SqlStdOperatorTable.JSON_ARRAYAGG.with(nullClause)
-            .createCall(span.end(this), valueExpr, orderList);
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
     }
 }
 
@@ -6928,7 +6449,6 @@ SqlCall GroupByWindowingCall():
 {
     final Span s;
     final List<SqlNode> args;
->>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
     final SqlOperator op;
 }
 {
@@ -6937,38 +6457,6 @@ SqlCall GroupByWindowingCall():
         {
             s = span();
             op = SqlStdOperatorTable.TUMBLE_OLD;
-<<<<<<< HEAD
-        }
-    |
-        <HOP>
-        {
-            s = span();
-            op = SqlStdOperatorTable.HOP_OLD;
-        }
-    |
-        <SESSION>
-        {
-            s = span();
-            op = SqlStdOperatorTable.SESSION_OLD;
-        }
-    )
-    args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
-        return op.createCall(s.end(this), args);
-=======
-}
-{
-<<<<<<< HEAD
-    <TUMBLE> { s = span(); }
-    args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
-        return SqlStdOperatorTable.TUMBLE.createCall(s.end(this), args);
-    }
-=======
-    (
-        <TUMBLE> { s = span(); }
-        args = UnquantifiedFunctionParameterList(ExprContext.ACCEPT_SUB_QUERY) {
-            return SqlStdOperatorTable.TUMBLE.createCall(s.end(this), args);
-=======
->>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
         }
     |
         <HOP>
@@ -7109,7 +6597,6 @@ SqlCall nullTreatment(SqlCall arg) :
     )
 }
 
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 SqlCall withinGroup(SqlNode arg) :
 {
     final Span withinGroupSpan;
@@ -7128,10 +6615,6 @@ SqlCall withinGroup(SqlNode arg) :
 }
 
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 9120ec0fa ([CALCITE-2786] Add order by clause support for JSON_ARRAYAGG)
 /**
  * Parses a call to a named function (could be a builtin with regular
  * syntax, or else a UDF).
@@ -7195,7 +6678,6 @@ SqlNode NamedFunctionCall() :
         call = ${parser.functionVersionContextParserMethod}(call)
     ]
 </#if>
->>>>>>> 3b1ea8a43 (DX-92322: Add AT syntax support for calling versioned UDF)
     [
         LOOKAHEAD(2) call = nullTreatment(call)
     ]
@@ -7358,11 +6840,6 @@ SqlIdentifier ReservedFunctionName() :
     |   <PERCENT_RANK>
     |   <PERCENTILE_CONT>
     |   <PERCENTILE_DISC>
-<<<<<<< HEAD
-    |   <PERCENT_RANK>
-    |   <PERCENTILE_CONT>
-    |   <PERCENTILE_DISC>
-=======
     |   <POWER>
     |   <RANK>
     |   <REGR_SXX>
@@ -7455,18 +6932,9 @@ SqlNode JdbcFunctionCall() :
     |
         (
             // INSERT is a reserved word, but we need to handle {fn insert}
->>>>>>> f44c1beaf ([CALCITE-3005] Implement string functions: LEFT, RIGHT (xuqianjin))
-            ( <INSERT> | <LEFT> | <RIGHT> | <TRUNCATE> ) { name = unquotedIdentifier(); }
-=======
-            <INSERT> { name = unquotedIdentifier(); }
-        |
-            // TRUNCATE is a reserved word, but we need to handle {fn truncate}
-            <TRUNCATE> { name = unquotedIdentifier(); }
-=======
             // Similarly LEFT, RIGHT, TRUNCATE
             LOOKAHEAD(1)
             ( <INSERT> | <LEFT> | <RIGHT> | <TRUNCATE> ) { name = unquotedIdentifier(); }
->>>>>>> ca39b3ae6 ([CALCITE-3005] Implement string functions: LEFT, RIGHT (xuqianjin))
         |
             // For cases like {fn power(1,2)} and {fn lower('a')}
             id = ReservedFunctionName() { name = id.getSimple(); }
@@ -7644,22 +7112,13 @@ SqlPostfixOperator PostfixRowOperator() :
         |   <TRUE> { return SqlStdOperatorTable.IS_NOT_TRUE; }
         |   <FALSE> { return SqlStdOperatorTable.IS_NOT_FALSE; }
         |   <UNKNOWN> { return SqlStdOperatorTable.IS_NOT_UNKNOWN; }
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+        |   <A> <SET> { return SqlStdOperatorTable.IS_NOT_A_SET; }
+        |   <EMPTY> { return SqlStdOperatorTable.IS_NOT_EMPTY; }
         |   LOOKAHEAD(2) <JSON> <VALUE> { return SqlStdOperatorTable.IS_NOT_JSON_VALUE; }
         |   LOOKAHEAD(2) <JSON> <OBJECT> { return SqlStdOperatorTable.IS_NOT_JSON_OBJECT; }
         |   LOOKAHEAD(2) <JSON> <ARRAY> { return SqlStdOperatorTable.IS_NOT_JSON_ARRAY; }
         |   LOOKAHEAD(2) <JSON> <SCALAR> { return SqlStdOperatorTable.IS_NOT_JSON_SCALAR; }
         |   <JSON> { return SqlStdOperatorTable.IS_NOT_JSON_VALUE; }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
-=======
-        |   <A> <SET> { return SqlStdOperatorTable.IS_NOT_A_SET; }
-        |   <EMPTY> { return SqlStdOperatorTable.IS_NOT_EMPTY; }
->>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
-=======
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
         )
     |
         (
@@ -7667,21 +7126,12 @@ SqlPostfixOperator PostfixRowOperator() :
         |   <TRUE> { return SqlStdOperatorTable.IS_TRUE; }
         |   <FALSE> { return SqlStdOperatorTable.IS_FALSE; }
         |   <UNKNOWN> { return SqlStdOperatorTable.IS_UNKNOWN; }
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
+        |   <EMPTY> { return SqlStdOperatorTable.IS_EMPTY; }
         |   LOOKAHEAD(2) <JSON> <VALUE> { return SqlStdOperatorTable.IS_JSON_VALUE; }
         |   LOOKAHEAD(2) <JSON> <OBJECT> { return SqlStdOperatorTable.IS_JSON_OBJECT; }
         |   LOOKAHEAD(2) <JSON> <ARRAY> { return SqlStdOperatorTable.IS_JSON_ARRAY; }
         |   LOOKAHEAD(2) <JSON> <SCALAR> { return SqlStdOperatorTable.IS_JSON_SCALAR; }
         |   <JSON> { return SqlStdOperatorTable.IS_JSON_VALUE; }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
-=======
-        |   <EMPTY> { return SqlStdOperatorTable.IS_EMPTY; }
->>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
-=======
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
         )
     )
 |
@@ -7971,12 +7421,6 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < JSON: "JSON" >
 |   < JSON_ARRAY: "JSON_ARRAY">
 |   < JSON_ARRAYAGG: "JSON_ARRAYAGG">
-|   < JSON_EXISTS: "JSON_EXISTS" >
-|   < JSON_VALUE: "JSON_VALUE" >
-|   < JSON_PRETTY: "JSON_PRETTY" >
-|   < JSON_OBJECT: "JSON_OBJECT">
-|   < JSON_TYPE: "JSON_TYPE">
-=======
 |   < JSON_DEPTH: "JSON_DEPTH">
 |   < JSON_EXISTS: "JSON_EXISTS" >
 |   < JSON_KEYS: "JSON_KEYS" >
@@ -8360,8 +7804,6 @@ SqlPostfixOperator PostfixRowOperator() :
 |   < UTF8: "UTF8" >
 |   < UTF16: "UTF16" >
 |   < UTF32: "UTF32" >
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
 |   < UUID: "UUID" >
 |   < VALUE: "VALUE" >
 |   < VALUES: "VALUES" >
@@ -8425,33 +7867,13 @@ String NonReservedKeyWord() :
     }
 }
 
->>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
 /** @see #NonReservedKeyWord */
 void NonReservedKeyWord0of3() :
 {
 }
 {
     (
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
-=======
-<#list parser.nonReservedKeywords as keyword>
-=======
-<#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
-=======
-<#list parser.nonReservedKeywords as keyword>
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
-=======
-<#list parser.nonReservedKeywords as keyword>
->>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
-=======
-<#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 <#if keyword?index == 0>
         <${keyword}>
 <#elseif keyword?index % 3 == 0>
@@ -8467,19 +7889,7 @@ void NonReservedKeyWord1of3() :
 }
 {
     (
-<#list parser.nonReservedKeywords as keyword>
-=======
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
-=======
-<#list parser.nonReservedKeywords as keyword>
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
-=======
-<#list parser.nonReservedKeywords as keyword>
->>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
-=======
-<#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 <#if keyword?index == 1>
         <${keyword}>
 <#elseif keyword?index % 3 == 1>
@@ -8495,19 +7905,7 @@ void NonReservedKeyWord2of3() :
 }
 {
     (
-<#list parser.nonReservedKeywords as keyword>
-=======
 <#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
->>>>>>> 9a9d19c93 ([CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers)
-=======
-<#list parser.nonReservedKeywords as keyword>
->>>>>>> 6ed98d944 (Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers")
-=======
-<#list parser.nonReservedKeywords as keyword>
->>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
-=======
-<#list (parser.nonReservedKeywords!default.parser.nonReservedKeywords) + (parser.nonReservedKeywordsToAdd!default.parser.nonReservedKeywordsToAdd) as keyword>
->>>>>>> 5ede6027e (Revert "Revert "[CALCITE-4238] Create a default parser configuration, to reduce redundant information in sub-parsers"")
 <#if keyword?index == 2>
         <${keyword}>
 <#elseif keyword?index % 3 == 2>
@@ -8517,7 +7915,6 @@ void NonReservedKeyWord2of3() :
     )
 }
 
->>>>>>> fc317a98f (Revert "Revert "[CALCITE-2405] In Babel parser, make 400 reserved keywords including YEAR, SECOND, DESC non-reserved"")
 /* LITERALS */
 
 <DEFAULT, DQID, BTID> TOKEN :
@@ -8671,14 +8068,7 @@ of the 'normal states'.
 
 <DEFAULT, DQID, BTID> TOKEN :
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
     < HINT_BEG: "/*+">
-=======
-    < HINT_BEG: "/*+" ~["/"] >
-=======
-    < HINT_BEG: "/*+">
->>>>>>> 173ab5f49 ([CALCITE-3940] Hint item can not parse correctly if the name is right… (#331))
 |   < COMMENT_END: "*/" >
 }
 

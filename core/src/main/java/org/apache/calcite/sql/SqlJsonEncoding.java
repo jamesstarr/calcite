@@ -14,35 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.calcite.test;
-
-import org.apache.calcite.adapter.os.OsAdapterTest;
-import org.apache.calcite.adapter.tpcds.TpcdsTest;
-import org.apache.calcite.adapter.tpch.TpchTest;
-import org.apache.calcite.chinook.EndToEndTest;
-import org.apache.calcite.chinook.RemotePreparedStatementParametersTest;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-/**
- * Supported json encodings that could be passed to a
- * {@code JsonValueExpression}.
- */
-<<<<<<< HEAD:core/src/main/java/org/apache/calcite/sql/SqlJsonEncoding.java
-=======
 package org.apache.calcite.sql;
 
 /**
  * Supported json encodings that could be passed to a
  * {@code JsonValueExpression}.
  */
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 public enum SqlJsonEncoding {
   UTF8("UTF8"),
   UTF16("UTF16"),
   UTF32("UTF32");
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
 
   private final String standardName;
 
@@ -58,6 +39,3 @@ public enum SqlJsonEncoding {
     return getStandardName();
   }
 }
-
-// End SqlJsonEncoding.java
-=======

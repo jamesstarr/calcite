@@ -67,7 +67,6 @@ public class SqlAdvisor {
   // Flags indicating precision/scale combinations
   private final SqlValidatorWithHints validator;
   private final SqlParser.Config parserConfig;
->>>>>>> 0a81a4bc3 ([CALCITE-2433] SqlAdvisor: support configurable quoting characters)
 
   // Cache for getPreferredCasing
   private String prevWord;
@@ -367,12 +366,6 @@ public class SqlAdvisor {
       final SqlParserPos pos, String hintToken) {
     List<SqlNode> nodes = SqlUtil.getAncestry(root,
         input -> input instanceof SqlIdentifier
-<<<<<<< HEAD
-            && Util.last(((SqlIdentifier) input).names)
-                .equals(UPPER_HINT_TOKEN),
-=======
-            && ((SqlIdentifier) input).names.contains(UPPER_HINT_TOKEN),
-=======
             && ((SqlIdentifier) input).names.contains(hintToken),
         input -> Objects.requireNonNull(input).getParserPosition()
             .startsAt(pos));

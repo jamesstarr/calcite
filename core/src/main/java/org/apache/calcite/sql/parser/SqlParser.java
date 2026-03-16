@@ -28,10 +28,6 @@ import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.calcite.sql.validate.SqlDelegatingConformance;
 import org.apache.calcite.util.SourceStringReader;
-<<<<<<< HEAD
-
-=======
->>>>>>> a74d3bb1d ([CALCITE-2662] In Planner, allow parsing a stream (Reader) instead of a String (Enrico Olivelli))
 
 import com.google.common.collect.ImmutableSet;
 
@@ -332,13 +328,6 @@ public class SqlParser {
 
     public ConfigBuilder setConformance(SqlConformance conformance) {
       this.conformance = conformance;
-<<<<<<< HEAD
-      return this;
-    }
-
-    public ConfigBuilder setCharLiteralStyles(Set<CharLiteralStyle> charLiteralStyles) {
-      this.charLiteralStyles = charLiteralStyles;
-=======
       return this;
     }
 

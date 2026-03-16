@@ -14,49 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<<< HEAD:redis/src/main/java/org/apache/calcite/adapter/redis/RedisConfig.java
-package org.apache.calcite.adapter.redis;
-
-/**
- * Set the redis config.
- */
-public class RedisConfig {
-  private final String host;
-  private final int port;
-  private final int database;
-  private final String password;
-
-  public RedisConfig(String host, int port, int database, String password) {
-    this.host = host;
-    this.port = port;
-    this.database = database;
-    this.password = password;
-  }
-
-  public String getHost() {
-    return host;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public int getDatabase() {
-    return database;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-}
-========
 package org.apache.calcite.adapter.file;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
->>>>>>> a9d30ce58 ([CALCITE-2457] JUnit 4 -> 5: migrate Assume -> Assumptions, drop suites, remove junit4 from core classpath)
 
 /**
  * Enables to activate test conditionally if the specified host is reachable.
@@ -68,7 +31,3 @@ public @interface RequiresNetwork {
   String host() default  "en.wikipedia.org";
   int port() default 80;
 }
-
-// End RequiresNetwork.java
->>>>>>>> a9d30ce58 ([CALCITE-2457] JUnit 4 -> 5: migrate Assume -> Assumptions, drop suites, remove junit4 from core classpath):file/src/test/java/org/apache/calcite/adapter/file/RequiresNetwork.java
-=======

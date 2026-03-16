@@ -93,7 +93,3 @@ public class MemoryFactory<E> {
     }
   }
 }
-
-// End MemoryFactory.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -18,8 +18,6 @@ package org.apache.calcite.rel.metadata;
 
 import org.apache.calcite.rel.RelNode;
 
-<<<<<<< HEAD
-=======
 import java.lang.reflect.Proxy;
 
 import static java.util.Objects.requireNonNull;
@@ -58,9 +56,3 @@ public class JaninoRelMetadataHandlerProvider implements RelMetadataHandlerProvi
     return new TableRelMetadataCache();
   }
 }
-<<<<<<< HEAD
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
-
-// End JaninoRelMetadataHandlerProvider.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

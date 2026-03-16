@@ -46,8 +46,6 @@ import java.util.stream.Collectors;
 /**
  * Tests based on {@code zips-min.json} dataset. Runs automatically as part of CI.
  */
-public class GeodeZipsTest extends AbstractGeodeTest {
-=======
 class GeodeZipsTest extends AbstractGeodeTest {
 
   @BeforeAll

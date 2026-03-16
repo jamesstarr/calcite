@@ -176,13 +176,6 @@ public class RuleQueue {
       if (phaseMatchList.list.isEmpty()) {
         return null;
       }
-      int bestPos;
-      if (LOGGER.isTraceEnabled()) {
-        matchList.sort(MATCH_COMPARATOR);
-        match = matchList.get(0);
-        bestPos = 0;
-=======
->>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
 
       match = phaseMatchList.list.poll();
 

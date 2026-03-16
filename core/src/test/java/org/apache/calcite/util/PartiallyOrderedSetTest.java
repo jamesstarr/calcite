@@ -16,11 +16,6 @@
  */
 package org.apache.calcite.util;
 
-<<<<<<< HEAD
-import org.apache.calcite.config.CalciteSystemProperty;
-
-=======
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

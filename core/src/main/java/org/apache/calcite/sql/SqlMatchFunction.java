@@ -29,7 +29,3 @@ public class SqlMatchFunction extends SqlFunction {
     super(name, kind, returnTypeInference, operandTypeInference, operandTypeChecker, category);
   }
 }
-
-// End SqlMatchFunction.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

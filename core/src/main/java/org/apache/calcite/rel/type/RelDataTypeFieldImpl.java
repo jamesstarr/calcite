@@ -20,11 +20,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 
 import java.io.Serializable;
 import java.util.Objects;
-<<<<<<< HEAD
-
-import static java.util.Objects.requireNonNull;
-=======
->>>>>>> e93a6fdc9 (DX-58856: Improving RexCall's equals method)
 
 import static java.util.Objects.requireNonNull;
 

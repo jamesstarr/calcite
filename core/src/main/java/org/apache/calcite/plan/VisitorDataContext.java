@@ -185,24 +185,6 @@ public class VisitorDataContext implements DataContext {
     return null;
   }
 
-<<<<<<< HEAD
-
-  private static RexNode convertAndRemoveCast(RexBuilder builder, RexExecutor executor,
-                                     RexNode literal, RelDataType toType) {
-    if (literal instanceof RexLiteral) {
-      if (((builder != null) && (executor != null))
-          && (toType.getSqlTypeName() != literal.getType().getSqlTypeName())) {
-        RexNode cast = builder.makeCast(toType, literal);
-        final List<RexNode> reducedValues = new ArrayList<>();
-        executor.reduce(builder, ImmutableList.of(cast), reducedValues);
-        literal = Util.first(reducedValues.get(0), literal);
-      }
-    }
-
-    return RexUtil.removeCast(literal);
-  }
-=======
->>>>>>> d01e418b9 ([CALCITE-2843] Support PostgreSQL cast operator '::' (Muhammad Gelbana))
 
   private static RexNode convertAndRemoveCast(RexBuilder builder, RexExecutor executor,
                                      RexNode literal, RelDataType toType) {

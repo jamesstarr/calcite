@@ -24,6 +24,7 @@ import org.apache.calcite.config.NullCollation;
 import org.apache.calcite.linq4j.function.Experimental;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
@@ -1019,9 +1020,6 @@ public class SqlDialect {
     return false;
   }
 
-<<<<<<< HEAD
-=======
-=======
   /** Returns how NULL values are sorted if an ORDER BY item does not contain
    * NULLS ASCENDING or NULLS DESCENDING. */
   public NullCollation getNullCollation() {
@@ -1096,43 +1094,6 @@ public class SqlDialect {
   }
 
   /**
-<<<<<<< HEAD
-   * Returns whether the dialect supports implicit type coercion.
-   *
-   * <p>Most of the sql dialects support implicit type coercion, so we make this method
-   * default return true. For instance, "cast('10' as integer) &gt; 5"
-   * can be simplified to "'10' &gt; 5" if the dialect supports implicit type coercion
-   * for VARCHAR and INTEGER comparison.
-   *
-   * <p>For sql dialect that does not support implicit type coercion, such as the BigQuery,
-   * we can not convert '10' into INT64 implicitly.
-   *
-   * <p>Now this method is used for some auxiliary decision when translating some {@link RexCall}s,
-   * see SqlImplementor#stripCastFromString for details.
-   *
-   * @param call the call to make decision
-   */
-  public boolean supportsImplicitTypeCoercion(RexCall call) {
-    final RexNode operand0 = call.getOperands().get(0);
-    return SqlTypeUtil.isCharacter(operand0.getType());
-  }
-
-
-  /** Returns the name of the system table that has precisely one row.
-   * If there is no such table, returns null, and we will generate SELECT with
-   * no FROM clause.
-   *
-   * <p>For {@code VALUES 1},
-   * Oracle returns ["DUAL"] and we generate "SELECT 1 FROM DUAL";
-   * MySQL returns null and we generate "SELECT 1".
-   */
-  @Experimental
-  public @Nullable List<String> getSingleRowTableName() {
-    return null;
-  }
-
-  /**
-=======
    * Copies settings from this dialect into a parser configuration.
    *
    * <p>{@code SqlDialect}, {@link SqlParser.Config} and {@link SqlConformance}

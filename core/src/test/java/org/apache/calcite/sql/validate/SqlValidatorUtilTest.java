@@ -155,6 +155,3 @@ class SqlValidatorUtilTest {
     assertThat(sensitiveMatcher.frequency(beatles, "Ringo"), is(0));
   }
 }
->>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""")
-}
-=======

@@ -50,7 +50,3 @@ public class SqlAnyValueAggFunction extends SqlAggFunction {
 
   //~ Methods ----------------------------------------------------------------
 }
-
-// End SqlAnyValueAggFunction.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

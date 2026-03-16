@@ -27,11 +27,6 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.Pair;
-<<<<<<< HEAD:elasticsearch/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
-
-import com.google.common.collect.ImmutableList;
-=======
->>>>>>> 130909e66 ([CALCITE-2347] running ElasticSearch in embedded mode for unit tests of ES adapter (Andrei Sereda)):core/src/main/java/org/apache/calcite/adapter/elasticsearch/ElasticsearchProject.java
 
 import com.google.common.collect.ImmutableList;
 
@@ -71,7 +66,6 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
 
     final List<String> fields = new ArrayList<>();
     final List<String> scriptFields = new ArrayList<>();
-=======
     // registers wherever "select *" is present
     boolean hasSelectStar = false;
     for (Pair<RexNode, String> pair: getNamedProjects()) {
@@ -126,7 +120,6 @@ public class ElasticsearchProject extends Project implements ElasticsearchRel {
       query.append("\"script_fields\": {" + String.join(", ", scriptFields) + "}");
     }
 
-=======
     implementor.list.removeIf(l -> l.startsWith("\"_source\""));
     implementor.add("{" + query.toString() + "}");
   }

@@ -102,7 +102,6 @@ public final class LogicalJoin extends Join {
     super(cluster, traitSet, hints, left, right, condition, variablesSet, joinType);
     this.semiJoinDone = semiJoinDone;
     this.systemFieldList = Objects.requireNonNull(systemFieldList);
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   @Deprecated // to be removed before 2.0
@@ -171,8 +170,6 @@ public final class LogicalJoin extends Join {
         variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 
-<<<<<<< HEAD
-=======
   //~ Methods ----------------------------------------------------------------
 
   @Override public LogicalJoin copy(RelTraitSet traitSet, RexNode conditionExpr,
@@ -207,12 +204,3 @@ public final class LogicalJoin extends Join {
         left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
   }
 }
-<<<<<<< HEAD
-
-  @Override public RelNode withHints(List<RelHint> hintList) {
-    return new LogicalJoin(getCluster(), traitSet, hintList,
-        left, right, condition, variablesSet, joinType, semiJoinDone, systemFieldList);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

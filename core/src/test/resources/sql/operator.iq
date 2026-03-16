@@ -66,7 +66,7 @@ select * from "scott".emp where not sal > 1300 and not sal < 1200;
 
 !ok
 
->>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
+# MULTISET EXCEPT
 # TODO reactive when multiset changes are cherry picked
 #values multiset ['a', 'c', 'a'] multiset except multiset ['a'];
 #+--------+
@@ -77,7 +77,6 @@ select * from "scott".emp where not sal > 1300 and not sal < 1200;
 #(1 row)
 #
 #!ok
-<<<<<<< HEAD
 
 # MULTISET EXCEPT ALL
 # TODO reactive when multiset changes are cherry picked
@@ -245,9 +244,6 @@ order by 1,2;
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 # FLOOR and CEIL of DATE
 select v,
   case when b then 'ceil' else 'floor' end as op,
@@ -314,128 +310,7 @@ order by 1,2;
 | 12:34:56 | floor | 12:34:56 | 12:34:56 | 12:34:56 | 12:34:56 | 12:34:56 | 12:00:00 | 12:34:00 | 12:34:56 |
 +----------+-------+----------+----------+----------+----------+----------+----------+----------+----------+
 (2 rows)
-# MULTISET EXCEPT
-values multiset ['a', 'c', 'a'] multiset except multiset ['a'];
-+--------+
-| EXPR$0 |
-+--------+
-| [c, a] |
-+--------+
-(1 row)
-
-!ok
-=======
->>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
-
-# MULTISET EXCEPT ALL
-# TODO reactive when multiset changes are cherry picked
-#values multiset ['a', 'c', 'a'] multiset except all multiset ['a'];
-#+--------+
-#| EXPR$0 |
-#+--------+
-#| [c, a] |
-#+--------+
-#(1 row)
-#
-#!ok
-
-# MULTISET EXCEPT DISTINCT
-# TODO reactive when multiset changes are cherry picked
-
-#values multiset ['a', 'c', 'a'] multiset except distinct multiset ['a'];
-#+--------+
-#| EXPR$0 |
-#+--------+
-#| [c]    |
-#+--------+
-#(1 row)
-#
-#!ok
-
-# MULTISET UNION
-# TODO reactive when multiset changes are cherry picked
-# values multiset ['a', 'c', 'b'] multiset union multiset ['a'];
-# +--------------+
-# | EXPR$0       |
-# +--------------+
-# | [a, c, b, a] |
-# +--------------+
-# (1 row)
-
-#!ok
-
-# MULTISET UNION ALL
-# TODO reactive when multiset changes are cherry picked
-# values multiset ['a', 'c', 'b'] multiset union all multiset ['a'];
-# +--------------+
-# | EXPR$0       |
-# +--------------+
-# | [a, c, b, a] |
-# +--------------+
-# (1 row)
-
-# !ok
-
-# MULTISET UNION DISTINCT
-# TODO reactive when multiset changes are cherry picked
-# values multiset ['a', 'c', 'b'] multiset union distinct multiset ['a'];
-# +-----------+
-# | EXPR$0    |
-# +-----------+
-# | [a, b, c] |
-# +-----------+
-# (1 row)
-
-# !ok
-
-# MULTISET INTERSECT
-# TODO reactive when multiset changes are cherry picked
-# values multiset ['a', 'c', 'a', 'a'] multiset intersect multiset ['a', 'a'];
-# +--------+
-# | EXPR$0 |
-# +--------+
-# | [a, a] |
-# +--------+
-# (1 row)
-
-# !ok
-
-# MULTISET INTERSECT ALL
-# TODO reactive when multiset changes are cherry picked
-# values multiset ['a', 'c', 'a', 'a'] multiset intersect all multiset ['a', 'a'];
-# +--------+
-# | EXPR$0 |
-# +--------+
-# | [a, a] |
-# +--------+
-# (1 row)
-
-# !ok
-
-# MULTISET INTERSECT DISTINCT
-# TODO reactive when multiset changes are cherry picked
-# values multiset ['a', 'c', 'a', 'a'] multiset intersect distinct multiset ['a', 'a'];
-# +--------+
-# | EXPR$0 |
-# +--------+
-# | [a]    |
-# +--------+
-# (1 row)
-
-# !ok
-
-=======
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
-=======
 
 !ok
 
->>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
-=======
->>>>>>> c11398901 ([CALCITE-3412] FLOOR(timestamp TO WEEK) gives wrong result)
-=======
-
-!ok
-
->>>>>>> 651fe11cc ([CALCITE-3412] FLOOR(timestamp TO WEEK) gives wrong result (#272))
 # End operator.iq

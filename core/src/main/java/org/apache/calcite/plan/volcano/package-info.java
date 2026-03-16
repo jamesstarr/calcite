@@ -269,7 +269,3 @@
  *     (1993)</a>.</p>
  */
 package org.apache.calcite.plan.volcano;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

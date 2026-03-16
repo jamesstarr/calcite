@@ -17,7 +17,6 @@
 package org.apache.calcite.test.enumerable;
 
 import org.apache.calcite.adapter.enumerable.EnumerableCorrelate;
-=======
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -30,7 +29,6 @@ import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.JdbcTest;
 
 import org.junit.jupiter.api.Test;
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 import java.util.function.Consumer;
 
@@ -279,10 +277,6 @@ class EnumerableCorrelateTest {
         .returnsUnordered("empid=200; name=Eric");
   }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> c8ecee92a ([CALCITE-2920] In RelBuilder, add antiJoin method (Ruben Quesada Lopez))
   private CalciteAssert.AssertThat tester(boolean forceDecorrelate,
       Object schema) {
     return CalciteAssert.that()

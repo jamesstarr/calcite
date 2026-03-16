@@ -100,14 +100,6 @@ public class ProjectTableScanRule
   protected void apply(RelOptRuleCall call, Project project, TableScan scan) {
     final RelOptTable table = scan.getTable();
     assert table.unwrap(ProjectableFilterableTable.class) != null;
-    if (!project.isMapping()) {
-      return;
-    }
-    final Mappings.TargetMapping mapping = Project.getPartialMapping(
-            project.getInput().getRowType().getFieldCount(),
-            project.getProjects());
-
-=======
 
     final List<Integer> selectedColumns = new ArrayList<>();
     project.getProjects().forEach(proj -> {
@@ -150,35 +142,6 @@ public class ProjectTableScanRule
               .project(newProjectRexNodes)
               .build());
     }
-<<<<<<< HEAD
-  }
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    /** Config that matches Project on TableScan. */
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b0 ->
-                    b0.operand(Project.class).oneInput(b1 ->
-                            b1.operand(TableScan.class)
-                                    .predicate(ProjectTableScanRule::test)
-                                    .noInputs()))
-            .as(Config.class);
-
-    /** Config that matches Project on EnumerableInterpreter on TableScan. */
-    Config INTERPRETER = DEFAULT
-            .withOperandSupplier(b0 ->
-                    b0.operand(Project.class).oneInput(b1 ->
-                            b1.operand(EnumerableInterpreter.class).oneInput(b2 ->
-                                    b2.operand(TableScan.class)
-                                            .predicate(ProjectTableScanRule::test)
-                                            .noInputs())))
-            .withDescription("ProjectTableScanRule:interpreter")
-            .as(Config.class);
-
-    @Override default ProjectTableScanRule toRule() {
-      return new ProjectTableScanRule(this);
-    }
-=======
->>>>>>> a4e9ec0f2 ([CALCITE-3405] Prune columns for ProjectableFilterableTable when Project is not simple mapping (Jin Xing))
   }
   /** Rule configuration. */
   public interface Config extends RelRule.Config {

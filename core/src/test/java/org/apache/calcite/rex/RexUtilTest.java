@@ -47,6 +47,3 @@ public class RexUtilTest {
     assert constantMap.size() == 1;
   }
 }
-// End RexUtilTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

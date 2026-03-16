@@ -710,8 +710,6 @@ public class SubQueryRemoveRule
         .withDescription("SubQueryRemoveRule:Project")
         .as(Config.class)
         .withMatchHandler(SubQueryRemoveRule::matchProject);
-<<<<<<< HEAD
-=======
 
     Config FILTER = EMPTY
         .withOperandSupplier(b ->
@@ -742,36 +740,3 @@ public class SubQueryRemoveRule
     Config withMatchHandler(MatchHandler<SubQueryRemoveRule> matchHandler);
   }
 }
-<<<<<<< HEAD
-
-    Config FILTER = EMPTY
-        .withOperandSupplier(b ->
-            b.operand(Filter.class)
-                .predicate(RexUtil.SubQueryFinder::containsSubQuery).anyInputs())
-        .withDescription("SubQueryRemoveRule:Filter")
-        .as(Config.class)
-        .withMatchHandler(SubQueryRemoveRule::matchFilter);
-
-    Config JOIN = EMPTY
-        .withOperandSupplier(b ->
-            b.operand(Join.class)
-                .predicate(RexUtil.SubQueryFinder::containsSubQuery)
-                .anyInputs())
-        .withDescription("SubQueryRemoveRule:Join")
-        .as(Config.class)
-        .withMatchHandler(SubQueryRemoveRule::matchJoin);
-
-    @Override default SubQueryRemoveRule toRule() {
-      return new SubQueryRemoveRule(this);
-    }
-
-    /** Forwards a call to {@link #onMatch(RelOptRuleCall)}. */
-    @ImmutableBeans.Property
-    MatchHandler<SubQueryRemoveRule> matchHandler();
-
-    /** Sets {@link #matchHandler()}. */
-    Config withMatchHandler(MatchHandler<SubQueryRemoveRule> matchHandler);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

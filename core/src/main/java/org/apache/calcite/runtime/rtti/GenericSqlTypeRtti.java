@@ -81,6 +81,3 @@ public class GenericSqlTypeRtti extends RuntimeTypeInformation {
     return typeArguments.length;
   }
 }
-// End GenericSqlTypeRtti.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

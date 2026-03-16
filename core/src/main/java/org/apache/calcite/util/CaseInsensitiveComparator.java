@@ -74,7 +74,3 @@ class CaseInsensitiveComparator implements Comparator {
     return s1.compareTo(s2);
   }
 }
-
-// End CaseInsensitiveComparator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

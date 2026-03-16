@@ -3178,8 +3178,4 @@ class MaterializationTest {
     String getViewName();
     Sql withViewName(String viewName);
   }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 6a01f59d3 (Refactor MaterializationTest to use a fluent API (#187))
 }

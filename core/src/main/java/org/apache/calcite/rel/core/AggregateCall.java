@@ -102,7 +102,6 @@ public class AggregateCall {
     this.distinct = distinct;
     this.approximate = approximate;
     this.ignoreNulls = ignoreNulls;
-=======
     Preconditions.checkArgument(
         aggFunction.getDistinctOptionality() != Optionality.IGNORED || !distinct,
         "DISTINCT has no effect for this aggregate function, so must be false");

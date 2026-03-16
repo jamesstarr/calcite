@@ -147,6 +147,3 @@
 { "_id" : "99504", "city" : "ANCHORAGE", "loc" : [ -149.74467, 61.203696 ], "pop" : 32383, "state" : "AK" }
 { "_id" : "99709", "city" : "FAIRBANKS", "loc" : [ -147.846917, 64.85437 ], "pop" : 23238, "state" : "AK" }
 { "_id" : "99801", "city" : "JUNEAU", "loc" : [ -134.529429, 58.362767 ], "pop" : 24947, "state" : "AK" }
-=======
-{ "_id" : "99801", "city" : "JUNEAU", "loc" : [ -134.529429, 58.362767 ], "pop" : 24947, "state" : "AK" }
->>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance)

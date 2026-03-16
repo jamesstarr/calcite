@@ -310,8 +310,6 @@ public class SqlParserPos implements Serializable {
     return lineNumber == pos.lineNumber
         && columnNumber == pos.columnNumber;
   }
-<<<<<<< HEAD
-=======
 
   /** Parser position for an identifier segment that is quoted. */
   private static class QuotedParserPos extends SqlParserPos {
@@ -326,21 +324,3 @@ public class SqlParserPos implements Serializable {
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 7bbe08b5b ([CALCITE-2674] Column name with escape character should not be verified as a function when the column name is same with it (Danny Chan))
-
-  /** Parser position for an identifier segment that is quoted. */
-  private static class QuotedParserPos extends SqlParserPos {
-    QuotedParserPos(int startLineNumber, int startColumnNumber,
-        int endLineNumber, int endColumnNumber) {
-      super(startLineNumber, startColumnNumber, endLineNumber,
-          endColumnNumber);
-    }
-
-    @Override public boolean isQuoted() {
-      return true;
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

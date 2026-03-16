@@ -573,7 +573,6 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
   }
 
   /** Implementation of {@code MIN} function to calculate the minimum of
->>>>>>> 30aec277f ([CALCITE-3494] Support decimal type aggregate in Interpreter (Wang Yanlin))
    * {@code BigDecimal} values as a user-defined aggregate.
    */
   public static class MinBigDecimal extends NumericComparison<BigDecimal> {
@@ -587,9 +586,6 @@ public class AggregateNode extends AbstractSingleNode<Aggregate> {
   }
 
   /** Implementation of {@code MIN} function to calculate the minimum of
-<<<<<<< HEAD
-=======
-=======
    * {@code boolean} values as a user-defined aggregate.
    */
   public static class MinBoolean {

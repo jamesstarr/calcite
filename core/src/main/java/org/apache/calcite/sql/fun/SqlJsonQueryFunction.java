@@ -116,7 +116,3 @@ public class SqlJsonQueryFunction extends SqlFunction {
     return (E) ((SqlLiteral) operand).getValue();
   }
 }
-
-// End SqlJsonQueryFunction.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

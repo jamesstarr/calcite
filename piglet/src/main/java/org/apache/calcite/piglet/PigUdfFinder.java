@@ -108,7 +108,3 @@ class PigUdfFinder {
     return returnedMethod;
   }
 }
-
-// End PigUdfFinder.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

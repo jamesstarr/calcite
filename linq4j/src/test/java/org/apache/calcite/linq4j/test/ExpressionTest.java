@@ -1686,10 +1686,6 @@ public class ExpressionTest {
         Expressions.toString(Expressions.constant(set)));
   }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 51bb28c66 ([CALCITE-3288] In ConstantExpression support SET literals (xy2953396112))
   /** An enum. */
   enum MyEnum {
     X,

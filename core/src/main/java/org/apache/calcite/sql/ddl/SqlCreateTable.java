@@ -166,16 +166,6 @@ public class SqlCreateTable extends SqlCreate
     final RelDataTypeFactory.Builder storedBuilder = typeFactory.builder();
     // REVIEW 2019-08-19 Danny Chan: Should we implement the
     // #validate(SqlValidator) to get the SqlValidator instance?
-        RelDataType type = d.dataType.deriveType(typeFactory, true);
-        final Pair<CalciteSchema, String> pairForType =
-            SqlDdlNodes.schema(context, true, d.dataType.getTypeName());
-        if (type == null) {
-          CalciteSchema.TypeEntry typeEntry = pairForType.left.getType(pairForType.right, false);
-          if (typeEntry != null) {
-            type = typeEntry.getType().apply(typeFactory);
-          }
-        }
-=======
     final SqlValidator validator = SqlDdlNodes.validator(context, true);
     for (Ord<SqlNode> c : Ord.zip(columnList)) {
       if (c.e instanceof SqlColumnDeclaration) {

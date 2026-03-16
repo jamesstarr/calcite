@@ -120,33 +120,6 @@ public class VolcanoRelMetadataProvider implements RelMetadataProvider {
                           new Class[]{metadataClass},
                           ChainedRelMetadataProvider.chainedInvocationHandlerOf(metaDataList)));
       }
-<<<<<<< HEAD
-
-      subset.set.inMetadataQuery = true;
-      List<Metadata> metaDataList = new ArrayList<>();
-      try {
-        for (RelNode relCandidate : subset.set.rels) {
-          final UnboundMetadata<M> function =
-              provider.apply(relCandidate.getClass(), metadataClass);
-          if (function != null) {
-            final M result = function.bind(relCandidate, mq);
-            if (result != null) {
-              metaDataList.add(result);
-            }
-          }
-        }
-      } finally {
-        subset.set.inMetadataQuery = false;
-      }
-
-      if (metaDataList.size() > 0) {
-        return metadataClass.cast(
-                  Proxy.newProxyInstance(metadataClass.getClassLoader(),
-                          new Class[]{metadataClass},
-                          ChainedRelMetadataProvider.chainedInvocationHandlerOf(metaDataList)));
-      }
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
       // Give up.
       return null;
     };

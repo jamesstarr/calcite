@@ -84,7 +84,3 @@ public class MemoryEnumerator<E> implements Enumerator<MemoryFactory.Memory<E>> 
     enumerator.close();
   }
 }
-
-// End MemoryEnumerator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

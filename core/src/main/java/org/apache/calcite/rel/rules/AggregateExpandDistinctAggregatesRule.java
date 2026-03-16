@@ -461,7 +461,6 @@ public final class AggregateExpandDistinctAggregatesRule
             ImmutableIntList.copyOf(fullGroupSet), -1, RelCollations.EMPTY,
             groupSets.size(), relBuilder.peek(), null, "$g"));
 
->>>>>>> 4ff578681 (Really deprecate RelBuilder.groupKey(ImmutableBitSet, ImmutableList<I… (#76))
     relBuilder.aggregate(
         relBuilder.groupKey(fullGroupSet,
             (Iterable<ImmutableBitSet>) groupSets),
@@ -898,8 +897,6 @@ public final class AggregateExpandDistinctAggregatesRule
             null, ImmutableList.of()));
     return relBuilder;
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -923,29 +920,3 @@ public final class AggregateExpandDistinctAggregatesRule
     Config withUsingGroupingSets(boolean usingGroupingSets);
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b ->
-                    b.operand(LogicalAggregate.class).anyInputs())
-            .as(Config.class);
-
-    Config JOIN = DEFAULT.withUsingGroupingSets(false);
-
-    @Override default AggregateExpandDistinctAggregatesRule toRule() {
-      return new AggregateExpandDistinctAggregatesRule(this);
-    }
-
-    /** Whether to use GROUPING SETS, default true. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean isUsingGroupingSets();
-
-    /** Sets {@link #isUsingGroupingSets()}. */
-    Config withUsingGroupingSets(boolean usingGroupingSets);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

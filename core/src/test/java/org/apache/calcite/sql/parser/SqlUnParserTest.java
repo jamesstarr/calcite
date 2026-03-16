@@ -24,19 +24,8 @@ class SqlUnParserTest extends SqlParserTest {
   @Override protected Tester getTester() {
     return new UnparsingTesterImpl();
   }
-<<<<<<< HEAD
-=======
 
   @Override protected boolean isUnparserTest() {
     return true;
   }
 }
-<<<<<<< HEAD
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
-
-  @Override protected boolean isUnparserTest() {
-    return true;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

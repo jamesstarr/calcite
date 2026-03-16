@@ -63,8 +63,6 @@ public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
             input,
             calc.getTraitSet()));
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -80,21 +78,3 @@ public class CalcRemoveRule extends RelRule<CalcRemoveRule.Config>
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b ->
-                    b.operand(LogicalCalc.class)
-                            .predicate(calc -> calc.getProgram().isTrivial())
-                            .anyInputs())
-            .as(Config.class);
-
-    @Override default CalcRemoveRule toRule() {
-      return new CalcRemoveRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

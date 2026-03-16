@@ -29,9 +29,6 @@ import org.apache.calcite.rel.type.RelDataTypeField;
 
 import org.apache.pig.data.DataType;
 
-
-=======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

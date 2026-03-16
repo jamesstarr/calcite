@@ -23,7 +23,3 @@
  * competitive for queries over small data sets.
  */
 package org.apache.calcite.interpreter;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

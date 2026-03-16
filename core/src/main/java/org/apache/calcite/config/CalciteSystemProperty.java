@@ -22,8 +22,13 @@ import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.IntPredicate;
+import java.util.stream.Stream;
 
-=======
 /**
  * A Calcite specific system property that is used to configure various aspects of the framework.
  *

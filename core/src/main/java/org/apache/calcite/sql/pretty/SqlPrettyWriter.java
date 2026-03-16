@@ -1431,12 +1431,5 @@ public class SqlPrettyWriter implements SqlWriter {
       return names.toArray(new String[0]);
     }
   }
-<<<<<<< HEAD
-=======
 
 }
-<<<<<<< HEAD
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -449,8 +449,6 @@ public class AggregateJoinTransposeRule
     RelNode newInput;
     boolean aggregate;
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -487,43 +485,3 @@ public class AggregateJoinTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(LogicalAggregate.class, LogicalJoin.class, false);
-
-    /** Extended instance that can push down aggregate functions. */
-    Config EXTENDED = EMPTY.as(Config.class)
-            .withOperandFor(LogicalAggregate.class, LogicalJoin.class, true);
-
-    @Override default AggregateJoinTransposeRule toRule() {
-      return new AggregateJoinTransposeRule(this);
-    }
-
-    /** Whether to push down aggregate functions, default false. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean isAllowFunctions();
-
-    /** Sets {@link #isAllowFunctions()}. */
-    Config withAllowFunctions(boolean allowFunctions);
-
-    /** Defines an operand tree for the given classes, and also sets
-     * {@link #isAllowFunctions()}. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-                                  Class<? extends Join> joinClass, boolean allowFunctions) {
-      return withAllowFunctions(allowFunctions)
-           .withOperandSupplier(b0 ->
-               b0.operand(aggregateClass)
-                   .predicate(agg -> isAggregateSupported(agg, allowFunctions))
-               .oneInput(b1 ->
-                    b1.operand(joinClass).anyInputs()))
-           .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

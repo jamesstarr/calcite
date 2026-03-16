@@ -56,21 +56,6 @@ public class EnumerableCollect extends Collect implements EnumerableRel {
     this(cluster, traitSet, input,
         deriveRowType(cluster.getTypeFactory(), SqlTypeName.MULTISET, fieldName,
             input.getRowType()));
-<<<<<<< HEAD
-  }
-
-  /**
-   * Creates an EnumerableCollect.
-   *
-   * @param input          Input relational expression
-   * @param rowType        Row type
-   */
-  public static Collect create(RelNode input, RelDataType rowType) {
-    final RelOptCluster cluster = input.getCluster();
-    final RelTraitSet traitSet =
-        cluster.traitSet().replace(EnumerableConvention.INSTANCE);
-    return new EnumerableCollect(cluster, traitSet, input, rowType);
-=======
   }
 
   /**

@@ -306,8 +306,6 @@ class ServerParserTest extends SqlParserTest {
     final String expected = "DROP FUNCTION `X`.`UDF`";
     sql(sql).ok(expected);
   }
-<<<<<<< HEAD
-=======
 
   @Test void testDropFunctionIfExists() {
     final String sql = "drop function if exists \"my udf\"";
@@ -316,15 +314,3 @@ class ServerParserTest extends SqlParserTest {
   }
 
 }
-<<<<<<< HEAD
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
-
-  @Test void testDropFunctionIfExists() {
-    final String sql = "drop function if exists \"my udf\"";
-    final String expected = "DROP FUNCTION IF EXISTS `my udf`";
-    sql(sql).ok(expected);
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

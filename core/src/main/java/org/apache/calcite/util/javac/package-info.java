@@ -19,7 +19,3 @@
  * Provides compilers for Java code.
  */
 package org.apache.calcite.util.javac;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

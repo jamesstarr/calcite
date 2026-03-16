@@ -31,8 +31,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.type.SqlTypeAssignmentRules;
-=======
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
@@ -79,8 +77,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
 
   //~ Methods ----------------------------------------------------------------
 
-<<<<<<< HEAD
-=======
   /**
    * Cast operand at index {@code index} to target type.
    * we do this base on the fact that validate happens before type coercion.
@@ -101,7 +97,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
       // Do not support implicit type coercion for dynamic param.
       return false;
     }
->>>>>>> 6781dfa0f ([CALCITE-3672] Support implicit type coercion for insert and update (#181))
     // Check it early.
     if (!needToCast(scope, operand, targetType)) {
       return false;
@@ -440,7 +435,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
       // because calcite will do the cast in SqlToRelConverter.
       return null;
     }
->>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
     boolean anyNullable = type1.isNullable() || type2.isNullable();
 
     if ((SqlTypeUtil.isCharacter(type1) || SqlTypeUtil.isBinary(type1))
@@ -452,9 +446,6 @@ public abstract class AbstractTypeCoercion implements TypeCoercion {
         && type1.getSqlTypeName() == SqlTypeName.UUID) {
       return factory.createTypeWithNullability(type2, anyNullable);
     }
-<<<<<<< HEAD
-=======
-=======
 
     // DATE + TIMESTAMP -> TIMESTAMP
     if (SqlTypeUtil.isDate(type1) && SqlTypeUtil.isTimestamp(type2)) {

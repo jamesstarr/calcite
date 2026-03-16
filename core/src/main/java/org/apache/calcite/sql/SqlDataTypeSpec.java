@@ -194,12 +194,6 @@ public class SqlDataTypeSpec extends SqlNode {
     if (!Objects.equals(this.timeZone, that.timeZone)) {
       return litmus.fail("{} != {}", this, node);
     }
-    if (!SqlNode.equalDeep(
-        this.collectionsTypeName,
-        that.collectionsTypeName, litmus)) {
-      return litmus.fail(null);
-    }
-=======
     if (!this.typeNameSpec.equalsDeep(that.typeNameSpec, litmus)) {
       return litmus.fail(null);
     }

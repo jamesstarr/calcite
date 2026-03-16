@@ -230,22 +230,6 @@ public class SqlSelect extends SqlCall {
     this.fetch = fetch;
   }
 
-<<<<<<< HEAD
-  public void setHints(SqlNodeList hints) {
-    this.hints = hints;
-  }
-
-  public SqlNodeList getHints() {
-    return this.hints;
-  }
-
-  public boolean hasHints() {
-    // The hints may be passed as null explicitly.
-    return this.hints != null && this.hints.size() > 0;
-  }
-
-=======
->>>>>>> 76c0a9567 ([CALCITE-2418] Remove matchRecognize field of SqlSelect)
   public void setHints(SqlNodeList hints) {
     this.hints = hints;
   }

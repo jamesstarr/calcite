@@ -36,7 +36,6 @@ import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelReferentialConstraint;
 import org.apache.calcite.rel.RelRoot;
-=======
 import org.apache.calcite.rel.RelShuttle;
 import org.apache.calcite.rel.core.Correlate;
 import org.apache.calcite.rel.core.CorrelationId;
@@ -624,8 +623,6 @@ public abstract class SqlToRelTestBase {
               catalogReader, typeFactory);
       final CalciteConnectionConfig calciteConfig = context.unwrap(CalciteConnectionConfig.class);
       if (calciteConfig != null) {
-        validator.setDefaultNullCollation(calciteConfig.defaultNullCollation());
-=======
         validator.transform(config ->
             config.withDefaultNullCollation(calciteConfig.defaultNullCollation())
                   .withAmbiguousColumnAllowed(calciteConfig.ambiguousColumnAllowed())
@@ -774,8 +771,6 @@ public abstract class SqlToRelTestBase {
       } else {
         catalogReader = new MockCatalogReaderSimple(typeFactory, true);
       }
-      return new MockCatalogReaderSimple(typeFactory, true).init();
-=======
       return catalogReader.init();
     }
 
@@ -932,71 +927,6 @@ public abstract class SqlToRelTestBase {
       super(opTab, catalogReader, typeFactory, config);
     }
 
-<<<<<<< HEAD
-  }
-
-  /**
-   * {@link RelOptTable.ViewExpander} implementation for testing usage.
-   */
-  private static class MockViewExpander implements RelOptTable.ViewExpander {
-    private final SqlValidator validator;
-    private final Prepare.CatalogReader catalogReader;
-    private final RelOptCluster cluster;
-    private final SqlToRelConverter.Config config;
-
-    MockViewExpander(
-        SqlValidator validator,
-        Prepare.CatalogReader catalogReader,
-        RelOptCluster cluster,
-        SqlToRelConverter.Config config) {
-      this.validator = validator;
-      this.catalogReader = catalogReader;
-      this.cluster = cluster;
-      this.config = config;
-    }
-
-    @Override public RelRoot expandView(RelDataType rowType, String queryString,
-        List<String> schemaPath, List<String> viewPath) {
-      try {
-        SqlNode parsedNode = SqlParser.create(queryString).parseStmt();
-        SqlNode validatedNode = validator.validate(parsedNode);
-        SqlToRelConverter converter = new SqlToRelConverter(
-            this, validator, catalogReader, cluster,
-            StandardConvertletTable.INSTANCE, config);
-        return converter.convertQuery(validatedNode, false, true);
-      } catch (SqlParseException e) {
-        throw new RuntimeException("Error happened while expanding view.", e);
-      }
-    }
-  }
-
-  /**
-   * Custom implementation of Correlate for testing.
-   */
-  public static class CustomCorrelate extends Correlate {
-    public CustomCorrelate(
-        RelOptCluster cluster,
-        RelTraitSet traits,
-        RelNode left,
-        RelNode right,
-        CorrelationId correlationId,
-        ImmutableBitSet requiredColumns,
-        JoinRelType joinType) {
-      super(cluster, traits, left, right, correlationId, requiredColumns, joinType);
-    }
-
-    @Override public Correlate copy(RelTraitSet traitSet,
-        RelNode left, RelNode right, CorrelationId correlationId,
-        ImmutableBitSet requiredColumns, JoinRelType joinType) {
-      return new CustomCorrelate(getCluster(), traitSet, left, right,
-          correlationId, requiredColumns, joinType);
-    }
-
-    @Override public RelNode accept(RelShuttle shuttle) {
-      return shuttle.visit(this);
-    }
-=======
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
   }
 
   /**

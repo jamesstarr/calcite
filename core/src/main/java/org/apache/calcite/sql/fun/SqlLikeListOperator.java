@@ -218,7 +218,3 @@ public final class SqlLikeListOperator extends SqlSpecialOperator {
   }
 
 }
-
-// End SqlLikeListOperator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

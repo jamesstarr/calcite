@@ -300,21 +300,9 @@ public class NlsString implements Comparable<NlsString>, Cloneable {
   public NlsString copy(String value) {
     return new NlsString(value, charsetName, collation);
   }
-<<<<<<< HEAD
-=======
 
   /** Returns the value as a {@link ByteString}. */
   public ByteString getValueBytes() {
     return bytesValue;
   }
 }
-<<<<<<< HEAD
->>>>>>> bbd2cc09a ([CALCITE-2619] Reduce string literal creation cost by deferring and caching charset conversion (Ted Xu))
-
-  /** Returns the value as a {@link ByteString}. */
-  public ByteString getValueBytes() {
-    return bytesValue;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

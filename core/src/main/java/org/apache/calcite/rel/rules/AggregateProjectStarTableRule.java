@@ -76,7 +76,3 @@ public class AggregateProjectStarTableRule extends AggregateStarTableRule {
     }
   }
 }
-
-// End AggregateProjectStarTableRule.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<< HEAD
-=======
 package org.apache.calcite.adapter.elasticsearch;
 
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -125,9 +123,3 @@ class ScrollingTest {
 
 
 }
-<<<<<<< HEAD
->>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
-
-// End ScrollingTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

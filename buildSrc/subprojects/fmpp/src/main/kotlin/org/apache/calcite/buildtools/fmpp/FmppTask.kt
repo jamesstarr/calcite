@@ -50,7 +50,6 @@ open class FmppTask @Inject constructor(
     @TaskAction
     fun run() {
         project.delete(output.asFileTree)
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
         // Find the default_config.fmpp file
         val configFile = config.get().asFile
@@ -79,10 +78,6 @@ open class FmppTask @Inject constructor(
             "tdd(${configFile.absolutePath})"
         }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         ant.withGroovyBuilder {
             "taskdef"("name" to "fmpp",
                 "classname" to "fmpp.tools.AntTask",
@@ -90,11 +85,8 @@ open class FmppTask @Inject constructor(
             "fmpp"(
                 "configuration" to config.get(),
                 "sourceRoot" to templates.get().asFile,
-                "outputRoot" to output.get().asFile
-=======
                 "outputRoot" to output.get().asFile,
                 "data" to dataParam
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             )
         }
     }

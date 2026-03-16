@@ -37,15 +37,9 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.util.BuiltInMethod;
 import org.apache.calcite.util.Pair;
 
-import com.google.common.collect.Lists;
-
-import java.util.AbstractList;
-import java.util.List;
-=======
 import java.util.AbstractList;
 import java.util.List;
 import java.util.stream.Collectors;
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
 
 /**
  * Relational expression representing a scan of a table in an Elasticsearch data source.
@@ -126,8 +120,6 @@ public class ElasticsearchToEnumerableConverter extends ConverterImpl implements
    * @return list of constant expressions
    */
   private static <T> List<Expression> constantList(List<T> values) {
-    return Lists.transform(values, Expressions::constant);
-=======
     return values.stream().map(Expressions::constant).collect(Collectors.toList());
   }
 }

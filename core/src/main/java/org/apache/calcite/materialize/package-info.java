@@ -33,7 +33,3 @@
  * recognize what materializations would be useful based on actual query load.
  */
 package org.apache.calcite.materialize;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

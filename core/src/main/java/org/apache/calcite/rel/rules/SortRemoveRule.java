@@ -67,8 +67,6 @@ public class SortRemoveRule
     final RelTraitSet traits = sort.getInput().getTraitSet().replace(collation);
     call.transformTo(convert(sort.getInput(), traits));
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -82,20 +80,3 @@ public class SortRemoveRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b ->
-                    b.operand(Sort.class).anyInputs())
-            .as(Config.class);
-
-    @Override default SortRemoveRule toRule() {
-      return new SortRemoveRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

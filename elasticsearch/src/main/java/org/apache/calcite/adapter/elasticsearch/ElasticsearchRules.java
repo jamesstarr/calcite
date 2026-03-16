@@ -180,18 +180,9 @@ class ElasticsearchRules {
         }
       }
       throw new IllegalArgumentException("Translation of " + call
-        + "is not supported by ElasticsearchProject");
-=======
         + " is not supported by ElasticsearchProject");
     }
 
-<<<<<<< HEAD
-    private String stripQuotes(String s) {
-      return s.startsWith("'") && s.endsWith("'") ? s.substring(1, s.length() - 1) : s;
-    }
-
-=======
->>>>>>> 8c96cf58c ([CALCITE-2376] Unify ES2 and ES5 adapters. Migrate to low-level ES rest client as main transport. (Andrei Sereda))
     List<String> visitList(List<RexNode> list) {
       final List<String> strings = new ArrayList<>();
       for (RexNode node: list) {

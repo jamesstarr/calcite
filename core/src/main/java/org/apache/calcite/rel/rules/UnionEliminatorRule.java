@@ -49,8 +49,6 @@ public class UnionEliminatorRule
   //~ Methods ----------------------------------------------------------------
 
   @Override public boolean matches(RelOptRuleCall call) {
-<<<<<<< HEAD
-=======
     Union union = call.rel(0);
     return union.all && union.getInputs().size() == 1;
   }
@@ -64,7 +62,6 @@ public class UnionEliminatorRule
     return true;
   }
 
->>>>>>> 2504323cf ([CALCITE-3939] Change UnionEliminatorRule and ProjectRemoveRule to au… (#335))
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
     Config DEFAULT = EMPTY.as(Config.class)
@@ -81,27 +78,3 @@ public class UnionEliminatorRule
     }
   }
 }
-<<<<<<< HEAD
-
-  @Override public boolean autoPruneOld() {
-    return true;
-  }
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(LogicalUnion.class);
-
-    @Override default UnionEliminatorRule toRule() {
-      return new UnionEliminatorRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Union> unionClass) {
-      return withOperandSupplier(b -> b.operand(unionClass).anyInputs())
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

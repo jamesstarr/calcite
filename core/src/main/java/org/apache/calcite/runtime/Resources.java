@@ -943,8 +943,6 @@ public class Resources {
      * Opens the properties file corresponding to a given class. The code is
      * copied from {@link ResourceBundle}.
      */
-    private static InputStream openPropertiesFile(Class clazz) {
-=======
     @SuppressWarnings("removal")
     private static @Nullable InputStream openPropertiesFile(Class clazz) {
       final ClassLoader loader = clazz.getClassLoader();

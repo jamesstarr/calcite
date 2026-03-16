@@ -155,8 +155,6 @@ public class AggregateFilterTransposeRule
       call.transformTo(topAggregate);
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -188,38 +186,3 @@ public class AggregateFilterTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Aggregate.class, Filter.class);
-
-    @Override default AggregateFilterTransposeRule toRule() {
-      return new AggregateFilterTransposeRule(this);
-    }
-
-    /** Defines an operand tree for the given 2 classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-                                  Class<? extends Filter> filterClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(aggregateClass).oneInput(b1 ->
-                      b1.operand(filterClass).anyInputs()))
-              .as(Config.class);
-    }
-
-    /** Defines an operand tree for the given 3 classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-                                  Class<? extends Filter> filterClass,
-                                  Class<? extends RelNode> relClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(aggregateClass).oneInput(b1 ->
-                      b1.operand(filterClass).oneInput(b2 ->
-                              b2.operand(relClass).anyInputs())))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

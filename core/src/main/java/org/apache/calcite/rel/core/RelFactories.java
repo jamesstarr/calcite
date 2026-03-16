@@ -428,8 +428,6 @@ public class RelFactories {
   }
 
   /**
-<<<<<<< HEAD
-=======
    * Can create a {@link Values} of the appropriate type for a rule's calling
    * convention.
    */
@@ -588,7 +586,6 @@ public class RelFactories {
           partitionKeys, orderKeys, interval);
     }
   }
->>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
 
   /**
    * Can create a {@link Spool} of
@@ -728,144 +725,3 @@ public class RelFactories {
     }
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Can create a {@link Spool} of
-   * the appropriate type for a rule's calling convention.
-   */
-  public interface SpoolFactory {
-    /** Creates a {@link TableSpool}. */
-    RelNode createTableSpool(RelNode input, Spool.Type readType,
-        Spool.Type writeType, RelOptTable table);
-  }
-
-  /**
-   * Implementation of {@link SpoolFactory}
-   * that returns Logical Spools.
-   */
-  private static class SpoolFactoryImpl implements SpoolFactory {
-    public RelNode createTableSpool(RelNode input, Spool.Type readType,
-        Spool.Type writeType, RelOptTable table) {
-      return LogicalTableSpool.create(input, readType, writeType, table);
-    }
-  }
-
-  /**
-   * Can create a {@link RepeatUnion} of
-   * the appropriate type for a rule's calling convention.
-   */
-  @Experimental
-  public interface RepeatUnionFactory {
-    /** Creates a {@link RepeatUnion}. */
-    RelNode createRepeatUnion(RelNode seed, RelNode iterative, boolean all,
-        int iterationLimit, RelOptTable table);
-  }
-
-  /**
-   * Implementation of {@link RepeatUnion}
-   * that returns a {@link LogicalRepeatUnion}.
-   */
-  private static class RepeatUnionFactoryImpl implements RepeatUnionFactory {
-    public RelNode createRepeatUnion(RelNode seed, RelNode iterative,
-        boolean all, int iterationLimit, RelOptTable table) {
-      return LogicalRepeatUnion.create(seed, iterative, all, iterationLimit, table);
-    }
-  }
-
-  /** Immutable record that contains an instance of each factory. */
-  public static class Struct {
-    public final FilterFactory filterFactory;
-    public final ProjectFactory projectFactory;
-    public final AggregateFactory aggregateFactory;
-    public final SortFactory sortFactory;
-    public final ExchangeFactory exchangeFactory;
-    public final SortExchangeFactory sortExchangeFactory;
-    public final SetOpFactory setOpFactory;
-    public final JoinFactory joinFactory;
-    public final CorrelateFactory correlateFactory;
-    public final ValuesFactory valuesFactory;
-    public final TableScanFactory scanFactory;
-    public final TableFunctionScanFactory tableFunctionScanFactory;
-    public final SnapshotFactory snapshotFactory;
-    public final MatchFactory matchFactory;
-    public final SpoolFactory spoolFactory;
-    public final RepeatUnionFactory repeatUnionFactory;
-
-    private Struct(FilterFactory filterFactory,
-        ProjectFactory projectFactory,
-        AggregateFactory aggregateFactory,
-        SortFactory sortFactory,
-        ExchangeFactory exchangeFactory,
-        SortExchangeFactory sortExchangeFactory,
-        SetOpFactory setOpFactory,
-        JoinFactory joinFactory,
-        CorrelateFactory correlateFactory,
-        ValuesFactory valuesFactory,
-        TableScanFactory scanFactory,
-        TableFunctionScanFactory tableFunctionScanFactory,
-        SnapshotFactory snapshotFactory,
-        MatchFactory matchFactory,
-        SpoolFactory spoolFactory,
-        RepeatUnionFactory repeatUnionFactory) {
-      this.filterFactory = Objects.requireNonNull(filterFactory);
-      this.projectFactory = Objects.requireNonNull(projectFactory);
-      this.aggregateFactory = Objects.requireNonNull(aggregateFactory);
-      this.sortFactory = Objects.requireNonNull(sortFactory);
-      this.exchangeFactory = Objects.requireNonNull(exchangeFactory);
-      this.sortExchangeFactory = Objects.requireNonNull(sortExchangeFactory);
-      this.setOpFactory = Objects.requireNonNull(setOpFactory);
-      this.joinFactory = Objects.requireNonNull(joinFactory);
-      this.correlateFactory = Objects.requireNonNull(correlateFactory);
-      this.valuesFactory = Objects.requireNonNull(valuesFactory);
-      this.scanFactory = Objects.requireNonNull(scanFactory);
-      this.tableFunctionScanFactory =
-          Objects.requireNonNull(tableFunctionScanFactory);
-      this.snapshotFactory = Objects.requireNonNull(snapshotFactory);
-      this.matchFactory = Objects.requireNonNull(matchFactory);
-      this.spoolFactory = Objects.requireNonNull(spoolFactory);
-      this.repeatUnionFactory = Objects.requireNonNull(repeatUnionFactory);
-    }
-
-    public static @Nonnull Struct fromContext(Context context) {
-      Struct struct = context.unwrap(Struct.class);
-      if (struct != null) {
-        return struct;
-      }
-      return new Struct(
-          Util.first(context.unwrap(FilterFactory.class),
-              DEFAULT_FILTER_FACTORY),
-          Util.first(context.unwrap(ProjectFactory.class),
-              DEFAULT_PROJECT_FACTORY),
-          Util.first(context.unwrap(AggregateFactory.class),
-              DEFAULT_AGGREGATE_FACTORY),
-          Util.first(context.unwrap(SortFactory.class),
-              DEFAULT_SORT_FACTORY),
-          Util.first(context.unwrap(ExchangeFactory.class),
-              DEFAULT_EXCHANGE_FACTORY),
-          Util.first(context.unwrap(SortExchangeFactory.class),
-              DEFAULT_SORT_EXCHANGE_FACTORY),
-          Util.first(context.unwrap(SetOpFactory.class),
-              DEFAULT_SET_OP_FACTORY),
-          Util.first(context.unwrap(JoinFactory.class),
-              DEFAULT_JOIN_FACTORY),
-          Util.first(context.unwrap(CorrelateFactory.class),
-              DEFAULT_CORRELATE_FACTORY),
-          Util.first(context.unwrap(ValuesFactory.class),
-              DEFAULT_VALUES_FACTORY),
-          Util.first(context.unwrap(TableScanFactory.class),
-              DEFAULT_TABLE_SCAN_FACTORY),
-          Util.first(context.unwrap(TableFunctionScanFactory.class),
-              DEFAULT_TABLE_FUNCTION_SCAN_FACTORY),
-          Util.first(context.unwrap(SnapshotFactory.class),
-              DEFAULT_SNAPSHOT_FACTORY),
-          Util.first(context.unwrap(MatchFactory.class),
-              DEFAULT_MATCH_FACTORY),
-          Util.first(context.unwrap(SpoolFactory.class),
-              DEFAULT_SPOOL_FACTORY),
-          Util.first(context.unwrap(RepeatUnionFactory.class),
-              DEFAULT_REPEAT_UNION_FACTORY));
-    }
-  }
-}
-=======

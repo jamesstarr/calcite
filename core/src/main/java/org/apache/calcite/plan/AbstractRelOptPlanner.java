@@ -50,16 +50,11 @@ import static org.apache.calcite.util.Static.RESOURCE;
  * Abstract base for implementations of the {@link RelOptPlanner} interface.
  */
 public abstract class AbstractRelOptPlanner implements RelOptPlanner {
->>>>>>> f996861c4 ([CALCITE-3915] Add rule listener to report rule attempts and time at … (#340))
   //~ Static fields/initializers ---------------------------------------------
 
   /** Logger for rule attempts information. */
   private static final Logger RULE_ATTEMPTS_LOGGER = CalciteTrace.getRuleAttemptsTracer();
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> f996861c4 ([CALCITE-3915] Add rule listener to report rule attempts and time at … (#340))
   //~ Instance fields --------------------------------------------------------
 
   /**
@@ -440,12 +435,6 @@ public abstract class AbstractRelOptPlanner implements RelOptPlanner {
   /** Returns sub-classes of relational expression. */
   public Iterable<Class<? extends RelNode>> subClasses(
       final Class<? extends RelNode> clazz) {
-<<<<<<< HEAD
-    return Iterables.filter(classes, clazz::isAssignableFrom);
-=======
-    return Util.filter(classes, clazz::isAssignableFrom);
-
-=======
     return Util.filter(classes, c -> {
       // RelSubset must be exact type, not subclass
       if (c == RelSubset.class) {

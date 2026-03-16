@@ -362,9 +362,6 @@ public abstract class OperandTypes {
       };
 
   /**
-   * Operand type-checking strategy type must be a positive numeric non-NULL
-   * literal in the range 0 - 1.
-=======
    * Operand type-checking strategy type must be a numeric non-NULL
    * literal in the range 0 and 1 inclusive.
    */

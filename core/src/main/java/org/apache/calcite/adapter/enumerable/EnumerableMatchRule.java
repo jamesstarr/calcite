@@ -44,7 +44,3 @@ public class EnumerableMatchRule extends ConverterRule {
         match.getOrderKeys(), match.getInterval());
   }
 }
-
-// End EnumerableMatchRule.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

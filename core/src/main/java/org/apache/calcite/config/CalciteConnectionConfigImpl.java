@@ -183,8 +183,6 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
     return CalciteConnectionProperty.CONFORMANCE.wrap(properties)
         .getEnum(SqlConformanceEnum.class);
   }
-<<<<<<< HEAD
-=======
 
   @Override public String timeZone() {
     return CalciteConnectionProperty.TIME_ZONE.wrap(properties)
@@ -206,28 +204,3 @@ public class CalciteConnectionConfigImpl extends ConnectionConfigImpl
         .getBoolean();
   }
 }
-<<<<<<< HEAD
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
-
-  @Override public String timeZone() {
-    return CalciteConnectionProperty.TIME_ZONE.wrap(properties)
-            .getString();
-  }
-
-  public String locale() {
-    return CalciteConnectionProperty.LOCALE.wrap(properties)
-        .getString();
-  }
-
-  public boolean typeCoercion() {
-    return CalciteConnectionProperty.TYPE_COERCION.wrap(properties)
-        .getBoolean();
-  }
-
-  public boolean lenientOperatorLookup() {
-    return CalciteConnectionProperty.LENIENT_OPERATOR_LOOKUP.wrap(properties)
-        .getBoolean();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

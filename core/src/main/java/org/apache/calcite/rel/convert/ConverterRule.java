@@ -50,8 +50,6 @@ public abstract class ConverterRule extends RelOptRule {
    * @param descriptionPrefix Description prefix of rule
    */
   public ConverterRule(Class<? extends RelNode> clazz, RelTrait in,
-      RelTrait out, String description) {
-=======
       RelTrait out, String descriptionPrefix) {
     this(clazz, (Predicate<RelNode>) r -> true, in, out,
         RelFactories.LOGICAL_BUILDER, descriptionPrefix);

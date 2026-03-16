@@ -21,10 +21,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 {% endcomment %}
 -->
-  
-=======
 
->>>>>>> 08fae5803 (Cosmetic changes)
 **Note**:
 
 KafkaAdapter is an experimental feature, changes in public API and usage are expected.
@@ -97,12 +94,9 @@ sqlline> SELECT STREAM *
 +---------------+---------------------+---------------------+---------------+-----------------+
 {% endhighlight %}
 
-Kafka table is a streaming table, which runs continuously, `LIMIT` can be added to return fast as below: 
-=======
 Kafka table is a streaming table, which runs continuously.
 
 If you want the query to end quickly, add `LIMIT` as follows:
->>>>>>> 08fae5803 (Cosmetic changes)
 
 {% highlight sql %}
 sqlline> SELECT STREAM *

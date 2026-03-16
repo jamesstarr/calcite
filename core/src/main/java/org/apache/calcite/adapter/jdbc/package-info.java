@@ -19,7 +19,3 @@
  * Query provider based on a JDBC data source.
  */
 package org.apache.calcite.adapter.jdbc;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

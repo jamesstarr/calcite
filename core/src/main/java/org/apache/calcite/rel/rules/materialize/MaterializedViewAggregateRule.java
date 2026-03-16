@@ -367,8 +367,6 @@ public abstract class MaterializedViewAggregateRule extends MaterializedViewRule
           rexBuilder.makeInputRef(relBuilder.peek(),
               aggregate.getGroupCount() + i);
       aggregateCalls.add(
-          // TODO: handle aggregate ordering
-=======
           relBuilder.aggregateCall(rollupAgg, operand)
               .distinct(aggCall.isDistinct())
               .approximate(aggCall.isApproximate())

@@ -194,6 +194,4 @@ class ExpressionWriter {
       indentPending = false;
     }
   }
->>>>>>> 19d567a58 ([CALCITE-3237] IndexOutOfBoundsException when generating deeply nested Java code from linq4j (Sahith Nallapareddy))
-=======
 }

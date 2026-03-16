@@ -43,7 +43,3 @@ public class CollectNode extends AbstractSingleNode<Collect> {
     sink.send(row);
   }
 }
-
-// End CollectNode.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -374,9 +374,6 @@ public class Lattice {
 
   public StarTable createStarTable() {
     final List<Table> tables = new ArrayList<>();
-    for (Node node : nodes) {
-      tables.add(node.scan.getTable().unwrap(Table.class));
-=======
     for (LatticeNode node : rootNode.descendants) {
       tables.add(node.table.t.unwrap(Table.class));
     }
@@ -1075,7 +1072,6 @@ public class Lattice {
       });
     }
 
->>>>>>> 3343810f5 ([CALCITE-3131] In LatticeSuggester, record whether columns are used as "dimensions" or "measures")
     /** Records a use of a column.
      *
      * @param column Column
@@ -1087,9 +1083,6 @@ public class Lattice {
       columnUses.put(column.ordinal, measure);
     }
 
-<<<<<<< HEAD
-=======
-=======
     /** Work space for fixing up a tree of mutable nodes. */
     private static class Fixer {
       final Set<String> aliases = new HashSet<>();

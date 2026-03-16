@@ -19,7 +19,3 @@
  * Translates a SQL parse tree to relational expression.
  */
 package org.apache.calcite.sql2rel;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

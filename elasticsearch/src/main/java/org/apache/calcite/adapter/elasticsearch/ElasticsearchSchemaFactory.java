@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-=======
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaFactory;
 import org.apache.calcite.schema.SchemaPlus;

@@ -36,19 +36,8 @@ public class H2SqlDialect extends SqlDialect {
   @Override public boolean supportsCharSet() {
     return false;
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean supportsWindowFunctions() {
     return false;
   }
 }
-<<<<<<< HEAD
->>>>>>> 70f226063 ([CALCITE-2206] JDBC adapter incorrectly pushes windowed aggregates down to HSQLDB (Pavel Gubin))
-
-  @Override public boolean supportsWindowFunctions() {
-    return false;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

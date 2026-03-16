@@ -136,16 +136,6 @@ public enum CalciteConnectionProperty implements ConnectionProperty {
    * If the time zone is not set then the JVM time zone is returned.
    * Never null. */
   TIME_ZONE("timeZone", Type.STRING, TimeZone.getDefault().getID(), false),
-<<<<<<< HEAD
-
-  /** Returns the locale from the connect string.
-   * If the locale is not set, returns the root locale.
-   * Never null.
-   * Examples of valid locales: 'en', 'en_US',
-   * 'de_DE', '_GB', 'en_US_WIN', 'de__POSIX', 'fr__MAC', ''. */
-  LOCALE("locale", Type.STRING, Locale.ROOT.toString(), false),
-=======
->>>>>>> c2c086883 ([CALCITE-2782] Use server time zone by default if time zone is not specified in the user connection string (Justin Szeluga))
 
   /** Returns the locale from the connect string.
    * If the locale is not set, returns the root locale.

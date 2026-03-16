@@ -239,9 +239,6 @@ class VolcanoPlannerTest {
     assertThat(sort(buf),
         equalTo(
             sort(
-                "NoneSingleRel:Subset#0.NONE",
-                "PhysSingleRel:Subset#0.PHYS")));
-=======
                 "NoneSingleRel:Subset#0.NONE.[]",
                 "PhysSingleRel:Subset#0.PHYS.[0]",
                 "PhysSingleRel:Subset#0.PHYS.[]")));
@@ -292,8 +289,6 @@ class VolcanoPlannerTest {
    * this one didn't work due to the definition of ReformedSingleRule.
    */
   @Disabled // broken, because ReformedSingleRule matches child traits strictly
-  @Test public void testTransformSingleReformed() {
-=======
   @Test void testTransformSingleReformed() {
     VolcanoPlanner planner = new VolcanoPlanner();
     planner.addRelTraitDef(ConventionTraitDef.INSTANCE);

@@ -123,8 +123,6 @@ public class FilterTableScanRule
         Bindables.BindableTableScan.create(scan.getCluster(), scan.getTable(),
             filters.build(), projects));
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -149,31 +147,3 @@ public class FilterTableScanRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-          .withOperandSupplier(b0 ->
-                b0.operand(Filter.class).oneInput(b1 ->
-                        b1.operand(TableScan.class)
-          .predicate(FilterTableScanRule::test).noInputs()))
-          .as(Config.class);
-
-    Config INTERPRETER = EMPTY
-          .withOperandSupplier(b0 ->
-                b0.operand(Filter.class).oneInput(b1 ->
-                        b1.operand(EnumerableInterpreter.class).oneInput(b2 ->
-                                b2.operand(TableScan.class)
-          .predicate(FilterTableScanRule::test).noInputs())))
-          .withDescription("FilterTableScanRule:interpreter")
-          .as(Config.class);
-
-    @Override default FilterTableScanRule toRule() {
-      return new FilterTableScanRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

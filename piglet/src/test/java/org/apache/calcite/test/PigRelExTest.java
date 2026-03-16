@@ -218,7 +218,3 @@ class PigRelExTest extends PigRelTestBase {
     checkTranslation("CEIL(1.2)", inTree("CEIL(1.2E0:DOUBLE)"));
   }
 }
-
-// End PigRelExTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

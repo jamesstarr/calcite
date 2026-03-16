@@ -42,7 +42,3 @@ class SimplifyTask implements Comparable<SimplifyTask> {
     return Integer.compare(node.toString().length(), o.node.toString().length());
   }
 }
-
-// End SimplifyTask.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

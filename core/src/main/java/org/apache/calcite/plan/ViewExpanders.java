@@ -86,7 +86,3 @@ public abstract class ViewExpanders {
     };
   }
 }
-
-// End ViewExpanders.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

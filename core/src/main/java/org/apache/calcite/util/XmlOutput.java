@@ -377,9 +377,6 @@ public class XmlOutput {
       stringEncodeXML(data, out);
       out.println();
     }
-    out.println();
-=======
->>>>>>> 69f813903 (Cosmetic)
     out.flush();
     tagsWritten++;
   }

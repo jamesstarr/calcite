@@ -83,7 +83,3 @@ public class SetOpNode implements Node {
     }
   }
 }
-
-// End SetOpNode.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

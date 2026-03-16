@@ -21,9 +21,6 @@ import org.apache.calcite.sql.SqlNode;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-import java.util.Objects;
-import javax.annotation.Nullable;
-
 /**
  * The name-resolution scope of a LATERAL TABLE clause.
  *
@@ -33,19 +30,11 @@ import javax.annotation.Nullable;
 public class LateralTableScope extends ListScope {
   private final SqlNode node;
 
-  //~ Constructors -----------------------------------------------------------
-
-=======
->>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   /**
    * Creates a scope corresponding to a LATERAL TABLE clause.
    *
    * @param parent  Parent scope
    */
-  TableScope(SqlValidatorScope parent, SqlNode node) {
-    super(Preconditions.checkNotNull(parent));
-    this.node = Preconditions.checkNotNull(node);
-=======
   LateralTableScope(SqlValidatorScope parent, SqlNode node) {
     super(Objects.requireNonNull(parent, "parent"));
     this.node = Objects.requireNonNull(node, "node");

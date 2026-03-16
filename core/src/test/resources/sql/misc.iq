@@ -103,7 +103,6 @@ SELECT CAST(NULL AS UUID);
 # java.sql.SQLException: Error while executing SQL "SELECT UUID NULL": parse failed: Incorrect syntax near the keyword 'UUID' at line 1, column 8.
 # !error
 
->>>>>>> c25d56fe6 (DX-108641: Fix UUID literal comparisons to be compliant with RFC 4122 (#184))
 # Test RFC 4122 compliant UUID ordering - all comparisons in one statement
 SELECT
   UUID '00000000-0000-0000-0000-000000000000' < UUID '10000000-0000-0000-0000-000000000000' AS "0<1",
@@ -132,10 +131,6 @@ SELECT
 
 !ok
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> c25d56fe6 (DX-108641: Fix UUID literal comparisons to be compliant with RFC 4122 (#184))
 # [CALCITE-356] Allow column references of the form schema.table.column
 select "hr"."emps"."empid"
 from "hr"."emps";
@@ -196,12 +191,7 @@ Object 'HR' not found; did you mean 'hr'?
 !error
 
 select empid from bad_schema.bad_table;
-Table 'BAD_SCHEMA.BAD_TABLE' not found
-=======
-Object 'BAD_SCHEMA' not found
-=======
 Object 'BAD_SCHEMA.BAD_TABLE' not found
->>>>>>> 03d479037 (DX-57149: Reword for a more descriptive error message)
 !error
 
 select empid from bad_cat.bad_schema.bad_table;
@@ -225,10 +215,7 @@ Object 'CATALOG.hr.BAD_TABLE' not found
 !error
 
 select empid from catalog."hr".emp;
-Object 'CATALOG' not found
-=======
 Object 'CATALOG.hr.EMP' not found
->>>>>>> 03d479037 (DX-57149: Reword for a more descriptive error message)
 !error
 
 select empid from HR.bad_table;
@@ -416,22 +403,8 @@ and e."name" <> d."name";
 (3 rows)
 
 !ok
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], expr#6=[CAST($t4):VARCHAR CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], expr#7=[<>($t5, $t6)], empid=[$t0], name=[$t4], name0=[$t2], $condition=[$t7])
-=======
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#6=[CAST($t4):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#7=[<>($t5, $t6)], empid=[$t0], name=[$t4], name0=[$t2], $condition=[$t7])
-<<<<<<< HEAD
-  EnumerableJoin(condition=[=($1, $3)], joinType=[inner])
->>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
-=======
-=======
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR], expr#6=[CAST($t4):VARCHAR], expr#7=[<>($t5, $t6)], empid=[$t0], name=[$t4], name0=[$t2], $condition=[$t7])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
-  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
-=======
 EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t4], name0=[$t2])
   EnumerableHashJoin(condition=[AND(=($1, $3), <>(CAST($2):VARCHAR, CAST($4):VARCHAR))], joinType=[inner])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..4=[{inputs}], proj#0..2=[{exprs}])
       EnumerableTableScan(table=[[hr, emps]])
     EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])
@@ -454,22 +427,8 @@ and e."name" <> d."name";
 (3 rows)
 
 !ok
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], expr#6=[CAST($t4):VARCHAR CHARACTER SET "UTF-8" COLLATE "UTF-8$en_US$primary"], expr#7=[<>($t5, $t6)], empid=[$t0], name=[$t4], name0=[$t2], $condition=[$t7])
-=======
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#6=[CAST($t4):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#7=[<>($t5, $t6)], empid=[$t0], name=[$t4], name0=[$t2], $condition=[$t7])
-<<<<<<< HEAD
-  EnumerableJoin(condition=[=($1, $3)], joinType=[inner])
->>>>>>> f495333f2 ([DX-12070] Support for non-ISO-8859-1 literals)
-=======
-=======
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t2):VARCHAR], expr#6=[CAST($t4):VARCHAR], expr#7=[<>($t5, $t6)], empid=[$t0], name=[$t4], name0=[$t2], $condition=[$t7])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
-  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
-=======
 EnumerableCalc(expr#0..4=[{inputs}], empid=[$t0], name=[$t4], name0=[$t2])
   EnumerableHashJoin(condition=[AND(=($1, $3), <>(CAST($2):VARCHAR, CAST($4):VARCHAR))], joinType=[inner])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..4=[{inputs}], proj#0..2=[{exprs}])
       EnumerableTableScan(table=[[hr, emps]])
     EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])
@@ -489,9 +448,6 @@ where exists (select 1 from "hr"."emps");
 (3 rows)
 
 !ok
-EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t1])
-  EnumerableHashJoin(condition=[true], joinType=[inner])
-=======
 EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
@@ -500,7 +456,6 @@ EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
         EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], $f0=[$t5])
           EnumerableTableScan(table=[[hr, emps]])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Un-correlated NOT EXISTS
@@ -514,25 +469,11 @@ where not exists (select 1 from "hr"."emps");
 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condition=[$t2])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-=======
-  EnumerableJoin(condition=[true], joinType=[left])
-=======
-  EnumerableHashJoin(condition=[true], joinType=[left])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
-=======
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
-      EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1], $f0=[$t5])
-=======
       EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], $f0=[$t5])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -546,9 +487,6 @@ where exists (select 1 from "hr"."emps" where "empid" < 0);
 (0 rows)
 
 !ok
-EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t1])
-  EnumerableHashJoin(condition=[true], joinType=[inner])
-=======
 EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
@@ -557,7 +495,6 @@ EnumerableCalc(expr#0..1=[{inputs}], deptno=[$t0])
       EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
         EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
           EnumerableTableScan(table=[[hr, emps]])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
 !plan
 
 # Un-correlated NOT EXISTS (table empty)
@@ -574,25 +511,11 @@ where not exists (select 1 from "hr"."emps" where "empid" < 0);
 
 !ok
 EnumerableCalc(expr#0..1=[{inputs}], expr#2=[IS NULL($t1)], deptno=[$t0], $condition=[$t2])
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   EnumerableNestedLoopJoin(condition=[true], joinType=[left])
-=======
-  EnumerableJoin(condition=[true], joinType=[left])
-=======
-  EnumerableHashJoin(condition=[true], joinType=[left])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
-=======
-  EnumerableNestedLoopJoin(condition=[true], joinType=[left])
->>>>>>> f37d5eaea ([CALCITE-3535] EnumerableJoinRule: remove unnecessary Filter on top of INNER Join)
     EnumerableCalc(expr#0..3=[{inputs}], deptno=[$t0])
       EnumerableTableScan(table=[[hr, depts]])
     EnumerableAggregate(group=[{}], agg#0=[MIN($0)])
-      EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
-=======
       EnumerableCalc(expr#0..4=[{inputs}], expr#5=[1:BIGINT], expr#6=[0], expr#7=[<($t0, $t6)], $f0=[$t5], $condition=[$t7])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -631,16 +554,8 @@ where not exists (
 EnumerableCalc(expr#0..6=[{inputs}], expr#7=[IS NULL($t6)], proj#0..4=[{exprs}], $condition=[$t7])
   EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])
     EnumerableTableScan(table=[[hr, emps]])
-    EnumerableAggregate(group=[{1}], agg#0=[MIN($0)])
-<<<<<<< HEAD
-      EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1], $f0=[$t4], deptno=[$t0])
-=======
-      EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], $f0=[$t4], deptno=[$t0])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
-=======
     EnumerableAggregate(group=[{0}], agg#0=[MIN($1)])
       EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], deptno=[$t0], $f0=[$t4])
->>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
         EnumerableTableScan(table=[[hr, depts]])
 !plan
 
@@ -667,20 +582,6 @@ EnumerableCalc(expr#0..7=[{inputs}], expr#8=[IS NULL($t5)], expr#9=[IS NULL($t7)
     EnumerableCalc(expr#0..6=[{inputs}], proj#0..4=[{exprs}], $f0=[$t6])
       EnumerableHashJoin(condition=[=($1, $5)], joinType=[left])
         EnumerableTableScan(table=[[hr, emps]])
-        EnumerableAggregate(group=[{1}], agg#0=[MIN($0)])
-          EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], $f0=[$t4], deptno=[$t0])
-            EnumerableTableScan(table=[[hr, depts]])
-    EnumerableAggregate(group=[{1}], agg#0=[MIN($0)])
-<<<<<<< HEAD
-<<<<<<< HEAD
-      EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1], expr#5=[90], expr#6=[+($t0, $t5)], expr#7=[CAST($t6):INTEGER NOT NULL], expr#8=[=($t6, $t7)], $f0=[$t4], $f4=[$t6], $condition=[$t8])
-=======
-      EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], expr#5=[90], expr#6=[+($t0, $t5)], expr#7=[CAST($t6):INTEGER NOT NULL], expr#8=[=($t6, $t7)], $f0=[$t4], $f4=[$t6], $condition=[$t8])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
-=======
-      EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], expr#5=[90], expr#6=[+($t0, $t5)], expr#7=[true], $f0=[$t4], $f4=[$t6], $condition=[$t7])
->>>>>>> 714ffd845 ([CALCITE-2590] Remove redundant CAST when operand has exactly the same type as it is casted to)
-=======
         EnumerableAggregate(group=[{0}], agg#0=[MIN($1)])
           EnumerableCalc(expr#0..3=[{inputs}], expr#4=[1:BIGINT], deptno=[$t0], $f0=[$t4])
             EnumerableTableScan(table=[[hr, depts]])
@@ -768,14 +669,7 @@ select count(*) as c from "hr"."emps", "hr"."depts";
 
 !ok
 EnumerableAggregate(group=[{}], C=[COUNT()])
-  EnumerableHashJoin(condition=[true], joinType=[inner])
-=======
   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])
-    EnumerableCalc(expr#0..3=[{inputs}], expr#4=[0], DUMMY=[$t4])
-      EnumerableTableScan(table=[[hr, depts]])
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
-=======
->>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
     EnumerableCalc(expr#0..4=[{inputs}], expr#5=[0], DUMMY=[$t5])
       EnumerableTableScan(table=[[hr, emps]])
     EnumerableCalc(expr#0..3=[{inputs}], expr#4=[0], DUMMY=[$t4])
@@ -905,10 +799,7 @@ where c."city" = 'San Francisco'
 EnumerableCalc(expr#0..56=[{inputs}], product_id0=[$t20], time_id=[$t21], customer_id=[$t22], promotion_id=[$t23], store_id=[$t24], store_sales=[$t25], store_cost=[$t26], unit_sales=[$t27], customer_id0=[$t28], account_num=[$t29], lname=[$t30], fname=[$t31], mi=[$t32], address1=[$t33], address2=[$t34], address3=[$t35], address4=[$t36], city=[$t37], state_province=[$t38], postal_code=[$t39], country=[$t40], customer_region_id=[$t41], phone1=[$t42], phone2=[$t43], birthdate=[$t44], marital_status=[$t45], yearly_income=[$t46], gender=[$t47], total_children=[$t48], num_children_at_home=[$t49], education=[$t50], date_accnt_opened=[$t51], member_card=[$t52], occupation=[$t53], houseowner=[$t54], num_cars_owned=[$t55], fullname=[$t56], product_class_id0=[$t5], product_id=[$t6], brand_name=[$t7], product_name=[$t8], SKU=[$t9], SRP=[$t10], gross_weight=[$t11], net_weight=[$t12], recyclable_package=[$t13], low_fat=[$t14], units_per_case=[$t15], cases_per_pallet=[$t16], shelf_width=[$t17], shelf_height=[$t18], shelf_depth=[$t19], product_class_id=[$t0], product_subcategory=[$t1], product_category=[$t2], product_department=[$t3], product_family=[$t4])
   EnumerableHashJoin(condition=[=($6, $20)], joinType=[inner])
     EnumerableHashJoin(condition=[=($0, $5)], joinType=[inner])
-      EnumerableCalc(expr#0..4=[{inputs}], expr#5=['Snacks'], expr#6=[=($t3, $t5)], proj#0..4=[{exprs}], $condition=[$t6])
-=======
       EnumerableCalc(expr#0..4=[{inputs}], expr#5=['Snacks':VARCHAR(30)], expr#6=[=($t3, $t5)], proj#0..4=[{exprs}], $condition=[$t6])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
         EnumerableTableScan(table=[[foodmart2, product_class]])
       EnumerableTableScan(table=[[foodmart2, product]])
     EnumerableHashJoin(condition=[=($2, $8)], joinType=[inner])
@@ -2396,7 +2287,6 @@ where false;
 #
 #!ok
 #
->>>>>>> 044695b7e ([CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException)
 # [CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException
 values power(0.5, 2);
 +--------+
@@ -2419,10 +2309,6 @@ values atan2(0.5, 2);
 
 !ok
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 044695b7e ([CALCITE-2447] POWER, ATAN2 functions fail with NoSuchMethodException)
 !set outputformat csv
 
 # [CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order
@@ -2446,7 +2332,6 @@ EXPR$0
 false
 !ok
 
->>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
 # Sub-query returns a MAP, column is renamed, and enclosing query references the map.
 select mycol['b'] as x
 from (select map['a', false, 'b', true] from (values (2))) as t(mycol);
@@ -2454,16 +2339,12 @@ X
 true
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 # JSON
 values json_exists('{"foo":"bar"}', 'strict $.foo' false on error);
 EXPR$0
 true
 !ok
 
->>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
 # [CALCITE-2908] Implement SQL LAST_DAY function
 with data(c_date, c_timestamp) as (select * from (values
     (DATE'1965-01-10', TIMESTAMP '1965-01-10 20:20:20'),
@@ -2485,14 +2366,4 @@ EXPR$0, EXPR$1
 2019-12-31, 2019-12-31
 !ok
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 8fb9e5d96 ([CALCITE-1167] OVERLAPS should match even if operands are in (high, low) order)
-=======
->>>>>>> 1befe6160 ([CALCITE-2470] In RelBuilder, project method should combine expressions if the underlying node is a Project)
-=======
->>>>>>> bc721fdca ([CALCITE-2670] Combine similar JSON aggregate functions in operator table)
-=======
->>>>>>> 133dfb6da ([CALCITE-2908] Implement SQL LAST_DAY function (Chunwei Lei))
 # End misc.iq

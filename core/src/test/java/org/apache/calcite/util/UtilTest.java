@@ -1113,7 +1113,6 @@ class UtilTest {
     assertThat(list2.equals(list), is(false));
     //noinspection EqualsWithItself
     assertThat(list2.equals(list2), is(true));
-=======
 
   }
 
@@ -2580,10 +2579,6 @@ class UtilTest {
     return list;
   }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> f85467c1b (Util.filter replaces Guava Iterables.filter)
   static String mismatchDescription(Matcher m, Object item) {
     final StringDescription d = new StringDescription();
     m.describeMismatch(item, d);

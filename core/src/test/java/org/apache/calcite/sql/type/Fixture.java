@@ -67,7 +67,6 @@ public class Fixture {
           typeFactory.createSqlType(SqlTypeName.TIMESTAMP, 9), false);
   final RelDataType sqlDate = typeFactory.createTypeWithNullability(
           typeFactory.createSqlType(SqlTypeName.DATE), false);
->>>>>>> 1afb6a502 ([CALCITE-2994] Least restrictive type among structs does not consider nullability)
   final RelDataType structOfInt = typeFactory.createTypeWithNullability(
       typeFactory.createStructType(
           ImmutableList.of(sqlInt, sqlInt),
@@ -78,8 +77,4 @@ public class Fixture {
           ImmutableList.of(sqlInt, sqlInt),
           ImmutableList.of("i", "j")
       ), true);
-<<<<<<< HEAD
-}
-=======
-=======
 }

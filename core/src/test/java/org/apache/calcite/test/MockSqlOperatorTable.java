@@ -104,8 +104,6 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
           .build();
     }
   }
-<<<<<<< HEAD
-=======
 
   /** "MY_AVG" user-defined aggregate function, with two arguments. */
   public static class MyAvgAggFunction extends SqlAggFunction {
@@ -160,60 +158,3 @@ public class MockSqlOperatorTable extends ChainedSqlOperatorTable {
     }
   }
 }
-<<<<<<< HEAD
-
-  /** "MY_AVG" user-defined aggregate function, with two arguments. */
-  public static class MyAvgAggFunction extends SqlAggFunction {
-    public MyAvgAggFunction() {
-      super("MY_AVG", null, SqlKind.AVG, ReturnTypes.AVG_AGG_FUNCTION,
-          null, OperandTypes.NUMERIC_NUMERIC, SqlFunctionCategory.NUMERIC,
-          false, false, Optionality.FORBIDDEN);
-    }
-
-    @Override public boolean isDeterministic() {
-      return false;
-    }
-  }
-  /** "STRUCTURED_FUNC" user-defined function whose return type is structured type. */
-  public static class StructuredFunction extends SqlFunction {
-    StructuredFunction() {
-      super("STRUCTURED_FUNC", new SqlIdentifier("STRUCTURED_FUNC", SqlParserPos.ZERO),
-          SqlKind.OTHER_FUNCTION, null, null, OperandTypes.NILADIC, null,
-          SqlFunctionCategory.USER_DEFINED_FUNCTION);
-    }
-
-    @Override public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      final RelDataTypeFactory typeFactory = opBinding.getTypeFactory();
-      final RelDataType bigintType =
-          typeFactory.createSqlType(SqlTypeName.BIGINT);
-      final RelDataType varcharType =
-          typeFactory.createSqlType(SqlTypeName.VARCHAR, 20);
-      return typeFactory.builder()
-          .add("F0", bigintType)
-          .add("F1", varcharType)
-          .build();
-    }
-  }
-
-  /** "MYFUN" user-defined scalar function. */
-  public static class MyFunction extends SqlFunction {
-    public MyFunction() {
-      super("MYFUN",
-          new SqlIdentifier("MYFUN", SqlParserPos.ZERO),
-          SqlKind.OTHER_FUNCTION,
-          null,
-          null,
-          OperandTypes.NUMERIC,
-          null,
-          SqlFunctionCategory.USER_DEFINED_FUNCTION);
-    }
-
-    public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
-      final RelDataTypeFactory typeFactory =
-          opBinding.getTypeFactory();
-      return typeFactory.createSqlType(SqlTypeName.BIGINT);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

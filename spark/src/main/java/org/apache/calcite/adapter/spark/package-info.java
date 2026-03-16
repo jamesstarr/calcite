@@ -19,7 +19,3 @@
  * Adapter based on the Apache Spark data management system.
  */
 package org.apache.calcite.adapter.spark;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

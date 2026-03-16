@@ -172,8 +172,6 @@ public abstract class RexNode {
    * {@link RexBiVisitor#visitInputRef(RexInputRef, Object)} visitXxx} method.
    */
   public abstract <R, P> R accept(RexBiVisitor<R, P> visitor, P arg);
-<<<<<<< HEAD
-=======
 
   /** {@inheritDoc}
    *
@@ -188,21 +186,3 @@ public abstract class RexNode {
    */
   @Override public abstract int hashCode();
 }
-<<<<<<< HEAD
->>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
-
-  /** {@inheritDoc}
-   *
-   * <p>Every node must implement {@link #equals} based on its content
-   */
-  @Override public abstract boolean equals(Object obj);
-
-  /** {@inheritDoc}
-   *
-   * <p>Every node must implement {@link #hashCode} consistent with
-   * {@link #equals}
-   */
-  @Override public abstract int hashCode();
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

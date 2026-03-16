@@ -81,7 +81,3 @@ public class SqlWithinGroupOperator extends SqlBinaryOperator {
     return validateOperands(validator, scope, call);
   }
 }
-
-// End SqlWithinGroupOperator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

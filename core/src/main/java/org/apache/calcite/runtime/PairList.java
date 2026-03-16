@@ -244,7 +244,3 @@ public interface PairList<T, U> extends List<Map.Entry<T, U>> {
     }
   }
 }
-
-// End PairList.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

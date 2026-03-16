@@ -791,7 +791,6 @@ public enum SqlKind {
   JSON_VALUE_EXPRESSION,
 
   /**
-=======
    * The {@code JSON_ARRAYAGG} aggregate function.
    */
   JSON_ARRAYAGG,
@@ -1362,7 +1361,6 @@ public enum SqlKind {
    * <p>For instance: {@link #AND}, {@link #OR}, {@link #EQUALS}, {@link #LEAST}</p>
    * <p>Note: {@link #PLUS} does depend on the argument oder if argument types are different</p>
    */
-=======
   @API(since = "1.22", status = API.Status.EXPERIMENTAL)
   public static final Set<SqlKind> SYMMETRICAL =
       EnumSet.of(

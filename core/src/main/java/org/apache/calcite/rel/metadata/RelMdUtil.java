@@ -877,8 +877,6 @@ public class RelMdUtil {
     }
     return alreadySorted && alreadySmaller;
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Validate the {@code result} represents a percentage number,
@@ -953,83 +951,4 @@ public class RelMdUtil {
   public static boolean clearCache(RelNode rel) {
     return rel.getCluster().getMetadataQuery().clearCache(rel);
   }
-}
->>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
-
-  /**
-   * Validate the {@code result} represents a percentage number,
-   * e.g. the value interval is [0.0, 1.0].
-   *
-   * @return true if the {@code result} is a percentage number
-   * @throws AssertionError if the validation fails
-   */
-  public static Double validatePercentage(Double result) {
-    assert isPercentage(result, true);
-    return result;
-  }
-
-<<<<<<< HEAD
-  private static boolean isPercentage(Double result, boolean fail) {
-    if (result != null) {
-      final double d = result;
-      if (d < 0.0) {
-        assert !fail;
-        return false;
-      }
-      if (d > 1.0) {
-        assert !fail;
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Validates the {@code result} is valid.
-   *
-   * <p>Never let the result go below 1, as it will result in incorrect
-   * calculations if the row-count is used as the denominator in a
-   * division expression.  Also, cap the value at the max double value
-   * to avoid calculations using infinity.
-   *
-   * @return the corrected value from the {@code result}
-   * @throws AssertionError if the {@code result} is negative
-   */
-  public static Double validateResult(Double result) {
-    if (result == null) {
-      return null;
-    }
-
-    if (result.isInfinite()) {
-      result = Double.MAX_VALUE;
-    }
-    assert isNonNegative(result, true);
-    if (result < 1.0) {
-      result = 1.0;
-    }
-    return result;
-  }
-
-  private static boolean isNonNegative(Double result, boolean fail) {
-    if (result != null) {
-      final double d = result;
-      if (d < 0.0) {
-        assert !fail;
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Removes cached metadata values for specified RelNode.
-   *
-   * @param rel RelNode whose cached metadata should be removed
-   * @return true if cache for the provided RelNode was not empty
-   */
-  public static boolean clearCache(RelNode rel) {
-    return rel.getCluster().getMetadataQuery().clearCache(rel);
-  }
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

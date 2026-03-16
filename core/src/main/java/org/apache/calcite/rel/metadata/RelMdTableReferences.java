@@ -228,8 +228,6 @@ public class RelMdTableReferences
   public Set<RelTableRef> getTableReferences(Exchange rel, RelMetadataQuery mq) {
     return mq.getTableReferences(rel.getInput());
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Table references from Window.
@@ -246,23 +244,3 @@ public class RelMdTableReferences
   }
 
 }
-<<<<<<< HEAD
->>>>>>> 7ddb4b7ee ([CALCITE-3454] Support Exchange, SetOp and TableModify for builtin)
-
-  /**
-   * Table references from Window.
-   */
-  public Set<RelTableRef> getTableReferences(Window rel, RelMetadataQuery mq) {
-    return mq.getTableReferences(rel.getInput());
-  }
-
-  /**
-   * Table references from Sample.
-   */
-  public Set<RelTableRef> getTableReferences(Sample rel, RelMetadataQuery mq) {
-    return mq.getTableReferences(rel.getInput());
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -78,8 +78,6 @@ public class NameMap<V> {
       floorKey = name;
       ceilingKey = name;
     } else {
-      return helper.map(map, name);
-=======
       floorKey = COMPARATOR.floorKey(name);
       ceilingKey = COMPARATOR.ceilingKey(name);
     }

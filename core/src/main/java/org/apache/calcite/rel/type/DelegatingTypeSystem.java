@@ -97,7 +97,3 @@ public class DelegatingTypeSystem implements RelDataTypeSystem {
     return typeSystem.shouldConvertRaggedUnionTypesToVarying();
   }
 }
-
-// End DelegatingTypeSystem.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

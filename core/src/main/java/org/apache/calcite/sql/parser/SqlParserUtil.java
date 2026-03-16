@@ -48,9 +48,6 @@ import org.apache.calcite.util.Util;
 import org.apache.calcite.util.trace.CalciteTrace;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import org.slf4j.Logger;
@@ -787,7 +784,6 @@ public final class SqlParserUtil {
     }
   }
 
-=======
 
   /** Implementation of
    * {@link org.apache.calcite.sql.SqlSpecialOperator.TokenSequence}

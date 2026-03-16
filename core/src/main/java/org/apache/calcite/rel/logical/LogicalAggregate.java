@@ -76,7 +76,6 @@ public final class LogicalAggregate extends Aggregate {
   public LogicalAggregate(
       RelOptCluster cluster,
       RelTraitSet traitSet,
->>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)
       RelNode input,
       ImmutableBitSet groupSet,
       List<ImmutableBitSet> groupSets,
@@ -159,8 +158,6 @@ public final class LogicalAggregate extends Aggregate {
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
   }
-<<<<<<< HEAD
-=======
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalAggregate(getCluster(), traitSet, hintList, input,
@@ -168,13 +165,3 @@ public final class LogicalAggregate extends Aggregate {
   }
 
 }
-<<<<<<< HEAD
-
-  @Override public RelNode withHints(List<RelHint> hintList) {
-    return new LogicalAggregate(getCluster(), traitSet, hintList, input,
-        groupSet, groupSets, aggCalls);
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -19,7 +19,3 @@
  * Provides a server for hosting Calcite connections.
  */
 package org.apache.calcite.server;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

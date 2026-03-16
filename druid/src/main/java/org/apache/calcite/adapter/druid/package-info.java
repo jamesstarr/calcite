@@ -19,7 +19,3 @@
  * Query provider based on a Druid database.
  */
 package org.apache.calcite.adapter.druid;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

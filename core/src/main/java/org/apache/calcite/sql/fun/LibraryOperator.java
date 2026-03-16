@@ -41,7 +41,3 @@ public @interface LibraryOperator {
    * Must not be null or empty. */
   SqlLibrary[] libraries();
 }
-
-// End LibraryOperator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

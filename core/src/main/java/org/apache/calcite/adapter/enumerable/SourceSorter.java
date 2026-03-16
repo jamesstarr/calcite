@@ -63,7 +63,3 @@ public class SourceSorter<TAccumulate, TSource, TSortKey>
     }
   }
 }
-
-// End SourceSorter.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

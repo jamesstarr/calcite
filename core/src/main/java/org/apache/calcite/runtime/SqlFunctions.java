@@ -39,8 +39,6 @@ import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.NumberUtil;
 import org.apache.calcite.util.TimeWithTimeZoneString;
 import org.apache.calcite.util.TimestampWithTimeZoneString;
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
-=======
 import org.apache.calcite.util.Unsafe;
 import org.apache.calcite.util.Util;
 
@@ -2846,9 +2844,6 @@ public class SqlFunctions {
   }
 
   /**
-   * Implements the {@code .} (field access) operator on an object whose type is not known until
-   * runtime.
-=======
    * Implements the {@code .} (field access) operator on an object
    * whose type is not known until runtime.
    *

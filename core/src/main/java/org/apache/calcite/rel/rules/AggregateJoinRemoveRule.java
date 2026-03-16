@@ -123,7 +123,3 @@ public class AggregateJoinRemoveRule extends RelOptRule {
     call.transformTo(node);
   }
 }
-
-// End AggregateJoinRemoveRule.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

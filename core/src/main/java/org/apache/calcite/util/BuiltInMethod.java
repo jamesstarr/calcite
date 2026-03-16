@@ -296,7 +296,6 @@ public enum BuiltInMethod {
   MAP_GET(Map.class, "get", Object.class),
   MAP_PUT(Map.class, "put", Object.class, Object.class),
   COLLECTION_ADD(Collection.class, "add", Object.class),
-=======
   COLLECTION_ADDALL(Collection.class, "addAll", Collection.class),
   COLLECTION_RETAIN_ALL(Collection.class, "retainAll", Collection.class),
   LIST_GET(List.class, "get", int.class),
@@ -591,7 +590,6 @@ public enum BuiltInMethod {
   CONTEXT_ROOT(Context.class, "root", true),
   DATA_CONTEXT_GET_QUERY_PROVIDER(DataContext.class, "getQueryProvider"),
   METADATA_REL(Metadata.class, "rel"),
-=======
   STRUCT_ACCESS(SqlFunctions.class, "structAccess", Object.class, int.class, String.class),
   SOURCE_SORTER(SourceSorter.class, Function2.class, Function1.class,
       Comparator.class),
@@ -657,17 +655,8 @@ public enum BuiltInMethod {
     this(null, null, Types.lookupField(clazz, fieldName));
     assert dummy : "dummy value for method overloading must be true";
   }
-<<<<<<< HEAD
-=======
 
   public String getMethodName() {
     return method.getName();
   }
 }
-<<<<<<< HEAD
-
-  public String getMethodName() {
-    return method.getName();
-  }
-}
-=======

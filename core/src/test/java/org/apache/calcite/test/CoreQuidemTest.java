@@ -25,7 +25,6 @@ import net.hydromatic.quidem.Quidem;
 
 import org.junit.jupiter.api.Disabled;
 
->>>>>>> 9d5cc2f5f ([CALCITE-6791] Search pattern during matching in REPLACE function should be case insensitive in MSSQL)
 import java.sql.Connection;
 import java.util.Collection;
 
@@ -104,8 +103,4 @@ class CoreQuidemTest extends QuidemTest {
     };
   }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 9d5cc2f5f ([CALCITE-6791] Search pattern during matching in REPLACE function should be case insensitive in MSSQL)
 }

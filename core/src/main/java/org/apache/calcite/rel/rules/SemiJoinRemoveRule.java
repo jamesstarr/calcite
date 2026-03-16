@@ -48,9 +48,6 @@ public class SemiJoinRemoveRule
 
   @Deprecated // to be removed before 2.0
   public SemiJoinRemoveRule(RelBuilderFactory relBuilderFactory) {
-    super(operandJ(LogicalJoin.class, null, Join::isSemiJoin, any()),
-        relBuilderFactory, null);
-=======
     this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
         .as(Config.class));
   }
@@ -60,8 +57,6 @@ public class SemiJoinRemoveRule
   @Override public void onMatch(RelOptRuleCall call) {
     call.transformTo(call.rel(0).getInput(0));
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -80,25 +75,3 @@ public class SemiJoinRemoveRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(LogicalJoin.class);
-
-    @Override default SemiJoinRemoveRule toRule() {
-      return new SemiJoinRemoveRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass) {
-      return withOperandSupplier(b ->
-          b.operand(joinClass).predicate(Join::isSemiJoin).anyInputs())
-          .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

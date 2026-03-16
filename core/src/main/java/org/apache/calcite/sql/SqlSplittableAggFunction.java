@@ -193,7 +193,6 @@ public interface SqlSplittableAggFunction {
       } else {
         return rexBuilder.makeCall(SqlStdOperatorTable.CASE, predicate, rexOne,
             rexBuilder.makeExactLiteral(BigDecimal.ZERO, aggregateCall.getType()));
->>>>>>> fdae2e50f ([CALCITE-896] Remove Aggregate if grouping columns are unique and all functions are splittable)
       }
     }
 
@@ -304,8 +303,6 @@ public interface SqlSplittableAggFunction {
       }
       int ordinal = extra.register(node);
       return AggregateCall.create(getMergeAggFunctionOfTopSplit(), false, false,
-          ImmutableList.of(ordinal), -1, aggregateCall.collation,
-=======
           false, ImmutableList.of(ordinal), -1, aggregateCall.collation,
           aggregateCall.type, aggregateCall.name);
     }

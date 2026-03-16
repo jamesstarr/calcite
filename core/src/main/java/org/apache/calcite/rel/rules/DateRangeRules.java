@@ -65,8 +65,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Predicate;
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-=======
 import javax.annotation.Nonnull;
 
 /**

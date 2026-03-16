@@ -19,7 +19,3 @@
  * Tests for Enumerable convention runtime.
  */
 package org.apache.calcite.test.enumerable;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

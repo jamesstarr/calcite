@@ -71,6 +71,3 @@ class WithScope extends ListScope {
   }
 
 }
-// End WithScope.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

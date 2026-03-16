@@ -321,8 +321,6 @@ public class LoptSemiJoinOptimizer {
               multiJoin.getNumFieldsInJoinFactor(factIdx),
               semiJoinCondition);
     }
-    return LogicalJoin.create(factRel, dimRel, semiJoinCondition,
-=======
     return LogicalJoin.create(factRel, dimRel, ImmutableList.of(), semiJoinCondition,
         ImmutableSet.of(), JoinRelType.SEMI);
   }

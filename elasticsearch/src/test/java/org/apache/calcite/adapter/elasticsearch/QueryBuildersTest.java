@@ -183,6 +183,3 @@ class QueryBuildersTest {
     return writer.toString();
   }
 }
-
-// End QueryBuildersTest.java
-=======

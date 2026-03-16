@@ -20,7 +20,3 @@
  * XML and JSON format.
  */
 package org.apache.calcite.rel.externalize;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

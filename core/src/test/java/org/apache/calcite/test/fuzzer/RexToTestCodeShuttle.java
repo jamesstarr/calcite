@@ -137,7 +137,6 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
     StringBuilder sb = new StringBuilder();
     sb.append("v");
     RelDataType type = fieldAccess.getType();
->>>>>>> 2148b0192 (Add shrinker for RexProgramFuzzy so the results are simpler to reason about)
     appendSqlType(sb, type);
     if (!type.isNullable()) {
       sb.append("NotNull");
@@ -149,9 +148,6 @@ class RexToTestCodeShuttle extends RexVisitorImpl<String> {
   }
 
   private void appendSqlType(StringBuilder sb, RelDataType type) {
-<<<<<<< HEAD
-=======
-=======
     switch (type.getSqlTypeName()) {
     case BOOLEAN:
       sb.append("Bool");

@@ -26,7 +26,3 @@
  * source SQL system.</p>
  */
 package org.apache.calcite.linq4j.tree;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

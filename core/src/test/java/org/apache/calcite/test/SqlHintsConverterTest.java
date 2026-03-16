@@ -31,8 +31,6 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
-import org.apache.calcite.rel.InvalidRelException;
-=======
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.RelVisitor;
@@ -454,15 +452,6 @@ class SqlHintsConverterTest extends SqlToRelTestBase {
   @Override protected Tester createTester() {
     return super.createTester()
         .withConfig(SqlToRelConverter
-            .configBuilder()
-            .withHintStrategyTable(HINT_STRATEGY_TABLE)
-            .build());
-  }
-
-  /** Format the query with hint {@link #HINT}. */
-  private static String withHint(String sql) {
-    return String.format(Locale.ROOT, sql, HINT);
-=======
           .configBuilder()
           .withHintStrategyTable(HintTools.HINT_STRATEGY_TABLE)
           .build());

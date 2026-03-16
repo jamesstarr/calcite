@@ -19,7 +19,3 @@
  * User-defined table function that generates a maze.
  */
 package org.apache.calcite.example.maze;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

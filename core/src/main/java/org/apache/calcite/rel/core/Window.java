@@ -375,21 +375,6 @@ public abstract class Window extends SingleRel {
       this.ordinal = ordinal;
       this.distinct = distinct;
       this.ignoreNulls = ignoreNulls;
-<<<<<<< HEAD
-    }
-
-    /** {@inheritDoc}
-     *
-     * <p>Override {@link RexCall}, defining equality based on identity.
-     */
-    @Override public boolean equals(Object obj) {
-      return this == obj;
-    }
-
-    @Override public int hashCode() {
-      return Objects.hash(digest, ordinal, distinct);
-=======
->>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
     }
 
     /** {@inheritDoc}

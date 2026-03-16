@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.linq4j.tree;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-=======
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

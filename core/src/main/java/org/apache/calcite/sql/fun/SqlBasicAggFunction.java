@@ -165,6 +165,3 @@ public final class SqlBasicAggFunction extends SqlAggFunction {
         allowsNullTreatment, percentile);
   }
 }
-// End SqlBasicAggFunction.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

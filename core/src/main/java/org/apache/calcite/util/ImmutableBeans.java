@@ -306,8 +306,6 @@ public class ImmutableBeans {
             // Strictly, a bean should not equal a Map but it's convenient
             || args[0] instanceof Map
             && bean.map.equals(args[0]));
-    return makeBean(beanClass, handlers.build(), ImmutableMap.of());
-=======
     return new Def<>(beanClass, handlers.build());
   }
 

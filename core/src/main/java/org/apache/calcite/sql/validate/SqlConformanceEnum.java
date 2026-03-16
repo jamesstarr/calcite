@@ -284,6 +284,27 @@ public enum SqlConformanceEnum implements SqlConformance {
   }
 
   @Override public boolean isOffsetLimitAllowed() {
+    switch (this) {
+    case BABEL:
+    case LENIENT:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  @Override public boolean allowGeometry() {
+    switch (this) {
+    case BABEL:
+    case LENIENT:
+    case MYSQL_5:
+    case SQL_SERVER_2008:
+    case PRESTO:
+      return true;
+    default:
+      return false;
+    }
+  }
 
   public boolean shouldConvertRaggedUnionTypesToVarying() {
     switch (this) {
@@ -347,41 +368,3 @@ public enum SqlConformanceEnum implements SqlConformance {
   }
 
 }
-<<<<<<< HEAD
-
-  @Override public boolean allowPluralTimeUnits() {
-    switch (this) {
-    case BABEL:
-    case LENIENT:
-      return true;
-    default:
-      return false;
-    }
-  }
-
-  @Override public boolean allowQualifyingCommonColumn() {
-    switch (this) {
-    case ORACLE_10:
-    case ORACLE_12:
-    case STRICT_92:
-    case STRICT_99:
-    case STRICT_2003:
-    case PRESTO:
-      return false;
-    default:
-      return true;
-    }
-  }
-
-  @Override public boolean allowAliasUnnestItems() {
-    switch (this) {
-    case PRESTO:
-      return true;
-    default:
-      return false;
-    }
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

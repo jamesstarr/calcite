@@ -52,7 +52,3 @@ public class LatticeTable {
     return t.getRowType().getFieldList().get(i);
   }
 }
-
-// End LatticeTable.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

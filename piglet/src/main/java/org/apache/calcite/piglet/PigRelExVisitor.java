@@ -448,7 +448,3 @@ class PigRelExVisitor extends LogicalExpressionVisitor {
     stack.push(RexSubQuery.scalar(builder.build(), null));
   }
 }
-
-// End PigRelExVisitor.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

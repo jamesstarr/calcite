@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-<<<<<<< HEAD
-=======
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ViewTable;
@@ -182,9 +180,3 @@ class BooleanLogicTest {
   }
 
 }
-<<<<<<< HEAD
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
-
-// End BooleanLogicTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

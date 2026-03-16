@@ -53,7 +53,6 @@ public class ElasticsearchChecker {
    */
   public static Consumer<List> elasticsearchChecker(final String... strings) {
     Objects.requireNonNull(strings, "strings");
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
     return a -> {
       ObjectNode actual = a == null || a.isEmpty() ? null
             : ((ObjectNode) a.get(0));
@@ -66,21 +65,12 @@ public class ElasticsearchChecker {
         expected = expandDots(expected);
 
         if (!expected.equals(actual)) {
-          assertEquals(MAPPER.writeValueAsString(expected),
-              MAPPER.writeValueAsString(actual),
-=======
           assertEquals(MAPPER.writeValueAsString(expected), MAPPER.writeValueAsString(actual),
               "expected and actual Elasticsearch queries do not match");
         }
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
-    return actual -> {
-      Object[] actualArray = actual == null || actual.isEmpty() ? null
-            : ((List) actual.get(0)).toArray();
-      CalciteAssert.assertArrayEqual("expected Elasticsearch query not found", strings,
-            actualArray);
-=======
     };
   }
 

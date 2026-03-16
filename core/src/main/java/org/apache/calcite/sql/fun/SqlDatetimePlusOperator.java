@@ -23,8 +23,6 @@ import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperatorBinding;
 import org.apache.calcite.sql.SqlSpecialOperator;
-import org.apache.calcite.sql.SqlSyntax;
-=======
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.type.InferTypes;
 import org.apache.calcite.sql.type.IntervalSqlType;
@@ -68,9 +66,3 @@ public class SqlDatetimePlusOperator extends SqlSpecialOperator {
     return SqlStdOperatorTable.PLUS.getMonotonicity(call);
   }
 }
-<<<<<<< HEAD
->>>>>>> 0630a3332 ([CALCITE-2281] Return type of the TIMESTAMPADD function has wrong precision (Sudheesh Katkam))
-
-// End SqlDatetimePlusOperator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

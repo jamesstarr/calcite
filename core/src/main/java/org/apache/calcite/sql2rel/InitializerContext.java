@@ -84,30 +84,3 @@ public interface InitializerContext {
    */
   RexNode convertExpression(SqlNode expr);
 }
-<<<<<<< HEAD
-
-  /**
-   * Validate the expression with a base table row type. The expression may reference the fields
-   * of the row type defines.
-   *
-   * @param rowType the table row type
-   * @param expr    the expression
-   * @return a validated {@code SqlNode}, usually it transforms
-   * from a {@code SqlUnresolvedFunction} to a resolved one
-   */
-  SqlNode validateExpression(RelDataType rowType, SqlNode expr);
-
-  /**
-   * Converts a {@code SqlNode} to {@code RexNode}.
-   *
-   * <p>Caution that the {@code SqlNode} must be validated,
-   * you can use {@link #validateExpression} to validate if the {@code SqlNode}
-   * is un-validated.
-   *
-   * @param expr the expression of sql node to convert
-   * @return a converted {@code RexNode} instance
-   */
-  RexNode convertExpression(SqlNode expr);
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

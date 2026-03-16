@@ -152,7 +152,6 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       String sql,
       Function1<ResultSet, Function0<T>> rowBuilderFactory) {
     return new ResultSetEnumerable<>(dataSource, sql, rowBuilderFactory);
->>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
   }
 
   /** Executes a SQL query and returns the results as an enumerator, using a
@@ -438,8 +437,6 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
       };
     };
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Consumer for decorating a {@link PreparedStatement}, that is, setting
@@ -449,15 +446,3 @@ public class ResultSetEnumerable<T> extends AbstractEnumerable<T> {
     void enrich(PreparedStatement statement) throws SQLException;
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Consumer for decorating a {@link PreparedStatement}, that is, setting
-   * its parameters.
-   */
-  public interface PreparedStatementEnricher {
-    void enrich(PreparedStatement statement) throws SQLException;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

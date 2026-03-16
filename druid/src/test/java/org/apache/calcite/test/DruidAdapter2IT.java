@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.test;
 
-<<<<<<< HEAD
-=======
 import org.apache.calcite.adapter.druid.DruidSchema;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionProperty;
@@ -3847,7 +3845,6 @@ public class DruidAdapter2IT {
                     + "\"virtualColumns\":[{\"type\":\"expression\",\"name\":\"vc\",\"expression\":\"timestamp_extract(\\\"__time\\\",",
                 "QUARTER"));
   }
->>>>>>> ceb53f5d8 ([CALCITE-2457] Druid: JUnit4 -> JUnit5)
 
   @Test void testCastTimestamp1() {
     final String sql = "Select cast(\"timestamp\" as varchar) as t"

@@ -164,6 +164,3 @@ class SqlTypeUtilTest {
     return builder.build();
   }
 }
-
-// End SqlTypeUtilTest.java
-=======

@@ -131,7 +131,3 @@ class SqlStatisticProviderTest {
         .collect(Collectors.toList());
   }
 }
-
-// End SqlStatisticProviderTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

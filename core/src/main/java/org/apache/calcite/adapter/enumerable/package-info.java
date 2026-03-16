@@ -19,7 +19,3 @@
  * Query optimizer rules for Java calling convention.
  */
 package org.apache.calcite.adapter.enumerable;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

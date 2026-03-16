@@ -136,7 +136,6 @@ public class SqlCreateTable extends SqlCreate
     final CalciteSchema schema =
         Schemas.subSchema(context.getRootSchema(),
             context.getDefaultSchemaPath());
-=======
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final RelDataType queryRowType;
     if (query != null) {

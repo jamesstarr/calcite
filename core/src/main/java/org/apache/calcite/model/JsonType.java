@@ -45,7 +45,3 @@ public class JsonType {
     handler.visit(this);
   }
 }
-
-// End JsonType.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

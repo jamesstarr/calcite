@@ -44,12 +44,6 @@ public class EnumerableRules {
   public static final RelOptRule ENUMERABLE_MERGE_JOIN_RULE =
       new EnumerableMergeJoinRule();
 
-  @Deprecated // To be removed before 2.0, use ENUMERABLE_JOIN_RULE instead.
-  public static final RelOptRule ENUMERABLE_SEMI_JOIN_RULE =
-      new EnumerableSemiJoinRule();
-
-=======
->>>>>>> 08c4ce185 ([CALCITE-3126] Remove deprecated SemiJoin usage completely)
   public static final RelOptRule ENUMERABLE_CORRELATE_RULE =
       new EnumerableCorrelateRule(RelFactories.LOGICAL_BUILDER);
 
@@ -115,8 +109,6 @@ public class EnumerableRules {
 
   public static final EnumerableTableFunctionScanRule ENUMERABLE_TABLE_FUNCTION_SCAN_RULE =
       new EnumerableTableFunctionScanRule(RelFactories.LOGICAL_BUILDER);
-<<<<<<< HEAD
-=======
 
   public static final EnumerableMatchRule ENUMERABLE_MATCH_RULE =
       new EnumerableMatchRule();
@@ -149,38 +141,3 @@ public class EnumerableRules {
     return ENUMERABLE_RULES;
   }
 }
-<<<<<<< HEAD
-
-  public static final EnumerableMatchRule ENUMERABLE_MATCH_RULE =
-      new EnumerableMatchRule();
-
-  public static final List<RelOptRule> ENUMERABLE_RULES = ImmutableList.of(
-      EnumerableRules.ENUMERABLE_JOIN_RULE,
-      EnumerableRules.ENUMERABLE_MERGE_JOIN_RULE,
-      EnumerableRules.ENUMERABLE_CORRELATE_RULE,
-      EnumerableRules.ENUMERABLE_PROJECT_RULE,
-      EnumerableRules.ENUMERABLE_FILTER_RULE,
-      EnumerableRules.ENUMERABLE_CALC_RULE,
-      EnumerableRules.ENUMERABLE_AGGREGATE_RULE,
-      EnumerableRules.ENUMERABLE_SORT_RULE,
-      EnumerableRules.ENUMERABLE_LIMIT_RULE,
-      EnumerableRules.ENUMERABLE_COLLECT_RULE,
-      EnumerableRules.ENUMERABLE_UNCOLLECT_RULE,
-      EnumerableRules.ENUMERABLE_UNION_RULE,
-      EnumerableRules.ENUMERABLE_REPEAT_UNION_RULE,
-      EnumerableRules.ENUMERABLE_TABLE_SPOOL_RULE,
-      EnumerableRules.ENUMERABLE_INTERSECT_RULE,
-      EnumerableRules.ENUMERABLE_MINUS_RULE,
-      EnumerableRules.ENUMERABLE_TABLE_MODIFICATION_RULE,
-      EnumerableRules.ENUMERABLE_VALUES_RULE,
-      EnumerableRules.ENUMERABLE_WINDOW_RULE,
-      EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE,
-      EnumerableRules.ENUMERABLE_TABLE_FUNCTION_SCAN_RULE,
-      EnumerableRules.ENUMERABLE_MATCH_RULE);
-
-  public static List<RelOptRule> rules() {
-    return ENUMERABLE_RULES;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -37,8 +37,6 @@ public enum ColumnStrategy {
   STORED,
   /** Column is computed and not stored. You cannot insert into it. */
   VIRTUAL;
-<<<<<<< HEAD
-=======
 
   /**
    * Returns whether you can insert into the column.
@@ -49,17 +47,3 @@ public enum ColumnStrategy {
     return this != STORED && this != VIRTUAL;
   }
 }
-<<<<<<< HEAD
->>>>>>> e564f3b87 ([CALCITE-3201] SqlValidator throws exception for sql insert target table with virtual columns)
-
-  /**
-   * Returns whether you can insert into the column.
-   *
-   * @return true if this column can be inserted
-   */
-  public boolean canInsertInto() {
-    return this != STORED && this != VIRTUAL;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

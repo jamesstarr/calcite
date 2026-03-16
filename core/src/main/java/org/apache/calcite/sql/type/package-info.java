@@ -19,7 +19,3 @@
  * SQL type system.
  */
 package org.apache.calcite.sql.type;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

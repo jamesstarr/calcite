@@ -166,51 +166,6 @@ public abstract class SqlTypeTransforms {
   public static final SqlTypeTransform TO_MULTISET =
       (opBinding, typeToTransform) ->
           opBinding.getTypeFactory().createMultisetType(typeToTransform, -1);
-<<<<<<< HEAD
-
-  /**
-   * Parameter type-inference transform strategy that wraps a given type in a multiset or
-   * wraps a field of the given type in a multiset if the given type is struct with one field.
-   * It is used when a multiset input is a sub-query.
-   */
-  public static final SqlTypeTransform TO_MULTISET_QUERY =
-      (opBinding, typeToTransform) ->
-          TO_MULTISET.transformType(opBinding,
-              SqlTypeUtil.deriveCollectionQueryComponentType(SqlTypeName.MULTISET,
-                  typeToTransform));
-
-  /**
-   * Parameter type-inference transform strategy that wraps a given type
-   * in a array.
-   *
-   * @see org.apache.calcite.rel.type.RelDataTypeFactory#createArrayType(RelDataType, long)
-   */
-  public static final SqlTypeTransform TO_ARRAY =
-      (opBinding, typeToTransform) ->
-          opBinding.getTypeFactory().createArrayType(typeToTransform, -1);
-
-  /**
-   * Parameter type-inference transform strategy that wraps a given type in an array or
-   * wraps a field of the given type in an array if the given type is struct with one field.
-   * It is used when an array input is a sub-query.
-   */
-  public static final SqlTypeTransform TO_ARRAY_QUERY =
-      (opBinding, typeToTransform) ->
-        TO_ARRAY.transformType(opBinding,
-            SqlTypeUtil.deriveCollectionQueryComponentType(SqlTypeName.ARRAY, typeToTransform));
-
-  /**
-   * Parameter type-inference transform strategy that converts a two-field
-   * record type to a MAP type.
-   *
-   * @see org.apache.calcite.rel.type.RelDataTypeFactory#createMapType
-   */
-  public static final SqlTypeTransform TO_MAP =
-      (opBinding, typeToTransform) ->
-          SqlTypeUtil.createMapTypeFromRecord(opBinding.getTypeFactory(),
-              typeToTransform);
-=======
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
 
   /**
    * Parameter type-inference transform strategy that wraps a given type in a multiset or

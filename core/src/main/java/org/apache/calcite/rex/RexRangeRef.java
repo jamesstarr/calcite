@@ -76,8 +76,6 @@ public class RexRangeRef extends RexNode {
   public <R, P> R accept(RexBiVisitor<R, P> visitor, P arg) {
     return visitor.visitRangeRef(this, arg);
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean equals(Object obj) {
     return this == obj
@@ -94,23 +92,3 @@ public class RexRangeRef extends RexNode {
     return "offset(" + offset + ")";
   }
 }
-<<<<<<< HEAD
->>>>>>> 232030fd4 ([CALCITE-2632]: Add hashCode and equals implementations to RexNode)
-
-  @Override public boolean equals(Object obj) {
-    return this == obj
-        || obj instanceof RexRangeRef
-        && type.equals(((RexRangeRef) obj).type)
-        && offset == ((RexRangeRef) obj).offset;
-  }
-
-  @Override public int hashCode() {
-    return Objects.hash(type, offset);
-  }
-
-  @Override public String toString() {
-    return "offset(" + offset + ")";
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

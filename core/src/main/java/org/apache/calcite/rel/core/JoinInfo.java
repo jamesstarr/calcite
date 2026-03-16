@@ -107,5 +107,4 @@ public class JoinInfo {
     return FlatLists.of(leftKeys, rightKeys);
   }
 
-=======
 }

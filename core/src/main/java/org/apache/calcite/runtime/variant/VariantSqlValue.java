@@ -56,6 +56,3 @@ public abstract class VariantSqlValue extends VariantValue {
     return new VariantNonNull(roundingMode, object, type);
   }
 }
-// End VariantSqlValue.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -2,30 +2,18 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
-=======
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
-=======
- */
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 plugins {
     `java-platform`
 }
@@ -64,20 +52,12 @@ dependencies {
         apiv("com.fasterxml.jackson.core:jackson-core", "jackson")
         apiv("com.fasterxml.jackson.core:jackson-databind")
         apiv("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", "jackson")
->>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
         apiv("com.github.kstyrc:embedded-redis")
         apiv("com.github.stephenc.jcip:jcip-annotations")
         apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
         apiv("com.google.guava:guava")
         api("com.google.errorprone:error_prone_annotations:2.28.0")
         api("org.checkerframework:checker-qual:3.10.0")
-<<<<<<< HEAD
-=======
-        apiv("com.github.stephenc.jcip:jcip-annotations")
-        apiv("com.google.code.findbugs:jsr305", "findbugs.jsr305")
-        apiv("com.google.guava:guava")
-=======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         apiv("com.google.protobuf:protobuf-java", "protobuf")
         apiv("com.h2database:h2")
         apiv("com.jayway.jsonpath:json-path")
@@ -94,8 +74,6 @@ dependencies {
         apiv("javax.servlet:javax.servlet-api", "servlet")
         apiv("joda-time:joda-time")
         apiv("junit:junit", "junit4")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
         apiv("log4j:log4j", "log4j")
         apiv("mysql:mysql-connector-java")
         apiv("net.hydromatic:aggdesigner-algorithm")
@@ -106,8 +84,6 @@ dependencies {
         apiv("net.hydromatic:quidem")
         apiv("net.hydromatic:scott-data-hsqldb")
         apiv("net.hydromatic:tpcds", "hydromatic.tpcds")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
         apiv("net.java.dev.jna:jna")
         apiv("net.sf.opencsv:opencsv")
         apiv("org.apache.calcite.avatica:avatica-core", "calcite.avatica")
@@ -124,9 +100,6 @@ dependencies {
         apiv("org.apache.kerby:kerb-client", "kerby")
         apiv("org.apache.kerby:kerb-core", "kerby")
         apiv("org.apache.kerby:kerb-simplekdc", "kerby")
-        apiv("org.apache.logging.log4j:log4j-api", "log4j")
-        apiv("org.apache.logging.log4j:log4j-core", "log4j")
-=======
         apiv("org.apache.logging.log4j:log4j-api", "log4j2")
         apiv("org.apache.logging.log4j:log4j-core", "log4j2")
         apiv("org.apache.logging.log4j:log4j-slf4j-impl", "log4j2")
@@ -134,11 +107,6 @@ dependencies {
         apiv("org.apache.pig:pigunit", "pig")
         apiv("org.apache.spark:spark-core_2.10", "spark")
         apiv("org.apiguardian:apiguardian-api")
-=======
->>>>>>> d4dded518 ([CALCITE-3871] Remove dependency of org.apiguardian:apiguardian-api)
-=======
-        apiv("org.apiguardian:apiguardian-api")
->>>>>>> 1b917d06c (Revert "[CALCITE-3871] Remove dependency of org.apiguardian:apiguardi… (#314))
         apiv("org.bouncycastle:bcpkix-jdk15on", "bouncycastle")
         apiv("org.bouncycastle:bcprov-jdk15on", "bouncycastle")
         apiv("org.cassandraunit:cassandra-unit")
@@ -173,24 +141,12 @@ dependencies {
         apiv("org.scala-lang:scala-library")
         apiv("org.slf4j:slf4j-api", "slf4j")
         apiv("org.slf4j:slf4j-log4j12", "slf4j")
->>>>>>> 278d51c33 ([CALCITE-3510] Implement Redis adapter  (#170))
         apiv("redis.clients:jedis")
         apiv("sqlline:sqlline")
         runtimev("org.junit.jupiter:junit-jupiter-engine", "junit5")
         runtimev("org.junit.vintage:junit-vintage-engine", "junit5")
         apiv("org.openjdk.jmh:jmh-core", "jmh")
         apiv("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
-=======
-        apiv("sqlline:sqlline")
-        runtimev("org.junit.jupiter:junit-jupiter-engine", "junit5")
-        runtimev("org.junit.vintage:junit-vintage-engine", "junit5")
-<<<<<<< HEAD
-        runtimev("org.openjdk.jmh:jmh-core", "jmh")
-        runtimev("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
-=======
-        apiv("org.openjdk.jmh:jmh-core", "jmh")
-        apiv("org.openjdk.jmh:jmh-generator-annprocess", "jmh")
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
         runtimev("xalan:xalan")
         runtimev("xerces:xercesImpl")
     }

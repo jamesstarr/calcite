@@ -266,8 +266,6 @@ public class RexImplicationChecker {
       return false;
     }
 
->>>>>>> 5395983cf (DX-14980: Enhance RexImplicationChecker to better handle cast)
-=======
     ImmutableList<RexNode> constExps = ImmutableList.of(second);
     final RexExecutable exec = RexExecutorImpl.getExecutable(builder, constExps, rowType);
 

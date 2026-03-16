@@ -18,9 +18,6 @@ package org.apache.calcite.schema;
 
 import org.apache.calcite.materialize.Lattice;
 import org.apache.calcite.rel.type.RelProtoDataType;
-import org.apache.calcite.util.Bug;
-=======
->>>>>>> 1f02c1401 ([CALCITE-2497] Update Janino version to 3.0.9)
 
 import com.google.common.collect.ImmutableList;
 

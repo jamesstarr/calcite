@@ -109,7 +109,3 @@ public class LazyAggregateLambdaFactory<TSource, TKey, TOrigAccumulate, TResult>
     void accumulate(Iterable<TSource> sourceIterable, TOrigAccumulate accumulator);
   }
 }
-
-// End LazyAggregateLambdaFactory.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

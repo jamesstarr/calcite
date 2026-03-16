@@ -162,10 +162,6 @@ public abstract class Prepare {
 
     final RelTraitSet desiredTraits = getDesiredRootTraitSet(root);
 
->>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
-=======
-=======
->>>>>>> 0e675a2f7 (Revert "Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234)" (#237))
     final Program program = getProgram();
     final RelNode rootRel4 = program.run(
         planner, root.rel, desiredTraits, materializationList, latticeList);

@@ -19,7 +19,3 @@
  * Query provider based on Apache Geode (Gemfire) In Memory Data Grid
  */
 package org.apache.calcite.adapter.geode.rel;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

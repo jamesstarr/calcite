@@ -56,11 +56,6 @@ public class SemiJoinFilterTransposeRule
   @Deprecated // to be removed before 2.0
 
   public SemiJoinFilterTransposeRule(RelBuilderFactory relBuilderFactory) {
-    super(
-        operandJ(LogicalJoin.class, null, Join::isSemiJoin,
-            some(operand(LogicalFilter.class, any()))),
-        relBuilderFactory, null);
-=======
     this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
             .as(Config.class));
 
@@ -89,8 +84,6 @@ public class SemiJoinFilterTransposeRule
 
     call.transformTo(newFilter);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -111,27 +104,3 @@ public class SemiJoinFilterTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(LogicalJoin.class, LogicalFilter.class);
-
-    @Override default SemiJoinFilterTransposeRule toRule() {
-      return new SemiJoinFilterTransposeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass,
-        Class<? extends Filter> filterClass) {
-      return withOperandSupplier(b0 ->
-          b0.operand(joinClass).predicate(Join::isSemiJoin).inputs(b1 ->
-              b1.operand(filterClass).anyInputs()))
-          .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

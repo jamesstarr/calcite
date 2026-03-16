@@ -19,7 +19,3 @@
  * Core linq4j tests.
  */
 package org.apache.calcite.linq4j.test;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

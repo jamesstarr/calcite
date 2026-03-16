@@ -897,7 +897,6 @@ public class Linq4jTest {
         is(2));
   }
 
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testDistinct() {
     final Employee[] emps2 = {
         new Employee(150, "Theodore", 10),
@@ -1720,8 +1719,6 @@ public class Linq4jTest {
     } catch (Exception ignored) {
       // ok
     }
-<<<<<<< HEAD
-=======
   }
 
   @Test void testLastOrDefaultWithPredicate() {
@@ -2015,19 +2012,6 @@ public class Linq4jTest {
                     return 0;
                   }
                 })
-            .toList()
-            .toString();
-    assertEquals(
-        "[10: Fred+Bill+Eric+Janet]",
-        s);
-  }
-
-  @Test void testGroupByWithKeySelectorAndElementSelectorAndResultSelector() {
-    String s =
-        Linq4j.asEnumerable(emps)
-            .groupBy(EMP_DEPTNO_SELECTOR, EMP_NAME_SELECTOR,
-                (key, group) -> String.format(Locale.ROOT, "%s: %s", key,
-                    stringJoin("+", group)))
             .toList()
             .toString();
     assertEquals(

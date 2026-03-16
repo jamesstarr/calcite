@@ -703,7 +703,6 @@ public abstract class SqlUtil {
       throw Util.needToImplement(query);
     }
   }
->>>>>>> 86af16450 ([CALCITE-2928] When resolving user-defined functions (UDFs), use the case-sensitivity of the current connection (Danny Chan))
   public static String deriveAliasFromOrdinal(int ordinal) {
     // Use a '$' so that queries can't easily reference the
     // generated name.
@@ -878,7 +877,6 @@ public abstract class SqlUtil {
     case "ISO-8859-1":
     case "UTF-8":
       return name;
-=======
     default:
       return null;
     }
@@ -965,14 +963,6 @@ public abstract class SqlUtil {
    * Returns an immutable list of {@link RelHint} from sql hints, with a given
    * inherit path from the root node.
    *
-<<<<<<< HEAD
-<<<<<<< HEAD
-   * <p>The inherit path would be empty list.
-   *
-   * @param hintStrategies The hint strategies to validate the sql hints
-=======
-   * <p>The inherit path would be empty [].
-=======
    * <p>The inherit path would be empty list.
    *
    * @param hintStrategies The hint strategies to validate the sql hints

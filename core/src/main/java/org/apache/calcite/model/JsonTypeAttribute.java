@@ -32,7 +32,3 @@ public class JsonTypeAttribute {
    */
   public String type;
 }
-
-// End JsonTypeAttribute.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

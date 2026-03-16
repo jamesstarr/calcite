@@ -74,8 +74,6 @@ import java.util.Set;
  * </ul>
  */
 public abstract class Aggregate extends SingleRel implements Hintable {
-<<<<<<< HEAD
-=======
 
   public static boolean isSimple(Aggregate aggregate) {
     return aggregate.getGroupType() == Group.SIMPLE;

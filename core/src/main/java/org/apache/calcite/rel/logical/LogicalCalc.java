@@ -37,9 +37,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.util.Util;
 
-
-=======
->>>>>>> 69e6272d1 (DX-94848: Cherry-pick [CALCITE-3631] Support SQL hints for Calc)
 import com.google.common.collect.ImmutableList;
 
 import java.util.Collections;
@@ -141,20 +138,9 @@ public final class LogicalCalc extends Calc {
     }
     variableSet.addAll(vuv.variables);
   }
-<<<<<<< HEAD
-=======
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalCalc(getCluster(), traitSet,
         ImmutableList.copyOf(hintList), input, program);
   }
 }
-<<<<<<< HEAD
-
-  @Override public RelNode withHints(List<RelHint> hintList) {
-    return new LogicalCalc(getCluster(), traitSet,
-        ImmutableList.copyOf(hintList), input, program);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

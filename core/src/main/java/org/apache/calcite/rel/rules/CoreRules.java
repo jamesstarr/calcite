@@ -530,8 +530,6 @@ public class CoreRules {
    * <p>It is triggered by the pattern
    * {@link LogicalProject} ({@link MultiJoin}).
    *
-   * @see #MULTI_JOIN_OPTIMIZE
-=======
    * @see #MULTI_JOIN_OPTIMIZE_BUSHY
    */
   public static final MultiJoinOptimizeBushyRule MULTI_JOIN_OPTIMIZE_BUSHY =

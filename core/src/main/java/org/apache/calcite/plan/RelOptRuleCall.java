@@ -281,29 +281,6 @@ public abstract class RelOptRuleCall {
    */
   public final void transformTo(RelNode rel) {
     transformTo(rel, ImmutableMap.of());
-<<<<<<< HEAD
-  }
-
-  /**
-   * Registers that a rule has produced an equivalent relational expression,
-   * but no other equivalences.
-   *
-   * <p>The hints of the root relational expression of
-   * the rule call(<code>this.rels[0]</code>)
-   * are copied to the new relational expression(<code>rel</code>)
-   * with specified handler {@code handler}.
-   *
-   * @param rel     Relational expression equivalent to the root relational
-   *                expression of the rule call, {@code call.rels(0)}
-   * @param handler Handler to customize the relational expression that registers
-   *                into the planner, the first parameter is the root relational expression
-   *                and the second parameter is the new relational expression
-   *
-   */
-  public final void transformTo(RelNode rel, RelHintsPropagator handler) {
-    transformTo(rel, ImmutableMap.of(), handler);
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /**

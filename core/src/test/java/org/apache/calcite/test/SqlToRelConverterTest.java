@@ -2549,7 +2549,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
 
   @Test void testSelectExtendedCharset() {
     final String sql = "select * from empdefaults where ename = '上海'";
-=======
     sql(sql)
         .equals("Failed to encode '英国' in character set 'ISO-8859-1'");
 
@@ -4640,8 +4639,6 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
           conformance);
     }
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Test case for
@@ -4722,86 +4719,3 @@ class SqlToRelConverterTest extends SqlToRelTestBase {
         .ok();
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5045">[CALCITE-5045]
-   * Alias within GroupingSets throws type mis-match exception</a>.
-   */
-  @Test public void testAliasWithinGroupingSets() {
-    final String sql = "SELECT empno / 2 AS x\n"
-        + "FROM emp\n"
-        + "GROUP BY ROLLUP(x)";
-    sql(sql)
-        .conformance(SqlConformanceEnum.LENIENT)
-        .ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5145">[CALCITE-5145]
-   * CASE statement within GROUPING SETS throws type mis-match exception</a>.
-   */
-  @Test public void testCaseAliasWithinGroupingSets() {
-    sql("SELECT empno,\n"
-        + "CASE\n"
-        + "WHEN ename in ('Fred','Eric') THEN 'CEO'\n"
-        + "ELSE 'Other'\n"
-        + "END AS derived_col\n"
-        + "FROM emp\n"
-        + "GROUP BY GROUPING SETS ((empno, derived_col),(empno))")
-        .conformance(SqlConformanceEnum.LENIENT).ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5145">[CALCITE-5145]
-   * CASE statement within GROUPING SETS throws type mis-match exception</a>.
-   */
-  @Test public void testCaseWithinGroupingSets() {
-    String sql = "SELECT empno,\n"
-        + "CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END\n"
-        + "FROM emp\n"
-        + "GROUP BY GROUPING SETS (\n"
-        + "(empno, CASE WHEN ename IN ('Fred','Eric') THEN 'Manager' ELSE 'Other' END),\n"
-        + "(empno)\n"
-        + ")";
-    sql(sql)
-        .conformance(SqlConformanceEnum.LENIENT)
-        .ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4512">[CALCITE-4512]
-   * GROUP BY expression with argument name same with SELECT field and alias causes
-   * validation error</a>.
-   */
-  @Test public void testGroupByExprArgFieldSameWithAlias() {
-    final String sql = "SELECT floor(deptno / 2) AS deptno\n"
-        + "FROM emp\n"
-        + "GROUP BY floor(deptno / 2)";
-    sql(sql)
-        .conformance(SqlConformanceEnum.LENIENT)
-        .ok();
-  }
-
-  /**
-   * Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4512">[CALCITE-4512]
-   * GROUP BY expression with argument name same with SELECT field and alias causes
-   * validation error</a>.
-   */
-  @Test public void testGroupByExprArgFieldSameWithAlias2() {
-    final String sql = ""
-        + "SELECT deptno / 2 AS deptno, deptno / 2 as empno, sum(sal)\n"
-        + "FROM emp\n"
-        + "GROUP BY GROUPING SETS ((deptno), (empno, deptno / 2), (2, 1))";
-    sql(sql)
-        .conformance(SqlConformanceEnum.LENIENT)
-        .ok();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

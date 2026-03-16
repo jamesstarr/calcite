@@ -18,9 +18,6 @@ package org.apache.calcite.plan;
 
 import org.apache.calcite.rel.RelNode;
 
-import com.google.common.base.Preconditions;
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;

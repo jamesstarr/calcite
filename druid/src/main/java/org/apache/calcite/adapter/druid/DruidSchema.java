@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
-=======
 
 /**
  * Schema mapped onto a Druid instance.
@@ -78,8 +76,6 @@ public class DruidSchema extends AbstractSchema {
 
     return tableMap;
   }
-<<<<<<< HEAD
-=======
 
   private Table table(String tableName, DruidConnectionImpl connection) {
     final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();
@@ -94,21 +90,3 @@ public class DruidSchema extends AbstractSchema {
         complexMetrics);
   }
 }
-<<<<<<< HEAD
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-
-  private Table table(String tableName, DruidConnectionImpl connection) {
-    final Map<String, SqlTypeName> fieldMap = new LinkedHashMap<>();
-    final Set<String> metricNameSet = new LinkedHashSet<>();
-    final Map<String, List<ComplexMetric>> complexMetrics = new HashMap<>();
-
-    connection.metadata(tableName, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-        null, fieldMap, metricNameSet, complexMetrics);
-
-    return DruidTable.create(DruidSchema.this, tableName, null,
-        fieldMap, metricNameSet, DruidTable.DEFAULT_TIMESTAMP_COLUMN,
-        complexMetrics);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

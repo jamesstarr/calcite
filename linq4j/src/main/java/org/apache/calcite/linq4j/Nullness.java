@@ -124,7 +124,3 @@ public class Nullness {
     return (T) dest[0];
   }
 }
-
-// End Nullness.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

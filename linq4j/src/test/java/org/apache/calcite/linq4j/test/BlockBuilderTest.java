@@ -27,7 +27,6 @@ import org.apache.calcite.linq4j.tree.Shuttle;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
@@ -83,8 +82,6 @@ class BlockBuilderTest {
     b.add(Expressions.return_(null, Expressions.add(ONE, TWO)));
     assertEquals("{\n  return 4;\n}\n", b.toBlock().toString());
   }
-<<<<<<< HEAD
-=======
 
   private BlockBuilder appendBlockWithSameVariable(
       Expression initializer1, Expression initializer2) {
@@ -173,94 +170,3 @@ class BlockBuilderTest {
   }
 
 }
-<<<<<<< HEAD
-
-  private BlockBuilder appendBlockWithSameVariable(
-      Expression initializer1, Expression initializer2) {
-    BlockBuilder outer = new BlockBuilder();
-    ParameterExpression outerX = Expressions.parameter(int.class, "x");
-    outer.add(Expressions.declare(0, outerX, initializer1));
-    outer.add(Expressions.statement(Expressions.assign(outerX, Expressions.constant(1))));
-
-    BlockBuilder inner = new BlockBuilder();
-    ParameterExpression innerX = Expressions.parameter(int.class, "x");
-    inner.add(Expressions.declare(0, innerX, initializer2));
-    inner.add(Expressions.statement(Expressions.assign(innerX, Expressions.constant(42))));
-    inner.add(Expressions.return_(null, innerX));
-    outer.append("x", inner.toBlock());
-    return outer;
-  }
-
-  @Test void testRenameVariablesWithEmptyInitializer() {
-    BlockBuilder outer = appendBlockWithSameVariable(null, null);
-
-    assertEquals("{\n"
-            + "  int x;\n"
-            + "  x = 1;\n"
-            + "  int x0;\n"
-            + "  x0 = 42;\n"
-            + "}\n", Expressions.toString(outer.toBlock()),
-        "x in the second block should be renamed to avoid name clash");
-  }
-
-  @Test void testRenameVariablesWithInitializer() {
-    BlockBuilder outer = appendBlockWithSameVariable(
-        Expressions.constant(7), Expressions.constant(8));
-
-    assertEquals("{\n"
-            + "  int x = 7;\n"
-            + "  x = 1;\n"
-            + "  int x0 = 8;\n"
-            + "  x0 = 42;\n"
-            + "}\n", Expressions.toString(outer.toBlock()),
-        "x in the second block should be renamed to avoid name clash");
-  }
-
-  /**
-   * CALCITE-2413: RexToLixTranslator does not generate correct declaration of Methods with
-   * generic return types
-   */
-  @Test void genericMethodCall() throws NoSuchMethodException {
-    BlockBuilder bb = new BlockBuilder();
-    bb.append("_i",
-        Expressions.call(
-            Expressions.new_(Identity.class),
-            Identity.class.getMethod("apply", Object.class),
-            Expressions.constant("test")));
-
-    assertEquals(
-        "{\n"
-            + "  final Object _i = new org.apache.calcite.linq4j.test.BlockBuilderTest.Identity()"
-            + ".apply(\"test\");\n"
-            + "}\n",
-        Expressions.toString(bb.toBlock()));
-
-  }
-
-  /** CALCITE-2611: unknown on one side of an or may lead to uncompilable code */
-  @Test void testOptimizeBoxedFalseEqNull() {
-    BlockBuilder outer = new BlockBuilder();
-    outer.append(
-        Expressions.equal(
-            OptimizeShuttle.BOXED_FALSE_EXPR,
-            Expressions.constant(null)));
-
-    assertEquals("{\n"
-            + "  return false;\n"
-            + "}\n", Expressions.toString(outer.toBlock()),
-        "Expected to optimize Boolean.FALSE = null to false");
-  }
-
-  /**
-   * Class with generics to validate if {@link Expressions#call(Method, Expression...)} works.
-   * @param <I> result type
-   */
-  static class Identity<I> implements Function<I, I> {
-    @Override public I apply(I i) {
-      return i;
-    }
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

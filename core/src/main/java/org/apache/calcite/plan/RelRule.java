@@ -29,8 +29,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-<<<<<<< HEAD
-=======
 import javax.annotation.Nullable;
 
 /**
@@ -324,8 +322,3 @@ public abstract class RelRule<C extends RelRule.Config> extends RelOptRule {
       extends BiConsumer<R, RelOptRuleCall> {
   }
 }
-<<<<<<< HEAD
->>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
-// End RelRule.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

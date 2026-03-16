@@ -13,7 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
->>>>>>> 9addb8c46 ([CALCITE-3176] File adapter for parsing JSON files)
  *
  * A JSON model of a Calcite schema based on CSV files.
  */
@@ -30,26 +29,4 @@
       }
     }
   ]
-<<<<<<< HEAD
-========
- */
-
-package org.apache.calcite.adapter.geode.rel;
-
-import org.junit.ClassRule;
-
-/**
- * Base class which allows sharing same geode instance across all tests. Also due to legacy
- * reasons there can't be more than one Geode instance (running in parallel) for a single JVM.
- */
-public abstract class AbstractGeodeTest {
-
-  @ClassRule
-  public static final GeodeEmbeddedPolicy POLICY = GeodeEmbeddedPolicy.create().share();
-
->>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance):geode/src/test/java/org/apache/calcite/adapter/geode/rel/AbstractGeodeTest.java
-}
-
-// End AbstractGeodeTest.java
-=======
 }

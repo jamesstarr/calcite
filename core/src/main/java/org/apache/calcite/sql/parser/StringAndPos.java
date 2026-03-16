@@ -90,7 +90,3 @@ public class StringAndPos {
         pos.getEndLineNum(), pos.getEndColumnNum() + 1);
   }
 }
-
-// End StringAndPos.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

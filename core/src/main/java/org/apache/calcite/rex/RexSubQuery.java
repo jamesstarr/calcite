@@ -126,7 +126,6 @@ public class RexSubQuery extends RexCall {
             -1L);
     return new RexSubQuery(type, SqlStdOperatorTable.MULTISET_QUERY,
         ImmutableList.of(), rel, correlationId);
->>>>>>> 421285fe4 ([CALCITE-5418] Rework Correlated Id Subquery Expansion)
   }
 
   /** Creates an ARRAY sub-query. */
@@ -188,8 +187,6 @@ public class RexSubQuery extends RexCall {
   public RexSubQuery clone(RelNode rel) {
     return new RexSubQuery(type, getOperator(), operands, rel, correlationId);
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean equals(Object obj) {
     if (this == obj) {
@@ -209,25 +206,3 @@ public class RexSubQuery extends RexCall {
   }
 
 }
-<<<<<<< HEAD
-
-  @Override public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    RexSubQuery rexCall = (RexSubQuery) obj;
-    return toString().equals(((RexCall) obj).toString())
-          && type.equals(rexCall.getType())
-          && Objects.equals(correlationId, ((RexSubQuery) obj).correlationId);
-  }
-
-  @Override public int hashCode() {
-    return toString().hashCode();
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

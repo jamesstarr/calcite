@@ -37,6 +37,3 @@ import org.apache.calcite.plan.volcano.VolcanoPlanner;
  */
 public interface TransformationRule {
 }
-// End TransformationRule.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

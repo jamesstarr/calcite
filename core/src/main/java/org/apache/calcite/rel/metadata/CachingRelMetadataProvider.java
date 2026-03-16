@@ -55,9 +55,6 @@ public class CachingRelMetadataProvider implements RelMetadataProvider {
   }
 
   //~ Methods ----------------------------------------------------------------
-
->>>>>>> 8a612190e (DX-35420 Revert previous customization rel metadata)
-=======
   @Deprecated // to be removed before 2.0
   public <M extends Metadata> UnboundMetadata<M> apply(
       Class<? extends RelNode> relClass,

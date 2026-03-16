@@ -19,7 +19,3 @@
  * Graph-theoretic algorithms and data structures.
  */
 package org.apache.calcite.util.graph;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

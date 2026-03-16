@@ -125,16 +125,6 @@ public interface ElasticsearchRel extends RelNode {
     }
 
     void visitChild(int ordinal, RelNode input) {
-<<<<<<< HEAD
-      assert ordinal == 0;
-      ((ElasticsearchRel) input).implement(this);
-    }
-
-  }
-}
-=======
-    public void visitChild(int ordinal, RelNode input) {
-=======
       assert ordinal == 0;
       ((ElasticsearchRel) input).implement(this);
     }

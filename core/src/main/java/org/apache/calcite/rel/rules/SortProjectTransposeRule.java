@@ -169,8 +169,6 @@ public class SortProjectTransposeRule
   public interface Config extends RelRule.Config {
     Config DEFAULT = EMPTY.as(Config.class)
             .withOperandFor(Sort.class, LogicalProject.class);
-<<<<<<< HEAD
-=======
 
     @Override default SortProjectTransposeRule toRule() {
       return new SortProjectTransposeRule(this);
@@ -200,36 +198,3 @@ public class SortProjectTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-    @Override default SortProjectTransposeRule toRule() {
-      return new SortProjectTransposeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Sort> sortClass,
-                                  Class<? extends Project> projectClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(sortClass).oneInput(b1 ->
-                      b1.operand(projectClass)
-                              .predicate(p -> !p.containsOver()).anyInputs()))
-              .as(Config.class);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Sort> sortClass,
-                                  Class<? extends Project> projectClass,
-                                  Class<? extends RelNode> inputClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(sortClass).oneInput(b1 ->
-                      b1.operand(projectClass)
-                              .predicate(p -> !p.containsOver())
-                              .oneInput(b2 ->
-                                      b2.operand(inputClass).anyInputs())))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -24,7 +24,3 @@ public enum RexDigestIncludeType {
   OPTIONAL,
   NO_TYPE;
 }
-
-// End RexDigestIncludeType.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

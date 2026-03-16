@@ -69,7 +69,6 @@ public class FoodMartQuerySet {
   }
 
   /** JSON query element. */
-=======
   @JsonIgnoreProperties(value = {"columns", "rows"})
   public static class FoodmartQuery {
     public int id;

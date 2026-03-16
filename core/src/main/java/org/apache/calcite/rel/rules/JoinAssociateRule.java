@@ -149,8 +149,6 @@ public class JoinAssociateRule
 
     call.transformTo(newTopJoin);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -182,38 +180,3 @@ public class JoinAssociateRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Join.class);
-
-    @Override default JoinAssociateRule toRule() {
-      return new JoinAssociateRule(this);
-    }
-
-    /**
-     * Whether to emit the new join tree if the new top or bottom join has a condition which
-     * is always {@code TRUE}.
-     */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean isAllowAlwaysTrueCondition();
-
-    /** Sets {@link #isAllowAlwaysTrueCondition()}. */
-    Config withAllowAlwaysTrueCondition(boolean allowAlwaysTrueCondition);
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(joinClass).inputs(
-                  b1 -> b1.operand(joinClass).anyInputs(),
-                  b2 -> b2.operand(RelNode.class).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

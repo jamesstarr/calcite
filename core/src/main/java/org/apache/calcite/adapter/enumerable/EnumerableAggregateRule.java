@@ -42,9 +42,6 @@ class EnumerableAggregateRule extends ConverterRule {
           rel.getCluster(),
           traitSet,
           convert(agg.getInput(), EnumerableConvention.INSTANCE),
-          false,
-=======
->>>>>>> a5ef91d2f (Following [CALCITE-2944] remove internal uses of Aggregate.indicator)
           agg.getGroupSet(),
           agg.getGroupSets(),
           agg.getAggCallList());

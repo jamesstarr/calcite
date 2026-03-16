@@ -369,8 +369,6 @@ public class FrameworksTest {
             RelRunner runner2 = connection.unwrap(RelRunner.class);
             runner2.prepare(values).executeQuery();
           } catch (Exception e) {
-            throw new RuntimeException(e);
-=======
             throw TestUtil.rethrow(e);
           }
         });

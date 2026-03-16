@@ -19,7 +19,3 @@
  * Provides a SQL parser.
  */
 package org.apache.calcite.sql.parser;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

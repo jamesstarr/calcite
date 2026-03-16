@@ -103,6 +103,3 @@ public class SqlJsonArrayFunction extends SqlFunction {
     return (E) ((SqlLiteral) operand).getValue();
   }
 }
-
-// End SqlJsonArrayFunction.java
-=======

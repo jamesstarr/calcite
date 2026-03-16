@@ -21,8 +21,6 @@ import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Project;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.tools.RelBuilderFactory;
@@ -127,7 +125,6 @@ public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
     // above the MultiJoin
     return RelOptUtil.projectMultiJoin(multiJoin, project);
   }
->>>>>>> 24be05bf5 (Following [CALCITE-2822] simplify test and related classes/rules)
 
   /** Rule configuration. */
   public interface Config extends JoinProjectTransposeRule.Config {
@@ -166,44 +163,3 @@ public class MultiJoinProjectTransposeRule extends JoinProjectTransposeRule {
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends JoinProjectTransposeRule.Config {
-    Config BOTH_PROJECT = EMPTY
-            .withOperandSupplier(b0 ->
-                    b0.operand(LogicalJoin.class).inputs(
-                        b1 -> b1.operand(LogicalProject.class).oneInput(b2 ->
-                                    b2.operand(MultiJoin.class).anyInputs()),
-                        b3 -> b3.operand(LogicalProject.class).oneInput(b4 ->
-                                    b4.operand(MultiJoin.class).anyInputs())))
-            .withDescription(
-                    "MultiJoinProjectTransposeRule:TwoLogicalProjects")
-            .as(Config.class);
-
-    Config LEFT_PROJECT = EMPTY
-            .withOperandSupplier(b0 ->
-                    b0.operand(LogicalJoin.class).inputs(b1 ->
-                        b1.operand(LogicalProject.class).oneInput(b2 ->
-                            b2.operand(MultiJoin.class).anyInputs())))
-            .withDescription(
-                    "MultiJoinProjectTransposeRule:LeftLogicalProject")
-            .as(Config.class);
-
-    Config RIGHT_PROJECT = EMPTY
-            .withOperandSupplier(b0 ->
-                    b0.operand(LogicalJoin.class).inputs(
-                        b1 -> b1.operand(RelNode.class).anyInputs(),
-                        b2 -> b2.operand(LogicalProject.class).oneInput(b3 ->
-                                    b3.operand(MultiJoin.class).anyInputs())))
-            .withDescription(
-                    "MultiJoinProjectTransposeRule:RightLogicalProject")
-            .as(Config.class);
-
-    @Override default MultiJoinProjectTransposeRule toRule() {
-      return new MultiJoinProjectTransposeRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

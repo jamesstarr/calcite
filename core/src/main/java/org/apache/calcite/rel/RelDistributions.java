@@ -70,24 +70,6 @@ public class RelDistributions {
   public static RelDistribution range(Collection<? extends Number> numbers) {
     ImmutableIntList list = ImmutableIntList.copyOf(numbers);
     return of(RelDistribution.Type.RANGE_DISTRIBUTED, list);
-<<<<<<< HEAD
-  }
-
-  public static RelDistribution of(RelDistribution.Type type, ImmutableIntList keys) {
-    RelDistribution distribution = new RelDistributionImpl(type, keys);
-    return RelDistributionTraitDef.INSTANCE.canonize(distribution);
-  }
-
-  /** Creates ordered immutable copy of keys collection.  */
-  private static ImmutableIntList normalizeKeys(Collection<? extends Number> keys) {
-    ImmutableIntList list = ImmutableIntList.copyOf(keys);
-    if (list.size() > 1
-        && !Ordering.natural().isOrdered(list)) {
-      list = ImmutableIntList.copyOf(Ordering.natural().sortedCopy(list));
-    }
-    return list;
-=======
->>>>>>> 53d7a8688 ([CALCITE-3949] RelDistributions.of() and RelCollations.of() should ca… (#344))
   }
 
   public static RelDistribution of(RelDistribution.Type type, ImmutableIntList keys) {

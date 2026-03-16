@@ -63,7 +63,3 @@ public class SqlNullTreatmentOperator extends SqlSpecialOperator {
     }
   }
 }
-
-// End SqlNullTreatmentOperator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

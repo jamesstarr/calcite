@@ -240,7 +240,6 @@ class UdfTest {
     assertThat(after, is(before + 1));
   }
 
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3195">[CALCITE-3195]
    * Handle a UDF that throws checked exceptions in the Enumerable code generator</a>. */
@@ -940,8 +939,6 @@ class UdfTest {
    * <a href="https://issues.apache.org/jira/browse/CALCITE-2053">[CALCITE-2053]
    * Overloaded user-defined functions that have Double and BigDecimal arguments
    * will goes wrong </a>. */
-  @Test public void testBigDecimalAndLong() {
-=======
   @Test void testBigDecimalAndLong() {
     final CalciteAssert.AssertThat with = withUdf();
     with.query("values \"adhoc\".\"toDouble\"(cast(1.0 as double))")

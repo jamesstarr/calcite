@@ -110,7 +110,6 @@ C    EMPID
 
 !ok
 
->>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)
 # Test Classifier
 select *
 from "hr"."emps" match_recognize (
@@ -161,10 +160,6 @@ C    CL EMPID
 
 !ok
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 73334a91f ([CALCITE-3302] Implement CLASSIFIER and LAST functions for MATCH_RECOGNIZE)
 !if (false) {
 # Match recognize
 SELECT *

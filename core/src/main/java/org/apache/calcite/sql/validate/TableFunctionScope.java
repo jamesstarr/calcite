@@ -22,8 +22,6 @@ import org.apache.calcite.sql.SqlNode;
  * Stub scope for table functions.
  */
 public class TableFunctionScope extends ListScope {
-<<<<<<< HEAD
-=======
   private final SqlNode node;
 
   protected TableFunctionScope(SqlNode node, SqlValidatorScope parent) {
@@ -36,9 +34,3 @@ public class TableFunctionScope extends ListScope {
   }
 
 }
-<<<<<<< HEAD
->>>>>>> 4d61893a7 ([CALCITE-2905] @PackageMaker is no longer needed)
-
-// End TableFunctionScope.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

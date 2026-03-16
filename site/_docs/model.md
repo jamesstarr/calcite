@@ -44,10 +44,7 @@ Models can also be built programmatically using the `Schema` SPI.
 {% highlight yaml %}
 version: 1.0
 defaultSchema: mongo
-schemas: 
-=======
 schemas:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [Schema...]
 {% endhighlight %}
 
@@ -76,16 +73,10 @@ Occurs within `root.schemas`.
 #### YAML
 {% highlight yaml %}
 name: foodmart
-path: 
-  lib
-cache: true
-materializations: 
-=======
 path:
   lib
 cache: true
 materializations:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [ Materialization... ]
 {% endhighlight %}
 
@@ -109,10 +100,7 @@ strings. For example,
 
 #### YAML
 {% highlight yaml %}
-path: 
-=======
 path:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - [usr, lib]
 - lib
 {% endhighlight %}
@@ -150,10 +138,7 @@ immediately, and are never flushed.
 
 Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 
-#### JSON 
-=======
 #### JSON
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 {% highlight json %}
 {
   name: 'foodmart',
@@ -168,8 +153,6 @@ Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 {% highlight yaml %}
 name: foodmart
 type: map
-tables: 
-=======
 tables:
 - [ Table... ]
 functions:
@@ -211,10 +194,7 @@ Like base class <a href="#schema">Schema</a>, occurs within `root.schemas`.
 name: mongo
 type: custom
 factory: org.apache.calcite.adapter.mongodb.MongoSchemaFactory
-operand: 
-=======
 operand:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   host: localhost
   database: test
 {% endhighlight %}
@@ -323,10 +303,7 @@ Occurs within `root.schemas.tables`.
 #### YAML
 {% highlight yaml %}
 name: sales_fact
-columns: 
-=======
 columns:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   [ Column... ]
 {% endhighlight %}
 
@@ -416,10 +393,7 @@ Like base class <a href="#table">Table</a>, occurs within `root.schemas.tables`.
 name: female_emps
 type: custom
 factory: TODO
-operand: 
-=======
 operand:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   todo: TODO
 {% endhighlight %}
 
@@ -495,10 +469,7 @@ Occurs within `root.schemas.functions`.
 name: MY_PLUS
 className: com.example.functions.MyPlusFunction
 methodName: apply
-path: {}  
-=======
 path: {}
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 {% endhighlight %}
 
 `name` (required string) is the name of this function.
@@ -527,8 +498,6 @@ if found, creates an aggregate function.
 
 Occurs within `root.schemas.types`.
 
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
-=======
 #### JSON
 {% highlight json %}
 {
@@ -543,24 +512,15 @@ Occurs within `root.schemas.types`.
 }
 {% endhighlight %}
 
->>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 #### YAML
 {% highlight yaml %}
 name: mytype1
 type: BIGINT
-<<<<<<< HEAD
-<<<<<<< HEAD
 attributes:
-=======
-attributes:  
-=======
-attributes:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - name: f1
   type: BIGINT
 {% endhighlight %}
 
->>>>>>> dcac8d7f4 ([CALCITE-1026] Allow models in YAML format)
 `name` (required string) is the name of this type.
 
 `type` (optional) is the SQL type.
@@ -617,26 +577,11 @@ auto: false
 algorithm: true
 algorithmMaxMillis: 10000
 rowCountEstimate: 86837
-<<<<<<< HEAD
-<<<<<<< HEAD
 defaultMeasures:
 - agg: count
 tiles:
 - dimensions: [ 'the_year', ['t', 'quarter'] ]
   measures:
-=======
-defaultMeasures: 
-- agg: count
-tiles: 
-- dimensions: [ 'the_year', ['t', 'quarter'] ] 
-  measures: 
-=======
-defaultMeasures:
-- agg: count
-tiles:
-- dimensions: [ 'the_year', ['t', 'quarter'] ]
-  measures:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
   - agg: sum
     args: unit_sales
   - agg: sum
@@ -718,12 +663,8 @@ Occurs within `root.schemas.lattices.tiles`.
 
 #### YAML
 {% highlight yaml %}
-dimensions: [ 'the_year', ['t', 'quarter'] ] 
-measures: 
-=======
 dimensions: [ 'the_year', ['t', 'quarter'] ]
 measures:
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 - agg: sum
   args: unit_sales
 - agg: sum

@@ -40,10 +40,6 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Schema mapped onto an index of ELASTICSEARCH types.
- *
- * <p>Each table in the schema is an ELASTICSEARCH type in that index.
-=======
  * Each table in the schema is an ELASTICSEARCH index.
  */
 public class ElasticsearchSchema extends AbstractSchema {

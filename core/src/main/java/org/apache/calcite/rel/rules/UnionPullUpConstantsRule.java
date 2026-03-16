@@ -145,8 +145,6 @@ public class UnionPullUpConstantsRule
   public interface Config extends RelRule.Config {
     Config DEFAULT = EMPTY.as(Config.class)
             .withOperandFor(Union.class);
-<<<<<<< HEAD
-=======
 
     @Override default UnionPullUpConstantsRule toRule() {
       return new UnionPullUpConstantsRule(this);
@@ -162,21 +160,3 @@ public class UnionPullUpConstantsRule
     }
   }
 }
-<<<<<<< HEAD
-
-    @Override default UnionPullUpConstantsRule toRule() {
-      return new UnionPullUpConstantsRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Union> unionClass) {
-      return withOperandSupplier(b ->
-              b.operand(unionClass)
-                      .predicate(union -> union.getRowType().getFieldCount() > 1)
-                      .anyInputs())
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -31,40 +31,17 @@ adapters.
 
 ## Building from a source distribution
 
-Prerequisite is Java (JDK 8, 9 or 10) on your path.
-=======
-Prerequisite is Java (JDK 8, 9, 10 or 11) on your path.
-=======
-Prerequisite is Java (JDK 8, 9, 10, 11, or 12) on your path.
->>>>>>> e5ce23d98 ([CALCITE-2952] Document JDK 12 support)
-=======
-Prerequisite is Java (JDK 8, 9, 10, 11, 12, or 13) on your path.
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 Prerequisite is Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18)
 and Gradle (version 7.4.2) on your path.
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 
 Unpack the source distribution `.tar.gz` file,
 `cd` to the root directory of the unpacked source,
 then build using Gradle:
 
 {% highlight bash %}
-$ ./gradlew build
-=======
-$ tar xvfz apache-calcite-1.34.0-src.tar.gz
-$ cd apache-calcite-1.34.0-src
-=======
-$ tar xvfz apache-calcite-1.22.0-src.tar.gz
-$ cd apache-calcite-1.22.0-src
->>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))
-$ gradle build
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
-=======
 $ tar xvfz apache-calcite-1.23.0-src.tar.gz
 $ cd apache-calcite-1.23.0-src
 $ ./gradlew build
->>>>>>> 1581e33f8 (Improve 1.23.0 release note and document)
 {% endhighlight %}
 
 [Running tests](#running-tests) describes how to run more or fewer
@@ -74,35 +51,16 @@ tests  (but you should use the `gradle` command rather than
 ## Building from Git
 
 Prerequisites are git
-and Java (JDK 8, 9 or 10) on your path.
-=======
-and Java (JDK 8, 9, 10 or 11) on your path.
->>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
-=======
-and Java (JDK 8, 9, 10, 11, or 12) on your path.
->>>>>>> e5ce23d98 ([CALCITE-2952] Document JDK 12 support)
-=======
-and Java (JDK 8, 9, 10, 11, 12, or 13) on your path.
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-
-Create a local copy of the GitHub repository,
-`cd` to its root directory,
-then build using the included maven wrapper:
-=======
 and Java (JDK 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 or 18) on your path.
 
 Create a local copy of the GitHub repository,
 `cd` to its root directory,
 then build using the included Gradle wrapper:
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 
 {% highlight bash %}
 $ git clone git://github.com/apache/calcite.git
 $ cd calcite
-$ ./mvnw install
-=======
 $ ./gradlew build
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 {% endhighlight %}
 
 Calcite includes a number of machine-generated codes. By default, these are
@@ -112,25 +70,13 @@ has not changed.
 
 Typically re-generation is called automatically when the relevant templates
 are changed, and it should work transparently.
-However if your IDE does not generate sources (e.g. `core/build/javacc/javaCCMain/org/apache/calcite/sql/parser/impl/SqlParserImpl.java`),
-=======
 However, if your IDE does not generate sources (e.g. `core/build/javacc/javaCCMain/org/apache/calcite/sql/parser/impl/SqlParserImpl.java`),
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 then you can call `./gradlew generateSources` tasks manually.
 
 [Running tests](#running-tests) describes how to run more or fewer
 tests.
 
-## If you already have Apache Maven
-
-If you have already installed Maven and it is on your path, then you
-can use `mvn` rather than `./mvnw` in commands. You need Maven version
-3.5.2 or later.
-=======
-## Gradle vs Gradle wrapper
-=======
 ## Gradle vs the Gradle Wrapper
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 
 Calcite uses the Gradle Wrapper to make a consistent build environment.
 In the typical case you don't need to install Gradle manually, and
@@ -175,23 +121,10 @@ The test suite will run by default when you build, unless you specify
 `-x test`
 
 {% highlight bash %}
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 $ ./gradlew assemble # build the artifacts
 $ ./gradlew build -x test # build the artifacts, verify code style, skip tests
 $ ./gradlew check # verify code style, execute tests
 $ ./gradlew test # execute tests
-<<<<<<< HEAD
-<<<<<<< HEAD
-$ ./gradlew style # update code formatting (for auto-correctable cases) and verify style
-$ ./gradlew autostyleCheck checkstyleAll # report code style violations
-$ ./gradlew -PenableErrorprone classes # verify Java code with Error Prone compiler, requires Java 11
-=======
-$ ./mvnw -DskipTests clean install
-$ ./mvnw test
-=======
-$ ./gradlew checkstyleMain checkstyleTest # verify code style
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 $ ./gradlew style # update code formatting (for auto-correctable cases) and verify style
 $ ./gradlew autostyleCheck checkstyleAll # report code style violations
 $ ./gradlew -PenableErrorprone classes # verify Java code with Error Prone compiler, requires Java 11
@@ -217,7 +150,6 @@ environment, as follows.
 * `./gradlew testSlow` runs tests that take longer to execute. For
   example, there are tests that create virtual TPC-H and TPC-DS schemas
   in-memory and run tests from those benchmarks.
->>>>>>> 41e581fd6 ([CALCITE-5440] Bump gradle from 7.4.2 to 7.6.1)
 
 Note: tests are executed in a forked JVM, so system properties are not passed automatically
 when running tests with Gradle.
@@ -329,19 +261,6 @@ Once the importer is finished, test the project setup.
 For example, navigate to the method `JdbcTest.testWinAgg` with
 *Navigate > Symbol* and enter `testWinAgg`. Run `testWinAgg` by right-clicking and selecting *Run* (or the equivalent keyboard shortcut).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-If you encounter an error while running the `JdbcTest.testWinAgg` , run the following Maven command from the command line:
-
-`$ ./mvnw -DskipTests clean install`
-
-You should see `"BUILD SUCCESS"`.
-
-Once that is complete, proceed with running `JdbcTest.testWinAgg`.
-
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 ### Setting up NetBeans
 
 From the main menu, select *File > Open Project* and navigate to a name of the project (Calcite) with a small Gradle icon, and choose to open.
@@ -441,12 +360,8 @@ Calcite model:
 
 {% highlight bash %}
 $ ./sqlline
-sqlline> !connect jdbc:calcite:model=mongodb/target/test-classes/mongo-model.json admin admin
-Connecting to jdbc:calcite:model=mongodb/target/test-classes/mongo-model.json
-=======
 sqlline> !connect jdbc:calcite:model=mongodb/src/test/resources/mongo-model.json admin admin
 Connecting to jdbc:calcite:model=mongodb/src/test/resources/mongo-model.json
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 Connected to: Calcite (version 1.x.x)
 Driver: Calcite JDBC Driver (version 1.x.x)
 Autocommit status: true
@@ -595,17 +510,12 @@ from a contributor, found it satisfactory, and is about to merge it to master.
 Usually the contributor is not a committer (otherwise they would be committing
 it themselves, after you gave approval in a review).
 
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
 There are certain kinds of continuous integration tests that are not run
 automatically against the PR. These tests can be triggered explicitly by adding
 an appropriate label to the PR. For instance, you can run slow tests by adding
 the `slow-tests-needed` label. It is up to you to decide if these additional
 tests need to run before merging.
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
 If the PR has multiple commits, squash them into a single commit. The
 commit message should follow the conventions outined in
 [contribution guidelines]({{ site.baseurl }}/develop/#contributing).
@@ -625,13 +535,7 @@ must:
  * resolve the issue (do not close it as this will be done by the release
 manager);
  * select "Fixed" as resolution cause;
- * mark the appropriate version (e.g., 1.20.0) in the "Fix version" field;
-=======
- * mark the appropriate version (e.g., 1.21.0) in the "Fix version" field;
->>>>>>> 4d2616180 ([CALCITE-3303] Release Calcite 1.21.0)
-=======
  * mark the appropriate version (e.g., 1.22.0) in the "Fix version" field;
->>>>>>> 55e2e46c7 ([CALCITE-3808] Release Calcite 1.22.0 (#120))
  * add a comment (e.g., "Fixed in ...") with a hyperlink pointing to the commit
 which resolves the issue (in GitHub or GitBox), and also thank the contributor
 for their contribution.
@@ -651,7 +555,6 @@ ball because that would be
 
 ## Set up Nexus repository credentials (for Calcite committers)
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 Gradle provides multiple ways to [configure project properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_configuration_properties).
 For instance, you could update `$HOME/.gradle/gradle.properties`.
 
@@ -672,41 +575,19 @@ Note: when https://github.com/vlsi/asflike-release-environment is used, the cred
 
 Note: if you want to uses `gpg-agent`, you need to pass `useGpgCmd` property, and specify the key id
 via `signing.gnupg.keyName`.
-<<<<<<< HEAD
-=======
-Follow the instructions [here](https://www.apache.org/dev/publishing-maven-artifacts.html#dev-env) to add your credentials to your maven configuration.
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
 ## Making a snapshot (for Calcite committers)
 
 Before you start:
 
-* Set up signing keys as described above.
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 * Make sure you are using JDK 8.
 * Make sure build and tests succeed with `-Dcalcite.test.db=hsqldb` (the default)
 
 {% highlight bash %}
-# Tell GPG how to read a password from your terminal
-export GPG_TTY=$(tty)
-
-# Make sure that there are no junk files in the sandbox
-git clean -xn
-./mvnw clean
-
-<<<<<<< HEAD
-./mvnw -Papache-release -Dgpg.passphrase=${GPG_PASSPHRASE} install
-=======
-./mvnw -Papache-release install
->>>>>>> 4223da054 ([CALCITE-2575] Release Calcite 1.18.0)
-=======
 # Make sure that there are no junk files in the sandbox
 git clean -xn
 # Publish snapshot artifacts
 ./gradlew clean publish -Pasf
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 {% endhighlight %}
 
 ## Making a release candidate (for Calcite committers)
@@ -720,31 +601,19 @@ Before you start:
 * Make sure you are using JDK 8 (not 9 or 10).
 * Check that `README` and `site/_docs/howto.md` have the correct version number.
 * Check that `NOTICE` has the current copyright year.
-* Set `version.major` and `version.minor` in `pom.xml`.
-* Make sure build and tests succeed, including with `-P it,it-oracle`.
-* Make sure that `./mvnw javadoc:javadoc javadoc:test-javadoc` succeeds
-=======
 * Check that `calcite.version` has the proper value in `/gradle.properties`.
 * Make sure build and tests succeed
 * Make sure that `./gradlew javadoc` succeeds
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
   (i.e. gives no errors; warnings are OK)
 * Generate a report of vulnerabilities that occur among dependencies,
   using `./gradlew dependencyCheckUpdate dependencyCheckAggregate`.
   Report to [private@calcite.apache.org](mailto:private@calcite.apache.org)
   if new critical vulnerabilities are found among dependencies.
-* Make sure that `./mvnw apache-rat:check` succeeds. (It will be run as part of
-  the release, but it's better to trouble-shoot early.)
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 * Decide the supported configurations of JDK, operating system and
   Guava.  These will probably be the same as those described in the
   release notes of the previous release.  Document them in the release
   notes.  To test Guava version _x.y_, specify `-Pguava.version=x.y`
-* Optional extra tests:
-=======
 * Optional tests using properties:
->>>>>>> ef260b65b ([CALCITE-3141] Slow tests are not run in continuous integration (#129))
   * `-Dcalcite.test.db=mysql`
   * `-Dcalcite.test.db=hsqldb`
   * `-Dcalcite.test.mongodb`
@@ -799,41 +668,21 @@ export GPG_TTY=$(tty)
 
 # Make sure that there are no junk files in the sandbox
 git clean -xn
-./mvnw clean
-=======
 
 # Dry run the release candidate (push to asf-like-environment)
 ./gradlew prepareVote -Prc=1
 
-./mvnw -DdryRun=true -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.(Y+1).Z-SNAPSHOT -Papache-release -Darguments="-DskipTests -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare-dry.log
-=======
 # Push release candidate to ASF servers
 ./gradlew prepareVote -Prc=1 -Pasf
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 {% endhighlight %}
 
 #### Checking the artifacts
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 * In the `release/build/distributions` directory should be these 3 files, among others:
   * `apache-calcite-X.Y.Z-src.tar.gz`
   * `apache-calcite-X.Y.Z-src.tar.gz.asc`
   * `apache-calcite-X.Y.Z-src.tar.gz.sha256`
 
-<<<<<<< HEAD
-=======
-* In the `target` directory should be these 8 files, among others:
-  * apache-calcite-X.Y.Z-src.tar.gz
-  * apache-calcite-X.Y.Z-src.tar.gz.asc
-  * apache-calcite-X.Y.Z-src.tar.gz.md5
-  * apache-calcite-X.Y.Z-src.tar.gz.sha256
-=======
-* In the `target` directory should be these 3 files, among others:
-  * `apache-calcite-X.Y.Z-src.tar.gz`
-  * `apache-calcite-X.Y.Z-src.tar.gz.asc`
-  * `apache-calcite-X.Y.Z-src.tar.gz.sha256`
-
->>>>>>> 6ec775507 ([CALCITE-2333] Stop releasing zips)
   * apache-calcite-X.Y.Z-src.zip.md5
 
 * Note that the file names start `apache-calcite-`.
@@ -852,29 +701,6 @@ git clean -xn
   `NOTICE`
 * Check PGP, per [this](https://httpd.apache.org/dev/verification.html)
 
-Now, remove the `-DdryRun` flag and run the release for real.
-For this step you'll have to add the [Apache servers](https://maven.apache.org/developers/committer-settings.html) to `~/.m2/settings.xml`.
-
-{% highlight bash %}
-# Make sure that there are no junk files in the sandbox; performing a dry run may have generated
-# redundant files that do not need to be present in the release artifacts.
-git clean -xn
-./mvnw clean
-
-# Prepare sets the version numbers, creates a tag, and pushes it to git
-# Note X.Y.Z is the current version we're trying to release, and X.Y+1.Z is the next development version.
-# For example, if I am currently building a release for 1.16.0, X.Y.Z would be 1.16.0 and X.Y+1.Z would be 1.17.0.
-./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments=-DskipTests release:prepare 2>&1 | tee /tmp/prepare.log
-
-# If you have multiple GPG keys, you can select the key used to sign the release by adding `-Dgpg.keyname=${GPG_KEY_ID}` to `-Darguments`:
-./mvnw -DdryRun=false -DskipTests -DreleaseVersion=X.Y.Z -DdevelopmentVersion=X.Y+1.Z-SNAPSHOT -Papache-release -Darguments="-DskipTests -Dgpg.keyname=${GPG_KEY_ID}" release:prepare 2>&1 | tee /tmp/prepare.log
-
-# Perform checks out the tagged version, builds, and deploys to the staging repository
-./mvnw -DskipTests -Papache-release release:perform 2>&1 | tee /tmp/perform.log
-{% endhighlight %}
-
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 Verify the staged artifacts in the Nexus repository:
 
 * Go to [https://repository.apache.org/](https://repository.apache.org/) and login
@@ -888,27 +714,8 @@ Verify the staged artifacts in the Nexus repository:
 
 ## Cleaning up after a failed release attempt (for Calcite committers)
 
-{% highlight bash %}
-# Make sure that the tag you are about to generate does not already
-# exist (due to a failed release attempt)
-git tag
-
-# If the tag exists, delete it locally and remotely
-git tag -d calcite-X.Y.Z
-git push origin :refs/tags/calcite-X.Y.Z
-
-# Remove modified files
-./mvnw release:clean
-
-# Check whether there are modified files and if so, go back to the
-# original git commit
-git status
-git reset --hard HEAD
-{% endhighlight %}
-=======
 If something is not correct, you can fix it, commit it, and prepare the next candidate.
 The release candidate tags might be kept for a while.
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
 ## Validate a release
 
@@ -1053,18 +860,8 @@ This is based on the time when you expect to announce the release.
 This is usually a day after the vote closes.
 Remember that UTC date changes at 4pm Pacific time.
 
-Promote the staged nexus artifacts.
-
-* Go to [https://repository.apache.org/](https://repository.apache.org/) and login
-* Under "Build Promotion" click "Staging Repositories"
-* In the line with "orgapachecalcite-xxxx", check the box
-* Press "Release" button
-
-Check the artifacts into svn.
-=======
 
 ### Publishing directly in your environment:
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 
 {% highlight bash %}
 # Dry run publishing the release (push to asf-like-environment)
@@ -1092,7 +889,6 @@ The old releases will remain available in the
 You should receive an email from the [Apache Reporter Service](https://reporter.apache.org/).
 Make sure to add the version number and date of the latest release at the site linked to in the email.
 
->>>>>>> 0c5dd4d55 (Improve READMEs and release howto instructions)
 Update the site with the release note, the release announcement, and the javadoc of the new version.
 The javadoc can be generated only from a final version (not a SNAPSHOT) so checkout the most recent
 tag and start working there (`git checkout calcite-X.Y.Z`). Add a release announcement by copying
@@ -1102,14 +898,6 @@ instructions in [site/README.md]({{ site.sourceRoot }}/site/README.md). Check th
 javadoc, and release note appear correctly and then publish the site following the instructions
 in the same file. Now checkout again the release branch (`git checkout branch-X.Y`) and commit
 the release announcement.
-<<<<<<< HEAD
-=======
-Add a release note by copying
-[site/_posts/2016-10-12-release-1.10.0.md]({{ site.sourceRoot }}/site/_posts/2016-10-12-release-1.10.0.md),
-generate the javadoc using `./mvnw site`, [publish the site](#publish-the-web-site),
-and check that it appears in the contents in [news](http://localhost:4000/news/).
-=======
->>>>>>> 0c5dd4d55 (Improve READMEs and release howto instructions)
 
 Merge the release branch back into `master` (e.g., `git merge --ff-only branch-X.Y`) and align
 the `master` with the `site` branch (e.g., `git merge --ff-only site`).

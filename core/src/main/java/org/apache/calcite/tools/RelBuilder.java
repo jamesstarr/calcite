@@ -47,7 +47,6 @@ import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.core.RepeatUnion;
 import org.apache.calcite.rel.core.Snapshot;
 import org.apache.calcite.rel.core.Sort;
-=======
 import org.apache.calcite.rel.core.Spool;
 import org.apache.calcite.rel.core.TableFunctionScan;
 import org.apache.calcite.rel.core.TableScan;
@@ -2834,17 +2833,6 @@ public class RelBuilder {
     return project(exprList);
   }
 
-<<<<<<< HEAD
-=======
-  public RelBuilder aggregate(GroupKey groupKey,
-      List<AggregateCall> aggregateCalls) {
-    return aggregate(groupKey,
-        Lists.transform(aggregateCalls, AggCallImpl2::new));
-
-  }
-
-=======
->>>>>>> b7cfaee8f ([CALCITE-3649] Hints should be propagated correctly in planner rules if original node is transformed to different kind)
   /** Creates a {@link Match}. */
   public RelBuilder match(RexNode pattern, boolean strictStart,
       boolean strictEnd, Map<String, RexNode> patternDefinitions,
@@ -3613,57 +3601,6 @@ public class RelBuilder {
       }
     }
   }
-    /** Whether {@link RelBuilder#aggregate} should prune unused
-     * input columns; default true. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean pruneInputOfAggregate();
-
-    /** Sets {@link #pruneInputOfAggregate}. */
-    Config withPruneInputOfAggregate(boolean pruneInputOfAggregate);
-
-    /** Whether to simplify expressions; default true. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean simplify();
-
-    /** Sets {@link #simplify}. */
-    Config withSimplify(boolean simplify);
-  }
-
-  /** Creates a {@link RelBuilder.Config}.
-   *
-   * @deprecated Use the {@code withXxx} methods in
-   * {@link RelBuilder.Config}. */
-  @Deprecated // to be removed before 2.0
-  public static class ConfigBuilder {
-    private Config config;
-
-    private ConfigBuilder(@Nonnull Config config) {
-      this.config = config;
-    }
-
-    /** Creates a {@link RelBuilder.Config}. */
-    public Config build() {
-      return config;
-    }
-
-    /** Sets the value that will become
-     * {@link org.apache.calcite.tools.RelBuilder.Config#dedupAggregateCalls}. */
-    public ConfigBuilder withDedupAggregateCalls(boolean dedupAggregateCalls) {
-      config = config.withDedupAggregateCalls(dedupAggregateCalls);
-      return this;
-    }
-
-    /** Sets the value that will become
-     * {@link org.apache.calcite.tools.RelBuilder.Config#simplify}. */
-    public ConfigBuilder withSimplify(boolean simplify) {
-      config = config.withSimplify(simplify);
-      return this;
-    }
-  }
-}
-<<<<<<< HEAD
 
   /** Configuration of RelBuilder.
    *
@@ -3744,4 +3681,3 @@ public class RelBuilder {
     }
   }
 }
-=======

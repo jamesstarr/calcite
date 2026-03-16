@@ -551,7 +551,6 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
   }
 
   public TrimResult trimFields(
->>>>>>> d110443b0 ([CALCITE-3984] Support exchange operator in RelFieldTrimmer (Xu Zhaohui) (#373))
       Exchange exchange,
       ImmutableBitSet fieldsUsed,
       Set<RelDataTypeField> extraFields) {
@@ -590,10 +589,6 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
   }
 
   public TrimResult trimFields(
-<<<<<<< HEAD
-=======
-=======
->>>>>>> d110443b0 ([CALCITE-3984] Support exchange operator in RelFieldTrimmer (Xu Zhaohui) (#373))
       SortExchange sortExchange,
       ImmutableBitSet fieldsUsed,
       Set<RelDataTypeField> extraFields) {
@@ -966,8 +961,6 @@ public class RelFieldTrimmer implements ReflectiveVisitor {
                 .distinct(aggCall.isDistinct())
                 .filter(filterArg)
                 .approximate(aggCall.isApproximate())
-                .sort(relBuilder.fields(aggCall.collation))
-=======
                 .sort(sortArg)
                 .as(aggCall.name);
         mapping.set(j, groupCount + newAggCallList.size());

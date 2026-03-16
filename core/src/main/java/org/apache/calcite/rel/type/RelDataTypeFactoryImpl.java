@@ -486,52 +486,10 @@ public abstract class RelDataTypeFactoryImpl implements RelDataTypeFactory {
    * to get the return type for the operation.
    */
   @Deprecated
->>>>>>> a1996197c (Fix compiler warnings)
   public RelDataType createDecimalQuotient(
       RelDataType type1,
       RelDataType type2) {
     return typeSystem.deriveDecimalDivideType(this, type1, type2);
-<<<<<<< HEAD
-  }
-
-  public RelDataType decimalOf(RelDataType type) {
-    // create decimal type and sync nullability
-    return createTypeWithNullability(decimalOf2(type), type.isNullable());
-  }
-
-  /** Create decimal type equivalent with the given {@code type} while sans nullability. */
-  private RelDataType decimalOf2(RelDataType type) {
-    assert SqlTypeUtil.isNumeric(type) || SqlTypeUtil.isNull(type);
-    SqlTypeName typeName = type.getSqlTypeName();
-    assert typeName != null;
-    switch (typeName) {
-    case DECIMAL:
-      // Fix the precision when the type is JavaType.
-      return RelDataTypeFactoryImpl.isJavaType(type)
-          ? SqlTypeUtil.getMaxPrecisionScaleDecimal(this) : type;
-    case TINYINT:
-      return createSqlType(SqlTypeName.DECIMAL, 3, 0);
-    case SMALLINT:
-      return createSqlType(SqlTypeName.DECIMAL, 5, 0);
-    case INTEGER:
-      return createSqlType(SqlTypeName.DECIMAL, 10, 0);
-    case BIGINT:
-      // the default max precision is 19, so this is actually DECIMAL(19, 0)
-      // but derived system can override the max precision/scale.
-      return createSqlType(SqlTypeName.DECIMAL, 38, 0);
-    case REAL:
-      return createSqlType(SqlTypeName.DECIMAL, 14, 7);
-    case FLOAT:
-      return createSqlType(SqlTypeName.DECIMAL, 14, 7);
-    case DOUBLE:
-      // the default max precision is 19, so this is actually DECIMAL(19, 15)
-      // but derived system can override the max precision/scale.
-      return createSqlType(SqlTypeName.DECIMAL, 30, 15);
-    default:
-      // default precision and scale.
-      return createSqlType(SqlTypeName.DECIMAL);
-    }
-=======
   }
 
   public RelDataType decimalOf(RelDataType type) {

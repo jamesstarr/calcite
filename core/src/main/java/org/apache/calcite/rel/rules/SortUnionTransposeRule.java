@@ -102,8 +102,6 @@ public class SortUnionTransposeRule
         sort.offset, sort.fetch);
     call.transformTo(result);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -134,37 +132,3 @@ public class SortUnionTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Sort.class, Union.class)
-            .withMatchNullFetch(false);
-
-    @Override default SortUnionTransposeRule toRule() {
-      return new SortUnionTransposeRule(this);
-    }
-
-    /** Whether to match a Sort whose {@link Sort#fetch} is null. Generally
-     * this only makes sense if the Union preserves order (and merges). */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean matchNullFetch();
-
-    /** Sets {@link #matchNullFetch()}. */
-    Config withMatchNullFetch(boolean matchNullFetch);
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Sort> sortClass,
-                                  Class<? extends Union> unionClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(sortClass).oneInput(b1 ->
-                      b1.operand(unionClass).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

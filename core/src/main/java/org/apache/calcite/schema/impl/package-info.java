@@ -19,7 +19,3 @@
  * Utilities to help implement Calcite's SPIs.
  */
 package org.apache.calcite.schema.impl;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

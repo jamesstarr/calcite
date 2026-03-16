@@ -32,8 +32,6 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableList;
-=======
 
 import java.util.Collections;
 import java.util.List;
@@ -107,7 +105,6 @@ public class MaterializedViewFilterScanRule
       }
     }
   }
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -128,26 +125,3 @@ public class MaterializedViewFilterScanRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Filter.class, TableScan.class);
-
-    @Override default MaterializedViewFilterScanRule toRule() {
-      return new MaterializedViewFilterScanRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Filter> filterClass,
-                                  Class<? extends TableScan> scanClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(filterClass).oneInput(b1 ->
-                      b1.operand(scanClass).noInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

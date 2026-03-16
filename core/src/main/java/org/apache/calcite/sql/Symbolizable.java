@@ -16,50 +16,15 @@
  */
 package org.apache.calcite.sql;
 
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
 import org.apache.calcite.sql.parser.SqlParserPos;
 
 /** Sub-class should be a Enum and can convert to a {@link SqlLiteral}. */
 public interface Symbolizable {
->>>>>>> c76a8f853 ([CALCITE-3962] Make JSON_VALUE operands varadic (#348))
 
   /**
    * Creates a parse-tree node representing an occurrence of this keyword
    * at a particular position in the parsed text.
    */
-  LEFT,
-
-  /**
-   * Semi-join.
-   *
-   * <p>Similar to {@code from A ... where a in (select b from B ...)}</p>
-   */
-  SEMI,
-
-  /**
-   * Anti-join.
-   *
-   * <p>Similar to {@code from A ... where a NOT in (select b from B ...)}
-   *
-   * <p>Note: if B.b is nullable and B has nulls, no rows must be returned.
-   */
-  ANTI;
-
-  /** Transforms this CorrelateJoinType to JoinType. **/
-  public JoinType toJoinType() {
-    switch (this) {
-    case INNER:
-      return JoinType.INNER;
-    case LEFT:
-      return JoinType.LEFT;
-    case SEMI:
-      return JoinType.SEMI;
-    case ANTI:
-      return JoinType.ANTI;
-    }
-    throw new IllegalStateException(
-        "Unable to convert " + this + " to JoinType");
-=======
   default SqlLiteral symbol(SqlParserPos pos) {
     return SqlLiteral.createSymbol((Enum<?>) this, pos);
   }

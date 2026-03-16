@@ -577,8 +577,6 @@ public class JoinToMultiJoinRule
       return null;
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -599,27 +597,3 @@ public class JoinToMultiJoinRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(LogicalJoin.class);
-
-    @Override default JoinToMultiJoinRule toRule() {
-      return new JoinToMultiJoinRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(joinClass).inputs(
-                  b1 -> b1.operand(RelNode.class).anyInputs(),
-                  b2 -> b2.operand(RelNode.class).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

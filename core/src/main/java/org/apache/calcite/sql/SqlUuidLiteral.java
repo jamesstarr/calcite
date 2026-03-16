@@ -64,7 +64,6 @@ public class SqlUuidLiteral extends SqlLiteral {
       int rightPrec) {
     writer.literal(this.toString());
   }
->>>>>>> c25d56fe6 (DX-108641: Fix UUID literal comparisons to be compliant with RFC 4122 (#184))
 
   private static String validateAndNormalize(String uuidStr) {
     if (uuidStr == null) {
@@ -74,8 +73,4 @@ public class SqlUuidLiteral extends SqlLiteral {
     UUID uuid = UUID.fromString(uuidStr);
     return uuid.toString();
   }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> c25d56fe6 (DX-108641: Fix UUID literal comparisons to be compliant with RFC 4122 (#184))
 }

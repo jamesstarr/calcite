@@ -26,8 +26,6 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -40,10 +38,6 @@ open class JavaCCTask @Inject constructor(
     val javaCCClasspath = objectFactory.property<Configuration>()
         .convention(project.configurations.named(JavaCCPlugin.JAVACC_CLASSPATH_CONFIGURATION_NAME))
 
-    @InputFile
-    val inputFile = objectFactory.property<File>()
-
-=======
     @Internal
     val inputFile = objectFactory.property<File>()
 
@@ -56,7 +50,6 @@ open class JavaCCTask @Inject constructor(
         null
     }
 
->>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
     @Input
     val lookAhead = objectFactory.property<Int>().convention(1)
 
@@ -76,10 +69,7 @@ open class JavaCCTask @Inject constructor(
         project.javaexec {
             classpath = javaCCClasspath.get()
             // The class is in the top-level package
-            main = "javacc"
-=======
             mainClass.set("javacc")
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
             args("-STATIC=${static.get()}")
             args("-LOOKAHEAD:${lookAhead.get()}")
             args("-OUTPUT_DIRECTORY:${output.get()}/${packageName.get().replace('.', '/')}")

@@ -118,8 +118,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  *      {@link RelBuilder#alias(RexNode, String)} is removed if not a top-level
  *      project</li>
  *   <li>{@link RelBuilder#aggregate} with grouping sets</li>
- *   <li> with filter</li>
-=======
  *   <li>Add call to create {@link TableFunctionScan}</li>
  *   <li>Add call to create {@link Window}</li>
  *   <li>Add call to create {@link TableModify}</li>
@@ -3098,8 +3096,6 @@ public class RelBuilderTest {
         + "  LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(root, hasTree(expected));
   }
-<<<<<<< HEAD
-=======
 
   /** Tests filter builder with correlation variables */
   @Test void testFilterWithCorrelationVariables() {
@@ -3370,7 +3366,6 @@ public class RelBuilderTest {
     assertThat(root, hasTree(expected));
   }
 
->>>>>>> 495e347b4 ([CALCITE-3887] Filter and Join conditions may not need to retain null… (#362))
   @Test void testHints() {
     final RelHint indexHint = RelHint.builder("INDEX")
         .hintOption("_idx1")

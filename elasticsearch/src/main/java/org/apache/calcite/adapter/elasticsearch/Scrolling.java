@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<< HEAD
-=======
 package org.apache.calcite.adapter.elasticsearch;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -171,9 +169,3 @@ class Scrolling {
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 85c9d2fa6 (Cosmetic changes)
-
-// End Scrolling.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

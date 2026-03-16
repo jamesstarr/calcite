@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
->>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 
 !set outputformat mysql
 
@@ -33,9 +32,6 @@ select cbrt(-8);
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 # STRCMP
 select strcmp('mytesttext', 'mytesttext');
 +--------+
@@ -48,13 +44,6 @@ select strcmp('mytesttext', 'mytesttext');
 !ok
 
 # XML Functions
-=======
-!set outputformat mysql
-
->>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
-=======
-# XML Functions
->>>>>>> bb4b68472 ([CALCITE-3684] Implement CBRT function (Qianjin Xu) (#171))
 
 # [CALCITE-4875] Preserve Operand Nullability in NVL rewrite
 # Asserting that NVL does not change a Nullable operand to NOT Nullable
@@ -62,10 +51,7 @@ select strcmp('mytesttext', 'mytesttext');
 !use oraclefunc
 select nvl("name", 'undefined') FROM "hr"."emps";
 
-EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR CHARACTER SET "ISO-8859-1" COLLATE "ISO-8859-1$en_US$primary"], expr#7=['undefined'], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
-=======
 EnumerableCalc(expr#0..4=[{inputs}], expr#5=[IS NOT NULL($t2)], expr#6=[CAST($t2):VARCHAR], expr#7=['undefined':VARCHAR], expr#8=[CASE($t5, $t6, $t7)], EXPR$0=[$t8])
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
   EnumerableTableScan(table=[[hr, emps]])
 !plan
 
@@ -104,7 +90,6 @@ SELECT ExtractValue('<a>c</a>', '//a');
 
 !ok
 
->>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 # STRING Functions
 
 #CONCAT
@@ -118,10 +103,6 @@ SELECT CONCAT('c', 'h', 'a', 'r');
 
 !ok
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 # Compression Functions
 
 SELECT COMPRESS('sample');
@@ -148,7 +129,6 @@ select sinh(1);
 
 !ok
 
->>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 #CONCAT
 select concat('a', 'b');
 +--------+
@@ -160,14 +140,6 @@ select concat('a', 'b');
 
 !ok
 
-<<<<<<< HEAD
-=======
-!use oraclefunc
-
-=======
->>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
-=======
->>>>>>> 6d50536b1 ([CALCITE-3684] Supports CONCAT for variable arguments (Wenhui Tang) (#303))
 SELECT XMLTRANSFORM(
                    '<?xml version="1.0"?>
                     <Article>
@@ -196,7 +168,6 @@ SELECT XMLTRANSFORM(
 !ok
 
 
->>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
 # TANH
 select tanh(1);
 +--------------------+
@@ -208,8 +179,6 @@ select tanh(1);
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 SELECT "EXTRACT"(
             '<Article><Title>Article1</Title><Authors><Author>Foo</Author><Author>Bar</Author></Authors><Body>article text</Body></Article>'
@@ -224,9 +193,6 @@ SELECT "EXTRACT"(
 
 !ok
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 SELECT EXISTSNODE(
             '<Article><Title>Article1</Title><Authors><Author>Foo</Author><Author>Bar</Author></Authors><Body>article text</Body></Article>'
             , '/Article/Title'
@@ -237,28 +203,6 @@ SELECT EXISTSNODE(
 |      1 |
 +--------+
 (1 row)
-# [CALCITE-6791] Search pattern during matching in REPLACE function should be
-# case insensitive in MSSQL
-!use scott-mssql
-select replace('ciAao', 'a', 'ciao');
-+-------------+
-| EXPR$0      |
-+-------------+
-| ciciaociaoo |
-+-------------+
-(1 row)
-
-!ok
-
-select replace('ciAao', 'A', 'ciao');
-+-------------+
-| EXPR$0      |
-+-------------+
-| ciciaociaoo |
-+-------------+
-(1 row)
-
-!ok
 
 !ok
 
@@ -285,14 +229,4 @@ select replace('ciAao', 'A', 'ciao');
 
 !ok
 
-=======
->>>>>>> 4176d20cc ([CALCITE-4875] Preserve Operand Nullability in NVL rewrite)
-=======
->>>>>>> 82a3d04d6 ([CALCITE-3695] Implement TANH function (#96))
-=======
-
->>>>>>> 6c8821c46 ([CALCITE-3579] Oracle XMLTRANSFORM Function Support (ritesh-kapoor))
-=======
-
->>>>>>> 423726151 ([CALCITE-3580] Oracle EXTRACT(XML) Function Support (ritesh-kapoor))
 # End functions.iq

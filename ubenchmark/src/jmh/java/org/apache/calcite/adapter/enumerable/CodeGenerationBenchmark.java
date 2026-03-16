@@ -281,7 +281,3 @@ public class CodeGenerationBenchmark {
     new Runner(opt).run();
   }
 }
-
-// End CodeGenerationBenchmark.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

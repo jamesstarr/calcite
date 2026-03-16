@@ -560,8 +560,6 @@ public class JdbcSchema implements Schema {
       return JdbcSchema.create(parentSchema, name, operand);
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Do not use */
   @Experimental
@@ -569,14 +567,3 @@ public class JdbcSchema implements Schema {
       extends BiFunction<String, String, Iterable<MetaImpl.MetaTable>> {
   }
 }
-<<<<<<< HEAD
->>>>>>> e60f35195 ([CALCITE-3048] Improve how JDBC adapter deduces current schema on Redshift)
-
-  /** Do not use */
-  @Experimental
-  public interface Foo
-      extends BiFunction<String, String, Iterable<MetaImpl.MetaTable>> {
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

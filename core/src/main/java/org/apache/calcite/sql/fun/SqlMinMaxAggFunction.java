@@ -24,8 +24,6 @@ import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlSplittableAggFunction;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
-=======
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.util.Optionality;
 

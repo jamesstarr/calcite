@@ -19,8 +19,6 @@ package org.apache.calcite.plan.volcano;
 import org.apache.calcite.avatica.util.Spaces;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
-import org.apache.calcite.linq4j.tree.Expressions;
-=======
 import org.apache.calcite.plan.AbstractRelOptPlanner;
 import org.apache.calcite.plan.Context;
 import org.apache.calcite.plan.Convention;
@@ -1484,7 +1482,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           key = key(rel);
           RelNode equivRel = mapDigestToRel.get(key);
           if ((equivRel != rel) && (equivRel != null)) {
->>>>>>> 1b15d3443 ([CALCITE-3095] Add several system properties to control enabling/disabling of rules and traits)
 
             // make sure this bad rel didn't get into the
             // set in any way (fixupInputs will do this but it
@@ -1666,14 +1663,6 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
     this.locked = locked;
   }
 
-  public void ensureRegistered(
-      RelNode rel,
-      RelNode equivRel,
-      VolcanoRuleCall ruleCall) {
-    ensureRegistered(rel, equivRel);
-  }
-
-=======
   //~ Inner Classes ----------------------------------------------------------
 
   /**

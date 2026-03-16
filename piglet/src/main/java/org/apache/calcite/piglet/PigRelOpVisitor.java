@@ -719,7 +719,3 @@ class PigRelOpVisitor extends PigRelOpWalker.PlanPreVisitor {
     return builder.checkMap(root);
   }
 }
-
-// End PigRelOpVisitor.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

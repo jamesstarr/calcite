@@ -148,19 +148,8 @@ public enum JoinRelType {
       return this;
     }
   }
-<<<<<<< HEAD
-=======
 
   public boolean projectsRight() {
     return this != SEMI && this != ANTI;
   }
 }
-<<<<<<< HEAD
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
-
-  public boolean projectsRight() {
-    return this != SEMI && this != ANTI;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -84,7 +84,6 @@ public class SparkSqlDialect extends SqlDialect {
       SqlNode fetch) {
     unparseFetchUsingLimit(writer, offset, fetch);
   }
->>>>>>> dd4536a41 ([CALCITE-3072] Generate right SQL for FLOOR&SUBSTRING functions in SparkSqlDialect (DonnyZone))
 
   @Override public void unparseCall(SqlWriter writer, SqlCall call,
       int leftPrec, int rightPrec) {
@@ -105,8 +104,6 @@ public class SparkSqlDialect extends SqlDialect {
             timeUnitNode.getParserPosition());
         SqlFloorFunction.unparseDatetimeFunction(writer, call2, "DATE_TRUNC", false);
         break;
-
-=======
       case TRIM:
         unparseHiveTrim(writer, call, leftPrec, rightPrec);
         break;
@@ -115,5 +112,4 @@ public class SparkSqlDialect extends SqlDialect {
       }
     }
   }
-=======
 }

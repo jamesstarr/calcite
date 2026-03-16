@@ -21,7 +21,3 @@
  * <p>There is one table for each Cassandra column family.</p>
  */
 package org.apache.calcite.adapter.cassandra;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

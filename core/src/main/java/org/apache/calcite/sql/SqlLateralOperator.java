@@ -40,9 +40,6 @@ public class SqlLateralOperator extends SqlSpecialOperator {
       int rightPrec) {
     final Set<SqlKind> specialOperandKinds = ImmutableSet.of(
         SqlKind.COLLECTION_TABLE,
-        SqlKind.SNAPSHOT,
-=======
->>>>>>> a506dd01c ([CALCITE-3620] Remove implicit lateral operator for temporal table join)
         SqlKind.SELECT,
         SqlKind.AS);
     if (call.operandCount() == 1

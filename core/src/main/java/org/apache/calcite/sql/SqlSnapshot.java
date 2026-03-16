@@ -131,7 +131,3 @@ public class SqlSnapshot extends SqlCall {
     }
   }
 }
-
-// End SqlSnapshot.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

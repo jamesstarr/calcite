@@ -108,8 +108,6 @@ public class GeodeTable extends AbstractQueryableTable implements TranslatableTa
         type = typeFactory.createMultisetType(
             typeFactory.createSqlType(SqlTypeName.ANY),
             -1);
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
-=======
       } else if (typeName == SqlTypeName.MAP) {
         RelDataType anyType = typeFactory.createSqlType(SqlTypeName.ANY);
         type = typeFactory.createMapType(anyType, anyType);

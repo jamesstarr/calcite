@@ -1764,7 +1764,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           return SqlSyntax.FUNCTION_ID;
         }
       };
->>>>>>> 28b8ea1f9 ([CALCITE-2750] PI operator incorrectly identified as dynamic function)
 
   /** The {@code TYPEOF} function. */
   public static final SqlFunction TYPEOF =
@@ -2236,17 +2235,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           .create(SqlKind.FUSION, ReturnTypes.ARG0, OperandTypes.MULTISET)
           .withFunctionType(SqlFunctionCategory.SYSTEM);
 
-=======
-  public static final SqlFunction FUSION =
-      new SqlAggFunction("FUSION", null,
-          SqlKind.FUSION,
-          ReturnTypes.ARG0,
-          null,
-          OperandTypes.MULTISET,
-          SqlFunctionCategory.SYSTEM, false, false,
-          Optionality.FORBIDDEN) {
-      };
-=======
   /**
    * The INTERSECTION operator. Multiset aggregator function.
    */
@@ -2358,8 +2346,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
       TUMBLE_OLD.auxiliary(SqlKind.TUMBLE_END);
 
   /** The {@code HOP} group function. */
-  public static final SqlGroupedWindowFunction HOP =
-=======
   public static final SqlGroupedWindowFunction HOP_OLD =
       new SqlGroupedWindowFunction("$HOP", SqlKind.HOP, null,
           ReturnTypes.ARG0, null,
@@ -2537,9 +2523,6 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
   public static final SqlAggFunction NTH_VALUE =
       new SqlNthValueAggFunction(SqlKind.NTH_VALUE);
 
-<<<<<<< HEAD
-=======
-=======
   //~ Methods ----------------------------------------------------------------
 
   /**

@@ -44,7 +44,3 @@ public interface AggregateLambdaFactory<TSource, TOrigAccumulate, TAccumulate,
   Function2<TKey, TAccumulate, TResult> resultSelector(
       Function2<TKey, TOrigAccumulate, TResult> resultSelector);
 }
-
-// End AggregateLambdaFactory.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

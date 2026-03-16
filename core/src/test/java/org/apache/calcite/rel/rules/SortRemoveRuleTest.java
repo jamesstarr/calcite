@@ -209,7 +209,3 @@ public final class SortRemoveRuleTest {
             SqlExplainLevel.DIGEST_ATTRIBUTES));
   }
 }
-
-// End SortRemoveRuleTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -153,7 +153,6 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
         fieldMap);
   }
 
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
   /**
    * Returns the appropriate {@link ComplexMetric} that is mapped from the given <code>alias</code>
    * if it exists, and is used in the expected context with the given {@link AggregateCall}.
@@ -233,10 +232,6 @@ public class DruidTable extends AbstractTable implements TranslatableTable {
   }
 
   public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-<<<<<<< HEAD
-=======
-  @Override public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-=======
     final RelDataType rowType = protoRowType.apply(typeFactory);
     final List<String> fieldNames = rowType.getFieldNames();
     Preconditions.checkArgument(fieldNames.contains(timestampFieldName));

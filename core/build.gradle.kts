@@ -2,30 +2,18 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
-=======
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
-=======
- */
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 import com.github.vlsi.gradle.crlf.CrLfSpec
 import com.github.vlsi.gradle.crlf.LineEndings
 
@@ -53,35 +41,22 @@ dependencies {
 
     api("com.fasterxml.jackson.core:jackson-annotations")
     api("org.apache.calcite.avatica:avatica-core")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
     api("org.apiguardian:apiguardian-api")
-=======
->>>>>>> d4dded518 ([CALCITE-3871] Remove dependency of org.apiguardian:apiguardian-api)
-=======
-    api("org.apiguardian:apiguardian-api")
->>>>>>> 1b917d06c (Revert "[CALCITE-3871] Remove dependency of org.apiguardian:apiguardi… (#314))
 
     implementation("com.esri.geometry:esri-geometry-api")
     implementation("com.fasterxml.jackson.core:jackson-core")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
     implementation("com.google.code.findbugs:jsr305"/* optional*/)
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
     implementation("com.google.errorprone:error_prone_annotations")
     implementation("com.google.guava:guava")
     implementation("com.jayway.jsonpath:json-path")
     implementation("com.yahoo.datasketches:sketches-core")
     implementation("commons-codec:commons-codec")
     implementation("net.hydromatic:aggdesigner-algorithm")
-    implementation("org.apache.calcite.avatica:avatica-server")
-=======
     implementation("org.apache.commons:commons-dbcp2")
     implementation("org.apache.commons:commons-lang3")
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
->>>>>>> ff50dd02a ([CALCITE-3560] Additional calcite.util.Source implementation for gene… (#125))
+    implementation("commons-io:commons-io")
     implementation("org.codehaus.janino:commons-compiler")
     implementation("org.codehaus.janino:janino")
     implementation("org.slf4j:slf4j-api")
@@ -91,48 +66,20 @@ dependencies {
     testOracle("com.oracle.ojdbc:ojdbc8")
     testPostgresql("org.postgresql:postgresql")
 
-    testImplementation("com.github.stephenc.jcip:jcip-annotations")
-=======
->>>>>>> 361fe0e95 (Use concurrent test execution by default (#177))
     testImplementation("net.hydromatic:foodmart-data-hsqldb")
     testImplementation("net.hydromatic:foodmart-queries")
     testImplementation("net.hydromatic:quidem")
     testImplementation("net.hydromatic:scott-data-hsqldb")
->>>>>>> 87623995c ([CALCITE-3888] Switch avatica-server to be test dependency for core)
     testImplementation("org.apache.calcite.avatica:avatica-server")
     testImplementation("org.apache.commons:commons-pool2")
     testImplementation("log4j:log4j") {
         because("SqlHintsConverterTest needs to implement a MockAppender")
     }
-<<<<<<< HEAD
-=======
-    testImplementation("org.apache.commons:commons-pool2")
-=======
->>>>>>> 2833961fa (Refine logging dependencies: keep slf4j bridges in runtime classpath … (#179))
     testImplementation("org.hsqldb:hsqldb")
     testImplementation("org.incava:java-diff")
     testImplementation("sqlline:sqlline")
     testImplementation(kotlin("stdlib-jdk8"))
->>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
     testImplementation(kotlin("test-junit5"))
-    testRuntimeOnly("org.slf4j:slf4j-log4j12")
-}
-
-// There are users that reuse/extend test code (e.g. Apache Felix)
-// So publish test jar to Nexus repository
-// TODO: remove when calcite-test-framework is extracted to a standalone artifact
-publishing {
-    publications {
-        named<MavenPublication>(project.name) {
-            artifact(tasks.testJar.get())
-        }
-    }
-}
-
-=======
-    testImplementation(kotlin("test"))
-=======
-    testImplementation(kotlin("test-junit"))
     testRuntimeOnly("org.slf4j:slf4j-log4j12")
 }
 
@@ -155,7 +102,6 @@ tasks.jar {
     }
 }
 
->>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 val generatedVersionDir = File(buildDir, "generated/sources/version")
 val versionClass by tasks.registering(Sync::class) {
     val re = Regex("^(\\d+)\\.(\\d+).*")
@@ -201,10 +147,6 @@ sourceSets {
     }
 }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 tasks.withType<Checkstyle>().configureEach {
     exclude("org/apache/calcite/runtime/Resources.java")
 }
@@ -223,15 +165,11 @@ val javaCCMain by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
     packageName.set("org.apache.calcite.sql.parser.impl")
 }
 
->>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 tasks.compileKotlin {
     dependsOn(versionClass)
     dependsOn(javaCCMain)
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 // Ensure spotless runs after version class generation and JAR tasks depend on JavaCC
 afterEvaluate {
     tasks.findByName("spotlessJava")?.let { spotlessTask ->
@@ -249,8 +187,6 @@ afterEvaluate {
     }
 }
 
->>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
-=======
 val fmppTest by tasks.registering(org.apache.calcite.buildtools.fmpp.FmppTask::class) {
     config.set(file("src/test/codegen/config.fmpp"))
     templates.set(file("src/main/codegen/templates"))
@@ -265,15 +201,10 @@ val javaCCTest by tasks.registering(org.apache.calcite.buildtools.javacc.JavaCCT
     packageName.set("org.apache.calcite.sql.parser.parserextensiontesting")
 }
 
->>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 tasks.compileTestKotlin {
     dependsOn(javaCCTest)
 }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> af96e9835 ([CALCITE-4829] Bump Gradle to 7.2 and test with Java 17 at GitHub Actions)
 ide {
     fun generatedSource(javacc: TaskProvider<org.apache.calcite.buildtools.javacc.JavaCCTask>, sourceSet: String) =
         generatedJavaSources(javacc.get(), javacc.get().output.get().asFile, sourceSets.named(sourceSet))

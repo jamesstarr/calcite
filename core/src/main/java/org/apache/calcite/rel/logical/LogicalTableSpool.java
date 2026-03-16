@@ -29,8 +29,6 @@ import org.apache.calcite.rel.core.TableSpool;
 import org.apache.calcite.rel.metadata.RelMetadataQuery;
 
 /**
- * Sub-class of {@link TableSpool} not targeted at any particular engine or calling convention.
-=======
  * Sub-class of {@link TableSpool} not targeted at any particular engine or
  * calling convention.
  *

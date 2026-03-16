@@ -670,8 +670,6 @@ public class RexImpTable {
     aggMap.put(BIT_XOR, bitop);
     aggMap.put(SINGLE_VALUE, constructorSupplier(SingleValueImplementor.class));
     aggMap.put(COLLECT, constructorSupplier(CollectImplementor.class));
-=======
-=======
     aggMap.put(PERCENTILE_CONT, constructorSupplier(PercentileContImplementor.class));
     aggMap.put(PERCENTILE_DISC, constructorSupplier(PercentileDiscImplementor.class));
     aggMap.put(LISTAGG, constructorSupplier(ListaggImplementor.class));
@@ -694,17 +692,6 @@ public class RexImpTable {
     winAggMap.put(COUNT, constructorSupplier(CountWinImplementor.class));
 
     // Functions for MATCH_RECOGNIZE
-    defineMethod(FINAL, "abs", NullPolicy.ANY);
-
-    map.put(PREV, (translator, call, nullAs) -> {
-      final RexNode node = call.getOperands().get(0);
-      final RexNode offset = call.getOperands().get(1);
-      final Expression offs = Expressions.multiply(translator.translate(offset),
-          Expressions.constant(-1));
-      ((EnumerableMatch.PrevInputGetter) translator.inputGetter).setOffset(offs);
-      return translator.translate(node, nullAs);
-    });
-=======
     matchMap.put(CLASSIFIER, ClassifierImplementor::new);
     matchMap.put(LAST, LastImplementor::new);
     map.put(PREV, new PrevImplementor());
@@ -2355,9 +2342,6 @@ public class RexImpTable {
     private Expression call(Expression operand, Type type,
         TimeUnit timeUnit) {
       return Expressions.call(SqlFunctions.class, methodName,
-          RexToLixTranslator.convert(operand, type),
-          RexToLixTranslator.convert(
-=======
           EnumUtils.convert(operand, type),
           EnumUtils.convert(
               Expressions.constant(timeUnit.multiplier), type));
@@ -2581,8 +2565,6 @@ public class RexImpTable {
 
       final Type returnType =
           translator.typeFactory.getJavaClass(call.getType());
-      return RexToLixTranslator.convert(
-=======
       return EnumUtils.convert(
           Expressions.makeBinary(expressionType, expressions.get(0),
               expressions.get(1)),
@@ -2855,8 +2837,6 @@ public class RexImpTable {
     }
   }
 
-<<<<<<< HEAD
-=======
   /** Implementor for the SQL {@code COALESCE} operator. */
   private static class CoalesceImplementor implements CallImplementor {
     public Expression implement(RexToLixTranslator translator, RexCall call,
@@ -2877,9 +2857,6 @@ public class RexImpTable {
     }
   }
 
-=======
-=======
-=======
   /** Implementor for the SQL {@code CAST} function that optimizes if, say, the
    * argument is already of the desired type. */
   private static class CastOptimizedImplementor implements CallImplementor {
@@ -3210,8 +3187,6 @@ public class RexImpTable {
       }
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Implements CLASSIFIER match-recognize function. */
   private static class ClassifierImplementor implements MatchImplementor {
@@ -3377,170 +3352,3 @@ public class RexImpTable {
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Implements CLASSIFIER match-recognize function. */
-  private static class ClassifierImplementor implements MatchImplementor {
-    @Override public Expression implement(RexToLixTranslator translator, RexCall call,
-        ParameterExpression row, ParameterExpression rows,
-        ParameterExpression symbols, ParameterExpression i) {
-      return EnumUtils.convert(
-          Expressions.call(symbols, BuiltInMethod.LIST_GET.method, i),
-          String.class);
-    }
-  }
-
-  /** Implements the LAST match-recognize function. */
-  private static class LastImplementor implements MatchImplementor {
-    @Override public Expression implement(RexToLixTranslator translator, RexCall call,
-        ParameterExpression row, ParameterExpression rows,
-        ParameterExpression symbols, ParameterExpression i) {
-      final RexNode node = call.getOperands().get(0);
-
-      final String alpha = ((RexPatternFieldRef) call.getOperands().get(0)).getAlpha();
-
-      final BinaryExpression lastIndex = Expressions.subtract(
-          Expressions.call(rows, BuiltInMethod.COLLECTION_SIZE.method),
-          Expressions.constant(1));
-
-      // Just take the last one, if exists
-      if ("*".equals(alpha)) {
-        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(i);
-        // Important, unbox the node / expression to avoid NullAs.NOT_POSSIBLE
-        final RexPatternFieldRef ref = (RexPatternFieldRef) node;
-        final RexPatternFieldRef newRef =
-            new RexPatternFieldRef(ref.getAlpha(),
-                ref.getIndex(),
-                translator.typeFactory.createTypeWithNullability(ref.getType(),
-                    true));
-        final Expression expression = translator.translate(newRef, NullAs.NULL);
-        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(null);
-        return expression;
-      } else {
-        // Alpha != "*" so we have to search for a specific one to find and use that, if found
-        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(
-            Expressions.call(BuiltInMethod.MATCH_UTILS_LAST_WITH_SYMBOL.method,
-                Expressions.constant(alpha), rows, symbols, i));
-
-        // Important, unbox the node / expression to avoid NullAs.NOT_POSSIBLE
-        final RexPatternFieldRef ref = (RexPatternFieldRef) node;
-        final RexPatternFieldRef newRef =
-            new RexPatternFieldRef(ref.getAlpha(),
-                ref.getIndex(),
-                translator.typeFactory.createTypeWithNullability(ref.getType(),
-                    true));
-        final Expression expression = translator.translate(newRef, NullAs.NULL);
-        ((EnumerableMatch.PassedRowsInputGetter) translator.inputGetter).setIndex(null);
-        return expression;
-      }
-    }
-  }
-
-  /** Implements PREV match-recognize function. */
-  private static class PrevImplementor implements CallImplementor {
-    @Override public Expression implement(RexToLixTranslator translator, RexCall call,
-        NullAs nullAs) {
-      final RexNode node = call.getOperands().get(0);
-      final RexNode offset = call.getOperands().get(1);
-      final Expression offs = Expressions.multiply(translator.translate(offset),
-          Expressions.constant(-1));
-      ((EnumerableMatch.PrevInputGetter) translator.inputGetter).setOffset(offs);
-      return translator.translate(node, nullAs);
-    }
-  }
-
-  /** Implements tumbling. */
-  private static class TumbleImplementor implements TableFunctionCallImplementor {
-    @Override public Expression implement(RexToLixTranslator translator,
-        Expression inputEnumerable,
-        RexCall call, PhysType inputPhysType, PhysType outputPhysType) {
-      // The table operand is removed from the RexCall because it
-      // represents the input, see StandardConvertletTable#convertWindowFunction.
-      Expression intervalExpression = translator.translate(call.getOperands().get(1));
-      RexCall descriptor = (RexCall) call.getOperands().get(0);
-      List<Expression> translatedOperands = new ArrayList<>();
-      final ParameterExpression parameter =
-          Expressions.parameter(Primitive.box(inputPhysType.getJavaRowType()), "_input");
-      Expression wmColExpr = inputPhysType.fieldReference(
-          parameter, ((RexInputRef) descriptor.getOperands().get(0)).getIndex(),
-          outputPhysType.getJavaFieldType(inputPhysType.getRowType().getFieldCount()));
-      translatedOperands.add(wmColExpr);
-      translatedOperands.add(intervalExpression);
-
-      return Expressions.call(
-          BuiltInMethod.TUMBLING.method,
-          inputEnumerable,
-          EnumUtils.tumblingWindowSelector(
-              inputPhysType,
-              outputPhysType,
-              translatedOperands.get(0),
-              translatedOperands.get(1)));
-    }
-  }
-
-  /** Implements hopping. */
-  private static class HopImplementor implements TableFunctionCallImplementor {
-    @Override public Expression implement(RexToLixTranslator translator,
-        Expression inputEnumerable, RexCall call, PhysType inputPhysType, PhysType outputPhysType) {
-      Expression slidingInterval = translator.translate(call.getOperands().get(1));
-      Expression windowSize = translator.translate(call.getOperands().get(2));
-      RexCall descriptor = (RexCall) call.getOperands().get(0);
-      List<Expression> translatedOperands = new ArrayList<>();
-      Expression wmColIndexExpr =
-          Expressions.constant(((RexInputRef) descriptor.getOperands().get(0)).getIndex());
-      translatedOperands.add(wmColIndexExpr);
-      translatedOperands.add(slidingInterval);
-      translatedOperands.add(windowSize);
-
-      return Expressions.call(
-          BuiltInMethod.HOPPING.method,
-          Expressions.list(
-              Expressions.call(inputEnumerable, BuiltInMethod.ENUMERABLE_ENUMERATOR.method),
-              translatedOperands.get(0),
-              translatedOperands.get(1),
-              translatedOperands.get(2)));
-    }
-  }
-
-  /** Implements per-key sessionization. */
-  private static class SessionImplementor implements TableFunctionCallImplementor {
-    @Override public Expression implement(RexToLixTranslator translator,
-        Expression inputEnumerable, RexCall call, PhysType inputPhysType, PhysType outputPhysType) {
-      RexCall timestampDescriptor = (RexCall) call.getOperands().get(0);
-      RexCall keyDescriptor = (RexCall) call.getOperands().get(1);
-      Expression gapInterval = translator.translate(call.getOperands().get(2));
-
-      List<Expression> translatedOperands = new ArrayList<>();
-      Expression wmColIndexExpr =
-          Expressions.constant(((RexInputRef) timestampDescriptor.getOperands().get(0)).getIndex());
-      Expression keyColIndexExpr =
-          Expressions.constant(((RexInputRef) keyDescriptor.getOperands().get(0)).getIndex());
-      translatedOperands.add(wmColIndexExpr);
-      translatedOperands.add(keyColIndexExpr);
-      translatedOperands.add(gapInterval);
-
-      return Expressions.call(
-          BuiltInMethod.SESSIONIZATION.method,
-          Expressions.list(
-              Expressions.call(inputEnumerable, BuiltInMethod.ENUMERABLE_ENUMERATOR.method),
-              translatedOperands.get(0),
-              translatedOperands.get(1),
-              translatedOperands.get(2)));
-    }
-  }
-
-  /** Implementor for the {@code REPLACE} function for Oracle, PostgreSQL and
-   * Microsoft SQL Server. And search pattern for SQL Server is case-insensitive. */
-  private static class ReplaceImplementor implements NotNullImplementor {
-    @Override public Expression implement(RexToLixTranslator translator,
-        RexCall call, List<Expression> translatedOperands) {
-      boolean isCaseSensitive = translator.conformance != SqlConformanceEnum.SQL_SERVER_2008;
-      final Expression operand0 = translatedOperands.get(0);
-      final Expression operand1 = translatedOperands.get(1);
-      final Expression operand2 = translatedOperands.get(2);
-      return Expressions.call(BuiltInMethod.REPLACE.method,
-          operand0, operand1, operand2, Expressions.constant(isCaseSensitive));
-    }
-  }
-}
-=======

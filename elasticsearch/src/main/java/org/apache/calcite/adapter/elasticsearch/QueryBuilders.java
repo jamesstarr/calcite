@@ -196,7 +196,6 @@ class QueryBuilders {
   }
 
   /**
->>>>>>> ca1b4e02e ([CALCITE-2528] Support Aggregates in ElasticSearch adapter (Andrei Sereda))
    * A query that matches on all documents.
    */
   static MatchAllQueryBuilder matchAll() {
@@ -204,9 +203,6 @@ class QueryBuilders {
   }
 
   /**
-<<<<<<< HEAD
-=======
-=======
    * Base class to build ES queries
    */
   abstract static class QueryBuilder {

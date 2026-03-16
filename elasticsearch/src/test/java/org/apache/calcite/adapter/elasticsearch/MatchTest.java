@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<< HEAD
-=======
 package org.apache.calcite.adapter.elasticsearch;
 
 
@@ -219,9 +217,3 @@ class MatchTest {
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 45f849e54 ([CALCITE-3601] Update elasticsearch tests upgrade from junit4 to junit5 (Qianjin Xu))
-
-// End MatchTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

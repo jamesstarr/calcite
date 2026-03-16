@@ -17,9 +17,6 @@
 package org.apache.calcite.rel.rules;
 
 import org.apache.calcite.plan.RelOptCluster;
-
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelRule;
@@ -37,9 +34,6 @@ import org.apache.calcite.util.ImmutableBitSet;
 import org.apache.calcite.util.ImmutableIntList;
 
 import java.util.ArrayList;
-
-=======
->>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import java.util.List;
 import java.util.function.Predicate;
 

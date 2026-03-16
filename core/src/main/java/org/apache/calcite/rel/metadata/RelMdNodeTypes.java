@@ -139,7 +139,6 @@ public class RelMdNodeTypes
     return getNodeTypes(rel, TableModify.class, mq);
   }
 
->>>>>>> 7ddb4b7ee ([CALCITE-3454] Support Exchange, SetOp and TableModify for builtin)
   public Multimap<Class<? extends RelNode>, RelNode> getNodeTypes(Exchange rel,
       RelMetadataQuery mq) {
     return getNodeTypes(rel, Exchange.class, mq);
@@ -165,9 +164,6 @@ public class RelMdNodeTypes
     return getNodeTypes(rel, Match.class, mq);
   }
 
-<<<<<<< HEAD
-=======
-=======
   private static Multimap<Class<? extends RelNode>, RelNode> getNodeTypes(RelNode rel,
       Class<? extends RelNode> c, RelMetadataQuery mq) {
     final Multimap<Class<? extends RelNode>, RelNode> nodeTypeCount = ArrayListMultimap.create();

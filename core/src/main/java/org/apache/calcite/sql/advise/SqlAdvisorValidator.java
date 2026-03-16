@@ -110,15 +110,11 @@ public class SqlAdvisorValidator extends SqlValidatorImpl {
     return expr;
   }
 
->>>>>>> 2faec311b ([CALCITE-3387] Query with GROUP BY and JOIN ... USING wrongly fails w… (#210))
   public SqlNode expandSelectExpr(SqlNode expr, SelectScope scope, SqlSelect select) {
     // Disable expansion. It doesn't help us come up with better hints.
     return expr;
   }
 
-<<<<<<< HEAD
-=======
-=======
   public SqlNode expandOrderExpr(SqlSelect select, SqlNode orderExpr) {
     // Disable expansion. It doesn't help us come up with better hints.
     return orderExpr;

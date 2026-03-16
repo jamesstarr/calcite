@@ -91,8 +91,6 @@ class ElasticsearchMapping {
     return this.index;
   }
 
-<<<<<<< HEAD
-=======
   /**
    * Represents elastic data-type, like {@code long}, {@code keyword},
    * {@code date} etc.
@@ -179,9 +177,3 @@ class ElasticsearchMapping {
   }
 
 }
-<<<<<<< HEAD
->>>>>>> beef988cd ([CALCITE-3023] Upgrade elastic search to 7.x (Takako Shimamoto))
-
-// End ElasticsearchMapping.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -393,20 +393,9 @@ public abstract class ProjectToWindowRule
       return graph;
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
     @Override ProjectToWindowRule toRule();
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    @Override ProjectToWindowRule toRule();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

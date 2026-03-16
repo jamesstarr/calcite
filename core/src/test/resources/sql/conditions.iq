@@ -271,7 +271,6 @@ from ax where ((s,t) in (('a','a'),(null, 'bb'))) is null;
 
 !ok
 
->>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
 with ax(s) as (values (1),(0))
 select case when s=0 then false else 100/s > 0 end from ax;
 
@@ -284,9 +283,6 @@ select case when s=0 then false else 100/s > 0 end from ax;
 (2 rows)
 
 !ok
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
 # Test case for CALCITE-2783
 with ax(s) as (values (true),(false),(cast(null as boolean)))
@@ -304,6 +300,4 @@ select s, (s or s is null), (s and s is not null) from ax;
 !ok
 
 
->>>>>>> a487e40cf ([CALCITE-2731] RexProgramBuilder makes unsafe simplifications to CASE expressions (Zoltan Haindrich))
-=======
 # End conditions.iq

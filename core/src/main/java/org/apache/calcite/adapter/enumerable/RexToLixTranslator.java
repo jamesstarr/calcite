@@ -29,7 +29,6 @@ import org.apache.calcite.linq4j.tree.Expressions;
 import org.apache.calcite.linq4j.tree.ParameterExpression;
 import org.apache.calcite.linq4j.tree.Primitive;
 import org.apache.calcite.linq4j.tree.Statement;
->>>>>>> 46f71d242 ([CALCITE-3512] Query fails when comparing Time/TimeStamp types (DonnyZone))
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactoryImpl;
 import org.apache.calcite.rex.RexBuilder;
@@ -1047,9 +1046,6 @@ public class RexToLixTranslator {
         program.getCondition(),
         RexImpTable.NullAs.FALSE);
   }
-<<<<<<< HEAD
-        block, ImmutableMap.of(), builder, this, correlates);
-=======
 
   public Expression translateConstructor(
       List<RexNode> operandList, SqlKind kind) {

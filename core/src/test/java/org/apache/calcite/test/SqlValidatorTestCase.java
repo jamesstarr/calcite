@@ -27,8 +27,6 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.test.AbstractSqlTester;
 import org.apache.calcite.sql.test.SqlTestFactory;
 import org.apache.calcite.sql.test.SqlTester;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.sql.test.SqlValidatorTester;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
@@ -213,7 +211,6 @@ public class SqlValidatorTestCase {
       String sql,
       String expectedCollationName,
       SqlCollation.Coercibility expectedCoercibility) {
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
     sql(sql).collation(expectedCollationName, expectedCoercibility);
   }
 

@@ -77,8 +77,6 @@ public class JavaToSqlTypeConversionRules {
           .put(ColumnList.class, SqlTypeName.COLUMN_LIST)
           .put(ArrayImpl.class, SqlTypeName.ARRAY)
           .put(List.class, SqlTypeName.ARRAY)
->>>>>>> 2ec16adb8 (DX-37612 Update TypeCoercions and implicit type cast support)
-=======
           .put(Map.class, SqlTypeName.MAP)
           .put(Void.class, SqlTypeName.NULL)
           .build();

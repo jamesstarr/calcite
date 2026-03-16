@@ -19,7 +19,3 @@
  * Defines a type system for relational expressions.
  */
 package org.apache.calcite.rel.type;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -87,8 +87,6 @@ public interface Hintable {
   }
 
   /**
-   * Returns the hints of this relational expressions as a list.
-=======
    * Returns the hints of this relational expressions as an immutable list.
    */
   ImmutableList<RelHint> getHints();

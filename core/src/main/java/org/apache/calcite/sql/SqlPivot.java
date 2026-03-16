@@ -36,7 +36,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-=======
 import static java.util.Objects.requireNonNull;
 
 /**

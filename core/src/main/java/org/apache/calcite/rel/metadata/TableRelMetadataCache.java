@@ -58,7 +58,3 @@ public class TableRelMetadataCache implements RelMetadataCache {
     return map.put(relNode, args, value);
   }
 }
-
-// End TableRelMetadataCache.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

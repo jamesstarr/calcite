@@ -294,8 +294,6 @@ public class SqlCallBinding extends SqlOperatorBinding {
       Resources.ExInst<SqlValidatorException> ex) {
     return validator.newValidationError(call, ex);
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Returns whether to allow implicit type coercion when validation.
@@ -305,16 +303,3 @@ public class SqlCallBinding extends SqlOperatorBinding {
     return validator.config().typeCoercionEnabled();
   }
 }
-<<<<<<< HEAD
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
-
-  /**
-   * Returns whether to allow implicit type coercion when validation.
-   * This is a short-cut method.
-   */
-  public boolean isTypeCoercionEnabled() {
-    return validator.config().typeCoercionEnabled();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

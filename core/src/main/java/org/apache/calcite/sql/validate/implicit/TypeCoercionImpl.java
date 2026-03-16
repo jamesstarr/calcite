@@ -36,7 +36,6 @@ import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeUtil;
-=======
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorScope;
 
@@ -514,6 +513,24 @@ public class TypeCoercionImpl extends AbstractTypeCoercion {
     final List<RelDataType> paramTypes = function.getParamTypes();
     assert paramTypes != null;
     boolean coerced = false;
+    for (int i = 0; i < call.operandCount(); i++) {
+      SqlNode operand = call.operand(i);
+      if (operand.getKind() == SqlKind.ARGUMENT_ASSIGNMENT) {
+        final List<SqlNode> operandList = ((SqlCall) operand).getOperandList();
+        String name = ((SqlIdentifier) operandList.get(1)).getSimple();
+        int formalIndex = function.getParamNames().indexOf(name);
+        if (formalIndex < 0) {
+          return false;
+        }
+        // Column list operand type is not supported now.
+        coerced = coerceOperandType(scope, (SqlCall) operand, 0,
+            paramTypes.get(formalIndex)) || coerced;
+      } else {
+        coerced = coerceOperandType(scope, call, i, paramTypes.get(i)) || coerced;
+      }
+    }
+    return coerced;
+  }
 
   public boolean querySourceCoercion(SqlValidatorScope scope,
       RelDataType sourceRowType, RelDataType targetRowType, SqlNode query) {

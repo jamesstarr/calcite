@@ -133,29 +133,6 @@ public class JsonEnumerator implements Enumerator<Object[]> {
 
   public void close() {
     enumerator.close();
-<<<<<<< HEAD
-  }
-
-  /**
-   * Json data and relDataType Converter.
-   */
-  static class JsonDataConverter {
-    private final RelDataType relDataType;
-    private final List<Object> dataList;
-
-    private JsonDataConverter(RelDataType relDataType, List<Object> dataList) {
-      this.relDataType = relDataType;
-      this.dataList = dataList;
-    }
-
-    RelDataType getRelDataType() {
-      return relDataType;
-    }
-
-    List<Object> getDataList() {
-      return dataList;
-    }
-=======
   }
 
   /**

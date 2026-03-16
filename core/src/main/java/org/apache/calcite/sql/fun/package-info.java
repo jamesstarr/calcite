@@ -28,7 +28,3 @@
  * {@link org.apache.calcite.sql} instead.</p>
  */
 package org.apache.calcite.sql.fun;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -46,7 +46,6 @@ public class FilterSetOpTransposeRule
   /** Creates a FilterSetOpTransposeRule. */
   protected FilterSetOpTransposeRule(Config config) {
     super(config);
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
   }
 
   @Deprecated // to be removed before 2.0
@@ -95,8 +94,6 @@ public class FilterSetOpTransposeRule
 
     call.transformTo(newSetOp);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -111,20 +108,3 @@ public class FilterSetOpTransposeRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b0 ->
-                    b0.operand(Filter.class).oneInput(b1 ->
-                            b1.operand(SetOp.class).anyInputs()))
-            .as(Config.class);
-
-    @Override default FilterSetOpTransposeRule toRule() {
-      return new FilterSetOpTransposeRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

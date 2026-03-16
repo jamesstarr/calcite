@@ -152,8 +152,6 @@ class Step extends DefaultEdge {
         Object... attributes) {
       @SuppressWarnings("unchecked") final List<IntPair> keys =
           (List) attributes[0];
-      return new Step(source, target, keys);
-=======
       return Step.create(source, target, keys, space);
     }
   }

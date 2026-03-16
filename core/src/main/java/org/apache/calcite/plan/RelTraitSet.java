@@ -21,8 +21,6 @@ import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.RelDistribution;
 import org.apache.calcite.rel.RelDistributionTraitDef;
 import org.apache.calcite.runtime.FlatLists;
->>>>>>> 95301caba ([CALCITE-3891] Remove use of Pair.zip in RelTraitSet)
-=======
 import org.apache.calcite.util.mapping.Mappings;
 
 import com.google.common.collect.ImmutableList;
@@ -271,7 +269,6 @@ public final class RelTraitSet extends AbstractList<RelTrait> {
   }
 
   /**
->>>>>>> 82d506510 ([CALCITE-3983] Add utility methods to RelTraitSet (#371))
    * Returns whether all the traits are default trait value.
    */
   public boolean isDefault() {
@@ -382,10 +379,6 @@ public final class RelTraitSet extends AbstractList<RelTrait> {
   }
 
   /**
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 82d506510 ([CALCITE-3983] Add utility methods to RelTraitSet (#371))
    * Returns the size of the RelTraitSet.
    *
    * @return the size of the RelTraitSet.

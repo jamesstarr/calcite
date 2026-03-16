@@ -514,8 +514,6 @@ public class PlannerTest {
         .build();
 
     RelOptPlanner planner = relNode.getCluster().getPlanner();
-<<<<<<< HEAD
-=======
     RuleSet ruleSet =
         RuleSets.ofList(
             PruneEmptyRules.UNION_INSTANCE,
@@ -733,7 +731,6 @@ public class PlannerTest {
         equalTo("EnumerableSort(sort0=[$1], dir0=[ASC])\n"
             + "  EnumerableProject(empid=[$0], deptno=[$1])\n"
             + "    EnumerableTableScan(table=[[hr, emps]])\n"));
->>>>>>> 815957625 ([CALCITE-3769] Deprecate TableScanRule (#199))
   }
 
   /** Test case for
@@ -952,16 +949,6 @@ public class PlannerTest {
     //      13 OOM              96
     //      35 OOM           1,716
     //      60 OOM          12,230
-    checkJoinNWay(5); // LoptOptimizeJoinRule disabled; takes about .4s
-    checkJoinNWay(9); // LoptOptimizeJoinRule enabled; takes about 0.04s
-    checkJoinNWay(35); // takes about 2s
-    if (CalciteSystemProperty.TEST_SLOW.value()) {
-      checkJoinNWay(60); // takes about 15s
-    }
-  }
-
-  private void checkJoinNWay(int n) throws Exception {
-=======
     final StringBuilder buf = new StringBuilder();
     buf.append("select * from \"depts\" as d0");
     for (int i = 1; i < n; i++) {
@@ -1406,8 +1393,6 @@ public class PlannerTest {
     Planner planner = getPlanner(null, Programs.of(ruleSet));
     planner.close();
   }
-<<<<<<< HEAD
-=======
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3376">[CALCITE-3376]
@@ -1498,95 +1483,3 @@ public class PlannerTest {
     assertThat(toString(root.rel), matcher);
   }
 }
-<<<<<<< HEAD
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3376">[CALCITE-3376]
-   * VolcanoPlanner CannotPlanException: best rel is null even though there is
-   * an option with non-infinite cost</a>. */
-  @Test void testCorrelatedJoinWithIdenticalInputs() throws Exception {
-    final RelBuilder builder = RelBuilder.create(RelBuilderTest.config().build());
-    final RuleSet ruleSet =
-        RuleSets.ofList(
-            CoreRules.JOIN_TO_CORRELATE,
-            EnumerableRules.ENUMERABLE_CORRELATE_RULE,
-            EnumerableRules.ENUMERABLE_PROJECT_RULE,
-            EnumerableRules.ENUMERABLE_FILTER_RULE,
-            EnumerableRules.ENUMERABLE_SORT_RULE,
-            EnumerableRules.ENUMERABLE_UNION_RULE,
-            EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
-
-    builder
-        .scan("EMP")
-        .scan("EMP")
-        .union(true)
-
-        .scan("EMP")
-        .scan("EMP")
-        .union(true)
-
-        .join(
-            JoinRelType.INNER,
-            builder.equals(
-                builder.field(2, 0, "DEPTNO"),
-                builder.field(2, 1, "EMPNO")));
-
-    final RelNode relNode = builder.build();
-    final RelOptPlanner planner = relNode.getCluster().getPlanner();
-    final Program program = Programs.of(ruleSet);
-    final RelTraitSet toTraits = relNode.getTraitSet()
-        .replace(EnumerableConvention.INSTANCE);
-    final RelNode output = program.run(planner, relNode, toTraits,
-        ImmutableList.of(), ImmutableList.of());
-    final String plan = toString(output);
-    assertThat(plan,
-        equalTo(
-            "EnumerableCorrelate(correlation=[$cor0], joinType=[inner], requiredColumns=[{7}])\n"
-            + "  EnumerableUnion(all=[true])\n"
-            + "    EnumerableTableScan(table=[[scott, EMP]])\n"
-            + "    EnumerableTableScan(table=[[scott, EMP]])\n"
-            + "  EnumerableFilter(condition=[=($0, $cor0.DEPTNO)])\n"
-            + "    EnumerableUnion(all=[true])\n"
-            + "      EnumerableTableScan(table=[[scott, EMP]])\n"
-            + "      EnumerableTableScan(table=[[scott, EMP]])\n"));
-  }
-
-  @Test void testView() throws Exception {
-    final String sql = "select * FROM dept";
-    final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "  LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
-        + "tuples=[[{ 10, 'Sales      ' },"
-        + " { 20, 'Marketing  ' },"
-        + " { 30, 'Engineering' },"
-        + " { 40, 'Empty      ' }]])\n";
-    checkView(sql, is(expected));
-  }
-
-  @Test void testViewOnView() throws Exception {
-    final String sql = "select * FROM dept30";
-    final String expected = "LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "  LogicalFilter(condition=[=($0, 30)])\n"
-        + "    LogicalProject(DEPTNO=[$0], DNAME=[$1])\n"
-        + "      LogicalValues(type=[RecordType(INTEGER DEPTNO, CHAR(11) DNAME)], "
-        + "tuples=[[{ 10, 'Sales      ' },"
-        + " { 20, 'Marketing  ' },"
-        + " { 30, 'Engineering' },"
-        + " { 40, 'Empty      ' }]])\n";
-    checkView(sql, is(expected));
-  }
-
-  private void checkView(String sql, Matcher<String> matcher)
-      throws SqlParseException, ValidationException, RelConversionException {
-    final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
-    final FrameworkConfig config = Frameworks.newConfigBuilder()
-        .defaultSchema(
-            CalciteAssert.addSchema(rootSchema, CalciteAssert.SchemaSpec.POST))
-        .build();
-    final Planner planner = Frameworks.getPlanner(config);
-    SqlNode parse = planner.parse(sql);
-    final SqlNode validate = planner.validate(parse);
-    final RelRoot root = planner.rel(validate);
-    assertThat(toString(root.rel), matcher);
-  }
-}
-=======

@@ -1584,7 +1584,6 @@ class RelToSqlConverterTest {
     sql(query)
         .dialect(HiveSqlDialect.DEFAULT).ok(expected)
         .dialect(MssqlSqlDialect.DEFAULT).ok(mssqlExpected);
->>>>>>> 4fc68204e ([CALCITE-3370] In JDBC adapter for Microsoft SQL Server, emulate NULLS FIRST using CASE expression (Justin Swett))
   }
 
   @Test void testHiveSelectQueryWithOverDescAndNullsFirstShouldBeEmulated() {
@@ -2167,7 +2166,6 @@ class RelToSqlConverterTest {
   }
 
   @Test void testSimpleJoin() {
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
     String query = "select *\n"
         + "from \"sales_fact_1997\" as s\n"
         + "join \"customer\" as c on s.\"customer_id\" = c.\"customer_id\"\n"
@@ -3537,7 +3535,6 @@ class RelToSqlConverterTest {
         .ok(expected);
   }
 
->>>>>>> 581bcc15c ([CALCITE-2157] ClickHouse dialect implementation (Chris Baynes) (#328))
   @Test public void testFloorMonth() {
     final String query = "SELECT floor(\"hire_date\" TO MONTH) FROM \"employee\"";
     final String expectedClickHouse = "SELECT toStartOfMonth(`hire_date`)\n"
@@ -3556,9 +3553,6 @@ class RelToSqlConverterTest {
         .ok(expectedMysql);
   }
 
-<<<<<<< HEAD
-=======
-=======
   @Test void testFloorMysqlHour() {
     String query = "SELECT floor(\"hire_date\" TO HOUR) FROM \"employee\"";
     String expected = "SELECT DATE_FORMAT(`hire_date`, '%Y-%m-%d %H:00:00')\n"
@@ -5711,7 +5705,6 @@ class RelToSqlConverterTest {
 
     Sql(CalciteAssert.SchemaSpec schemaSpec, String sql, SqlDialect dialect,
         SqlParser.Config parserConfig, SqlToRelConverter.Config config,
-=======
         Function<RelBuilder, RelNode> relFn,
         List<Function<RelNode, RelNode>> transforms) {
       final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
@@ -5923,13 +5916,6 @@ class RelToSqlConverterTest {
     }
 
     public Sql schema(CalciteAssert.SchemaSpec schemaSpec) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-      return new Sql(schemaSpec, sql, dialect, parserConfig, config, relFn,
-          transforms);
-=======
-      return new Sql(schemaSpec, sql, dialect, parserConfig, config, transforms);
-=======
       return new Sql(schemaSpec, sql, dialect, parserConfig, config, relFn,
           transforms);
     }

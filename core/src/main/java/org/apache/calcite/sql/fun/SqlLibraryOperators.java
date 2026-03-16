@@ -50,7 +50,6 @@ public abstract class SqlLibraryOperators {
   private SqlLibraryOperators() {
   }
 
->>>>>>> a2d08d56f ([CALCITE-3252] Add CONVERT_TIMEZONE, TO_DATE and TO_TIMESTAMP non-standard functions (Lindsey Meyer))
   /** The "CONVERT_TIMEZONE(tz1, tz2, datetime)" function;
    * converts the timezone of {@code datetime} from {@code tz1} to {@code tz2}.
    * This function is only on Redshift, but we list it in PostgreSQL
@@ -64,9 +63,6 @@ public abstract class SqlLibraryOperators {
           OperandTypes.CHARACTER_CHARACTER_DATETIME,
           SqlFunctionCategory.TIMEDATE);
 
-<<<<<<< HEAD
-=======
-=======
   /** Return type inference for {@code DECODE}. */
   private static final SqlReturnTypeInference DECODE_RETURN_TYPE =
       opBinding -> {

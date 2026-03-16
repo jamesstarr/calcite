@@ -219,7 +219,6 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
         return null;
       }
     }
-    return true;
   }
 
   /**
@@ -380,6 +379,9 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
     if (origins == null || origins.size() != 1) {
       return null;
     }
+    final RelColumnOrigin origin = Iterables.getOnlyElement(origins);
+    return origin.isDerived() ? null : origin;
+  }
 
   /**
    * Determines the origin of a column.
@@ -407,7 +409,6 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
             revise(e.relClass, BuiltInMetadata.TableReferences.DEF);
       }
     }
-    return result;
   }
 
   /**
@@ -870,8 +871,4 @@ public class RelMetadataQuery extends RelMetadataQueryBase {
       }
     }
   }
->>>>>>> a320d6088 ([CALCITE-3446] Make RelMetadataQuery extensible)
 }
->>>>>>> acbf6771f (DX-12806: Remove JaninoRelMetadataProvider)
-}
-=======

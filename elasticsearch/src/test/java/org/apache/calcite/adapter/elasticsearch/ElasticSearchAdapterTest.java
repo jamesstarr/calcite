@@ -66,8 +66,6 @@ class ElasticSearchAdapterTest {
    * Used to create {@code zips} index and insert zip data in bulk.
    * @throws Exception when instance setup failed
    */
-  @BeforeClass
-=======
   @BeforeAll
   public static void setupInstance() throws Exception {
     final Map<String, String> mapping = ImmutableMap.of("city", "keyword", "state",

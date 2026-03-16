@@ -134,7 +134,6 @@ class LatticeSpace {
     return path2;
   }
 
->>>>>>> d7fe6de6b ([CALCITE-3286] In LatticeSuggester, allow join conditions that use expressions)
   /** Registers an expression as a derived column of a given table.
    *
    * <p>Its ordinal is the number of fields in the row type plus the ordinal
@@ -169,8 +168,4 @@ class LatticeSpace {
       return tableExpressions.get(table).get(field - fieldCount).toString();
     }
   }
-<<<<<<< HEAD
-}
-=======
-=======
 }

@@ -19,7 +19,3 @@
  * Tests for Calcite.
  */
 package org.apache.calcite.test;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

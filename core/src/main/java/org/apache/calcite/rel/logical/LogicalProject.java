@@ -131,21 +131,9 @@ public final class LogicalProject extends Project {
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
   }
-<<<<<<< HEAD
-=======
 
   @Override public RelNode withHints(List<RelHint> hintList) {
     return new LogicalProject(getCluster(), traitSet, hintList,
         input, getProjects(), rowType);
   }
 }
-<<<<<<< HEAD
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
-
-  @Override public RelNode withHints(List<RelHint> hintList) {
-    return new LogicalProject(getCluster(), traitSet, hintList,
-        input, getProjects(), rowType);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

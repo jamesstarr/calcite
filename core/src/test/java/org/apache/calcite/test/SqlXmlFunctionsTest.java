@@ -160,7 +160,3 @@ class SqlXmlFunctionsTest {
     }
   }
 }
-=======
-
-// End SqlXmlFunctionsTest.java
-=======

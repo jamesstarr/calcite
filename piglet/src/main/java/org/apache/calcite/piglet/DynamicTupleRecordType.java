@@ -72,7 +72,3 @@ public class DynamicTupleRecordType extends DynamicRecordTypeImpl {
     return -1;
   }
 }
-
-// End DynamicTupleRecordType.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

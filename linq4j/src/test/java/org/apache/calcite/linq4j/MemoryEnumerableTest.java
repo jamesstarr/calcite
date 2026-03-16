@@ -66,7 +66,3 @@ class MemoryEnumerableTest {
     assertThat(minus.toString(), is("3 mod 5"));
   }
 }
-
-// End MemoryEnumerableTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

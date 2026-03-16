@@ -83,7 +83,6 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SortedSetMultimap;
 
-=======
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -895,8 +894,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
       // walk down the field access path expression, calculating
       // the desired input number
       int iInput = 0;
-      RelDataType fieldType = removeDistinct(fieldAccess.getType());
-=======
       Deque<Integer> accessOrdinals = new ArrayDeque<>();
 
       for (;;) {
@@ -1047,8 +1044,6 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
         return conjunction;
       }
     }
-<<<<<<< HEAD
-=======
 
   }
 
@@ -1065,21 +1060,3 @@ public class RelStructuredTypeFlattener implements ReflectiveVisitor {
   }
 
 }
-<<<<<<< HEAD
-
-  }
-
-  private int getNewInnerOrdinal(RexNode firstOp, String literalString) {
-    int newInnerOrdinal = 0;
-    for (RelDataTypeField field : firstOp.getType().getFieldList()) {
-      if (literalString.equalsIgnoreCase(field.getName())) {
-        break;
-      } else {
-        newInnerOrdinal += postFlattenSize(field.getType());
-      }
-    }
-    return newInnerOrdinal;
-  }
-
-}
-=======

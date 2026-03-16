@@ -28,7 +28,6 @@ import org.apache.calcite.rel.metadata.RelMetadataQuery;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.SqlFunctions;
-=======
 import org.apache.calcite.sql.SqlAggFunction;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlSplittableAggFunction;
@@ -93,8 +92,6 @@ public class AggregateRemoveRule
   @Override public void onMatch(RelOptRuleCall call) {
     final Aggregate aggregate = call.rel(0);
     final RelNode input = aggregate.getInput();
-<<<<<<< HEAD
-=======
     final RelMetadataQuery mq = call.getMetadataQuery();
     if (!SqlFunctions.isTrue(mq.areColumnsUnique(input, aggregate.getGroupSet()))) {
       return;
@@ -134,7 +131,6 @@ public class AggregateRemoveRule
     }
     call.transformTo(relBuilder.build());
   }
->>>>>>> fdae2e50f ([CALCITE-896] Remove Aggregate if grouping columns are unique and all functions are splittable)
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -157,28 +153,3 @@ public class AggregateRemoveRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-        .withRelBuilderFactory(RelFactories.LOGICAL_BUILDER)
-        .as(Config.class)
-        .withOperandFor(LogicalAggregate.class);
-
-    @Override default AggregateRemoveRule toRule() {
-      return new AggregateRemoveRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass) {
-      return withOperandSupplier(b ->
-          b.operand(aggregateClass)
-              .predicate(AggregateRemoveRule::isAggregateSupported)
-              .anyInputs())
-          .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

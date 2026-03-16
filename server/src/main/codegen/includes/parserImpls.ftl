@@ -188,10 +188,7 @@ void TableElement(List<SqlNode> list) :
 SqlNodeList AttributeDefList() :
 {
     final Span s;
-    final List<SqlNode> list = Lists.newArrayList();
-=======
     final List<SqlNode> list = new ArrayList<SqlNode>();
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 }
 {
     <LPAREN> { s = span(); }

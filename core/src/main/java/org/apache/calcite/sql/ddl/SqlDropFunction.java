@@ -35,7 +35,3 @@ public class SqlDropFunction extends SqlDropObject {
     super(OPERATOR, pos, ifExists, name);
   }
 }
-
-// End SqlDropFunction.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

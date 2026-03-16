@@ -23,7 +23,6 @@ import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -925,8 +924,7 @@ class TpchTest {
     checkQuery(20);
   }
 
-  @Test public void testQuery21() {
-=======
+  @Disabled("slow")
   @Test void testQuery21() {
     checkQuery(21);
   }

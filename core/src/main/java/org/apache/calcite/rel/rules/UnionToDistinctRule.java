@@ -69,8 +69,6 @@ public class UnionToDistinctRule
     relBuilder.distinct();
     call.transformTo(relBuilder.build());
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -90,26 +88,3 @@ public class UnionToDistinctRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(LogicalUnion.class);
-
-    @Override default UnionToDistinctRule toRule() {
-      return new UnionToDistinctRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Union> unionClass) {
-      return withOperandSupplier(b ->
-              b.operand(unionClass)
-                      .predicate(union -> !union.all).anyInputs())
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

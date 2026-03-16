@@ -44,7 +44,3 @@ public class UnpivotNamespace extends AbstractNamespace {
     return unpivot;
   }
 }
-
-// End UnpivotNamespace.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

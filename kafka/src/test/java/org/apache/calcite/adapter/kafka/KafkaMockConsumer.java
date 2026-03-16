@@ -46,10 +46,3 @@ public class KafkaMockConsumer extends MockConsumer {
     }
   }
 }
-<<<<<<< HEAD
-=======
-
-// End KafkaMockConsumer.java
->>>>>>> 59490ebac ([CALCITE-2913] Adapter for Apache Kafka (Mingmin Xu))
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

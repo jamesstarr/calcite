@@ -226,7 +226,3 @@ public interface Pattern {
 
   }
 }
-
-// End Pattern.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

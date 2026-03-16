@@ -106,8 +106,6 @@ public class EnumerableTableSpool extends TableSpool implements EnumerableRel {
   }
 
   @Override protected Spool copy(RelTraitSet traitSet, RelNode input,
-                                 Type readType, Type writeType) {
-=======
       Type readType, Type writeType) {
     return new EnumerableTableSpool(input.getCluster(), traitSet, input,
         readType, writeType, table);

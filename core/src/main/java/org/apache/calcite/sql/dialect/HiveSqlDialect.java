@@ -90,7 +90,6 @@ public class HiveSqlDialect extends SqlDialect {
       SqlOperator op = SqlStdOperatorTable.PERCENT_REMAINDER;
       SqlSyntax.BINARY.unparse(writer, op, call, leftPrec, rightPrec);
       break;
-=======
     case TRIM:
       RelToSqlConverterUtil.unparseHiveTrim(writer, call, leftPrec, rightPrec);
       break;
@@ -117,8 +116,6 @@ public class HiveSqlDialect extends SqlDialect {
   @Override public boolean supportsCharSet() {
     return false;
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean supportsGroupByWithRollup() {
     return true;
@@ -144,32 +141,3 @@ public class HiveSqlDialect extends SqlDialect {
     return super.getCastSpec(type);
   }
 }
-<<<<<<< HEAD
->>>>>>> 6fad66702 ([CALCITE-3282] In JDBC adapter, when generating SQL for Hive, generate INTEGER type as INT (huangfeng))
-
-  @Override public boolean supportsGroupByWithRollup() {
-    return true;
-  }
-
-  @Override public boolean supportsGroupByWithCube() {
-    return true;
-  }
-
-  @Override public boolean supportsNestedAggregations() {
-    return false;
-  }
-
-  @Override public SqlNode getCastSpec(final RelDataType type) {
-    if (type instanceof BasicSqlType) {
-      switch (type.getSqlTypeName()) {
-      case INTEGER:
-        SqlAlienSystemTypeNameSpec typeNameSpec = new SqlAlienSystemTypeNameSpec(
-            "INT", type.getSqlTypeName(), SqlParserPos.ZERO);
-        return new SqlDataTypeSpec(typeNameSpec, SqlParserPos.ZERO);
-      }
-    }
-    return super.getCastSpec(type);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

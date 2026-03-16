@@ -22,8 +22,6 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.util.Sources;
->>>>>>> d6c0815c2 ([CALCITE-2495] Support encoded URLs in calcite.util.Source, and use it for URL->File conversion in tests)
-=======
 import org.apache.calcite.util.TestUtil;
 import org.apache.calcite.util.Util;
 
@@ -517,8 +515,6 @@ class CsvTest {
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-824">[CALCITE-824]
    * Type inference when converting IN clause to semijoin</a>. */
-  @Ignore("No longer rewriting this to a join and no execution for in subquery rexnode")
-=======
   @Disabled("No longer rewriting this to a join and no execution for in subquery rexnode")
   @Test void testInToSemiJoinWithCast() throws SQLException {
     // Note that the IN list needs at least 20 values to trigger the rewrite

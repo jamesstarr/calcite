@@ -48,9 +48,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.apache.calcite.adapter.enumerable.EnumUtils.generateCollatorExpression;
-import static org.apache.calcite.adapter.enumerable.EnumUtils.javaRowClass;
-=======
->>>>>>> 66594a820 ([CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes)
 import static org.apache.calcite.adapter.enumerable.EnumUtils.overridingMethodDecl;
 
 /** Implementation of {@link PhysType}. */

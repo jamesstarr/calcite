@@ -1063,8 +1063,6 @@ public class ReflectiveSchemaTest {
             new java.sql.Date(100 * DateTimeUtils.MILLIS_PER_DAY)) // 1970-04-11
     };
   }
-<<<<<<< HEAD
-=======
 
   /** CALCITE-2611 unknown on one side of an or may lead to uncompilable code */
   @Test void testUnknownInOr() {
@@ -1075,16 +1073,3 @@ public class ReflectiveSchemaTest {
         .returnsUnordered("EXPR$0=false\nEXPR$0=false\nEXPR$0=true");
   }
 }
-<<<<<<< HEAD
-
-  /** CALCITE-2611 unknown on one side of an or may lead to uncompilable code */
-  @Test void testUnknownInOr() {
-    CalciteAssert.that()
-        .withSchema("s", CATCHALL)
-        .query("select (\"value\" = 3 and unknown) or ( \"value\"  = 3 ) "
-            + "from \"s\".\"primesCustomBoxed\"")
-        .returnsUnordered("EXPR$0=false\nEXPR$0=false\nEXPR$0=true");
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

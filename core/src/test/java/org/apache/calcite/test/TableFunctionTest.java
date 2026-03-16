@@ -103,7 +103,6 @@ class TableFunctionTest {
       assertThat(CalciteAssert.toString(resultSet),
           equalTo("N=4; C=abcd\n"));
     }
->>>>>>> 38d0848a3 ([CALCITE-2382] Sub-query join lateral table function (pengzhiwei))
   }
 
   @Test void testTableFunctionWithArrayParameter() throws SQLException {
@@ -441,8 +440,6 @@ class TableFunctionTest {
         + "from table(\"s\".\"fibonacci2\"(20))";
     with().query(q).returnsUnordered("C=7");
   }
-<<<<<<< HEAD
-=======
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]
@@ -520,83 +517,3 @@ class TableFunctionTest {
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3364">[CALCITE-3364]
-   * Can't group table function result due to a type cast error if table function
-   * returns a row with a single value</a>. */
-  @Test void testUserDefinedTableFunction9() {
-    final String q = "select \"N\" + 1 as c\n"
-        + "from table(\"s\".\"fibonacci2\"(3))\n"
-        + "group by \"N\"";
-    with().query(q).returnsUnordered("C=2\nC=3\nC=4");
-  }
-
-  @Test void testCrossApply() {
-    final String q1 = "select *\n"
-        + "from (values 2, 5) as t (c)\n"
-        + "cross apply table(\"s\".\"fibonacci2\"(c))";
-    final String q2 = "select *\n"
-        + "from (values 2, 5) as t (c)\n"
-        + "cross apply table(\"s\".\"fibonacci2\"(t.c))";
-    for (String q : new String[] {q1, q2}) {
-      with()
-          .with(CalciteConnectionProperty.CONFORMANCE,
-              SqlConformanceEnum.LENIENT)
-          .query(q)
-          .returnsUnordered("C=2; N=1",
-              "C=2; N=1",
-              "C=2; N=2",
-              "C=5; N=1",
-              "C=5; N=1",
-              "C=5; N=2",
-              "C=5; N=3",
-              "C=5; N=5");
-    }
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2004">[CALCITE-2004]
-   * Wrong plan generated for left outer apply with table function</a>. */
-  @Test void testLeftOuterApply() {
-    final String sql = "select *\n"
-        + "from (values 4) as t (c)\n"
-        + "left join lateral table(\"s\".\"fibonacci2\"(c)) as R(n) on c=n";
-    with()
-        .with(CalciteConnectionProperty.CONFORMANCE,
-            SqlConformanceEnum.LENIENT)
-        .query(sql)
-        .returnsUnordered("C=4; N=null");
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-2382">[CALCITE-2382]
-   * Sub-query lateral joined to table function</a>. */
-  @Test void testInlineViewLateralTableFunction() throws SQLException {
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
-      CalciteConnection calciteConnection =
-          connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      SchemaPlus schema = rootSchema.add("s", new AbstractSchema());
-      final TableFunction table =
-          TableFunctionImpl.create(Smalls.GENERATE_STRINGS_METHOD);
-      schema.add("GenerateStrings", table);
-      Table tbl = new ScannableTableTest.SimpleTable();
-      schema.add("t", tbl);
-
-      final String sql = "select *\n"
-          + "from (select 5 as f0 from \"s\".\"t\") \"a\",\n"
-          + "  lateral table(\"s\".\"GenerateStrings\"(f0)) as t(n, c)\n"
-          + "where char_length(c) > 3";
-      ResultSet resultSet = connection.createStatement().executeQuery(sql);
-      final String expected = "F0=5; N=4; C=abcd\n"
-          + "F0=5; N=4; C=abcd\n"
-          + "F0=5; N=4; C=abcd\n"
-          + "F0=5; N=4; C=abcd\n";
-      assertThat(CalciteAssert.toString(resultSet), equalTo(expected));
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

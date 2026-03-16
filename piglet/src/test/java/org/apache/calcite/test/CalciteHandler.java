@@ -43,15 +43,10 @@ class CalciteHandler extends Handler {
   }
 
   @Override protected void dump(RelNode rel) {
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
     dump(rel, writer);
   }
 
   public static void dump(RelNode rel, Writer writer) {
-<<<<<<< HEAD
-=======
-=======
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
     try (PreparedStatement preparedStatement = RelRunners.run(rel)) {
       final ResultSet resultSet = preparedStatement.executeQuery();
       dump(resultSet, true, new PrintWriter(writer));

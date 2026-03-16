@@ -193,7 +193,6 @@ public class Matchers {
       // Convert RelNode to a string with Linux line-endings
       return Util.toLinux(RelOptUtil.toString(input));
     });
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /**
@@ -238,35 +237,6 @@ public class Matchers {
    */
   public static Matcher<String> containsStringLinux(String value) {
     return compose(CoreMatchers.containsString(value), Util::toLinux);
-<<<<<<< HEAD
-  }
-
-  public static String trimNodeIds(String s) {
-    return PATTERN.matcher(s).replaceAll("");
-  }
-
-  /**
-   * Creates a matcher that matches if the examined value is expected throwable.
-   *
-   * @param expected Throwable to match.
-   */
-  public static Matcher<? super Throwable> expectThrowable(Throwable expected) {
-    return new BaseMatcher<Throwable>() {
-      @Override public boolean matches(Object item) {
-        if (!(item instanceof Throwable)) {
-          return false;
-        }
-        Throwable error = (Throwable) item;
-        return expected != null
-            && Objects.equals(error.getClass(), expected.getClass())
-            && Objects.equals(error.getMessage(), expected.getMessage());
-      }
-
-      @Override public void describeTo(Description description) {
-        description.appendText("is ").appendText(expected.toString());
-      }
-    };
-=======
   }
 
   public static String trimNodeIds(String s) {

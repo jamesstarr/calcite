@@ -25,8 +25,6 @@ public interface TemporalTable extends Table {
 
   /** Returns the name of the system column that contains the start effective
    * time of each row. */
-  String getSysStartFieldName();
-=======
   @Nonnull String getSysStartFieldName();
 
   /** Returns the name of the system column that contains the end effective

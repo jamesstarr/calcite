@@ -29,7 +29,3 @@ import org.apache.calcite.linq4j.function.Experimental;
 @Experimental
 public interface TransientTable extends Table {
 }
-
-// End TransientTable.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -37,8 +37,6 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.dialect.AnsiSqlDialect;
-import org.apache.calcite.sql.fun.OracleSqlOperatorTable;
-=======
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.calcite.sql.fun.SqlLibraryOperators;
@@ -69,7 +67,7 @@ import org.apache.calcite.util.trace.CalciteTrace;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -94,7 +92,6 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
->>>>>>> 510cf3429 ([CALCITE-3280] Add REGEXP_REPLACE function in Oracle, MySQL libraries (Shuming Li))
 
 import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PI;
 
@@ -9561,7 +9558,6 @@ public abstract class SqlOperatorBaseTest {
    * to be fixed especially cases where the query passes from the validation stage
    * and fails at runtime.
    * */
-=======
   @Disabled("Too slow and not really a unit test")
   @Tag("slow")
   @Test void testArgumentBounds() {
@@ -9589,8 +9585,6 @@ public abstract class SqlOperatorBaseTest {
       // to raise an error and due to the big number of operands they accept
       // they increase significantly the running time of the method.
       operatorsToSkip.add(SqlStdOperatorTable.JSON_VALUE);
-      operatorsToSkip.add(SqlStdOperatorTable.JSON_VALUE_ANY);
-=======
       operatorsToSkip.add(SqlStdOperatorTable.JSON_QUERY);
     }
     // Skip since ClassCastException is raised in SqlOperator#unparse
@@ -9804,14 +9798,6 @@ public abstract class SqlOperatorBaseTest {
       }
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    @Override protected SqlTester with(SqlTestFactory factory) {
-      return new TesterImpl(factory);
-=======
-    @Override protected TesterImpl with(final String name, final Object value) {
-      return new TesterImpl(factory.with(name, value));
-=======
     @Override protected SqlTester with(SqlTestFactory factory) {
       return new TesterImpl(factory);
     }

@@ -367,32 +367,6 @@ public class ScannableTableTest {
             "k=1942; i=4",
             "k=1943; i=6");
     assertThat(buf.toString(), is("returnCount=4, projects=[2, 0]"));
-<<<<<<< HEAD
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-3479">[CALCITE-3479]
-   * Stack overflow error thrown when running join query</a>
-   * Test two ProjectableFilterableTable can join and produce right plan.
-   */
-  @Test void testProjectableFilterableTableJoin() throws Exception {
-    final StringBuilder buf = new StringBuilder();
-    final String explain = "PLAN="
-        + "EnumerableNestedLoopJoin(condition=[true], joinType=[inner])\n"
-        + "  EnumerableInterpreter\n"
-        + "    BindableTableScan(table=[[s, b1]], filters=[[=($0, 10)]])\n"
-        + "  EnumerableInterpreter\n"
-        + "    BindableTableScan(table=[[s, b2]], filters=[[=($0, 10)]])";
-    CalciteAssert.that()
-            .with(
-              newSchema("s",
-                  Pair.of("b1", new BeatlesProjectableFilterableTable(buf, true)),
-                  Pair.of("b2", new BeatlesProjectableFilterableTable(buf, true))))
-            .query("select * from \"s\".\"b1\", \"s\".\"b2\" "
-                    + "where \"s\".\"b1\".\"i\" = 10 and \"s\".\"b2\".\"i\" = 10 "
-                    + "and \"s\".\"b1\".\"i\" = \"s\".\"b2\".\"i\"")
-            .explainContains(explain);
-=======
   }
 
   /** Test case for

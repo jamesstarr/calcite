@@ -478,13 +478,9 @@ public class Frameworks {
     public SqlStatisticProvider getStatisticProvider() {
       return statisticProvider;
     }
->>>>>>> ca65868f2 ([CALCITE-2441] RelBuilder.scan should expand TranslatableTable and views)
 
     public RelOptTable.ViewExpander getViewExpander() {
       return viewExpander;
     }
-<<<<<<< HEAD
-=======
-=======
   }
 }

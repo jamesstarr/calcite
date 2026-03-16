@@ -20,7 +20,3 @@
  * {@link org.apache.calcite.sql.parser Calcite SQL parser}.
  */
 package org.apache.calcite.sql.parser.impl;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -168,7 +168,3 @@ class SqlAdvisorJdbcTest {
   }
 
 }
-
-// End SqlAdvisorJdbcTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

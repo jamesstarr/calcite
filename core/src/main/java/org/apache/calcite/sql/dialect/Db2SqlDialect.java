@@ -45,8 +45,6 @@ public class Db2SqlDialect extends SqlDialect {
   @Override public boolean hasImplicitTableAlias() {
     return false;
   }
-<<<<<<< HEAD
-=======
 
   @Override public void unparseSqlIntervalQualifier(SqlWriter writer,
       SqlIntervalQualifier qualifier, RelDataTypeSystem typeSystem) {
@@ -120,80 +118,3 @@ public class Db2SqlDialect extends SqlDialect {
   }
 
 }
-<<<<<<< HEAD
->>>>>>> ef578f572 ([CALCITE-2188] JDBC adapter generates invalid SQL for DATE/INTERVAL arithmetic)
-
-  @Override public void unparseSqlIntervalQualifier(SqlWriter writer,
-      SqlIntervalQualifier qualifier, RelDataTypeSystem typeSystem) {
-
-    // DB2 supported qualifiers. Singular form of these keywords are also acceptable.
-    // YEAR/YEARS
-    // MONTH/MONTHS
-    // DAY/DAYS
-    // HOUR/HOURS
-    // MINUTE/MINUTES
-    // SECOND/SECONDS
-
-    switch (qualifier.timeUnitRange) {
-    case YEAR:
-    case MONTH:
-    case DAY:
-    case HOUR:
-    case MINUTE:
-    case SECOND:
-    case MICROSECOND:
-      final String timeUnit = qualifier.timeUnitRange.startUnit.name();
-      writer.keyword(timeUnit);
-      break;
-    default:
-      throw new AssertionError("Unsupported type: " + qualifier.timeUnitRange);
-    }
-
-    if (null != qualifier.timeUnitRange.endUnit) {
-      throw new AssertionError("Unsupported end unit: "
-          + qualifier.timeUnitRange.endUnit);
-    }
-  }
-
-  @Override public void unparseSqlIntervalLiteral(SqlWriter writer,
-      SqlIntervalLiteral literal, int leftPrec, int rightPrec) {
-    // A duration is a positive or negative number representing an interval of time.
-    // If one operand is a date, the other labeled duration of YEARS, MONTHS, or DAYS.
-    // If one operand is a time, the other must be labeled duration of HOURS, MINUTES, or SECONDS.
-    // If one operand is a timestamp, the other operand can be any of teh duration.
-
-    final SqlIntervalLiteral.IntervalValue interval =
-        (SqlIntervalLiteral.IntervalValue) literal.getValue();
-    final SqlIntervalQualifier qualifier;
-
-    // Correct invalid single-field interval literals, such as those holding weeks or quarters.
-    // These could have been created as part of the TimestampAddConvertlet.
-    if (interval.getIntervalQualifier().isSingleDatetimeField()) {
-      switch (interval.getIntervalQualifier().getStartUnit()) {
-      case WEEK:
-        qualifier = new SqlIntervalQualifier(TimeUnit.DAY, null, SqlParserPos.ZERO);
-        break;
-
-      case QUARTER:
-        qualifier = new SqlIntervalQualifier(TimeUnit.MONTH, null, SqlParserPos.ZERO);
-        break;
-
-      default:
-        qualifier = interval.getIntervalQualifier();
-        break;
-      }
-    } else {
-      qualifier = interval.getIntervalQualifier();
-    }
-
-    if (interval.getSign() == -1) {
-      writer.print("-");
-    }
-    writer.literal(literal.getValue().toString());
-    unparseSqlIntervalQualifier(writer, qualifier,
-        RelDataTypeSystem.DEFAULT);
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

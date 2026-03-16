@@ -123,6 +123,3 @@ public class AttributedDirectedGraph<V, E extends DefaultEdge>
     E createEdge(V v0, V v1, Object... attributes);
   }
 }
-
-// End AttributedDirectedGraph.java
-=======

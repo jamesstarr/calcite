@@ -191,7 +191,3 @@ class PigRelUdfConverter {
     return null;
   }
 }
-
-// End PigRelUdfConverter.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

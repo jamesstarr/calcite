@@ -1451,7 +1451,6 @@ public class RexBuilder {
               SqlTypeName.GEOMETRY);
     case ANY:
       return makeLiteral(value, guessType(value), allowCast);
-=======
     case UUID:
       if (value instanceof String) {
         return makeUuidLiteral((String) value);

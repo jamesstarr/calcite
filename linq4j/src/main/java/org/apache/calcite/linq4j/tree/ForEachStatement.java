@@ -80,7 +80,3 @@ public class ForEachStatement extends Statement {
     return result;
   }
 }
-
-// End ForEachStatement.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -1,6 +1,3 @@
-# Configuration file for Appveyor continuous integration.
-=======
->>>>>>> 678342a7b ([CALCITE-3623] Replace Spotless with Autostyle)
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -17,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-=======
 
 # Configuration file for Appveyor continuous integration.
 version: '{build}'
@@ -43,9 +39,6 @@ matrix:
 environment:
   matrix:
     - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    #- JAVA_HOME: C:\Program Files\Java\jdk9
-    #- JAVA_HOME: C:\Program Files\Java\jdk10
-=======
     - JAVA_HOME: C:\Program Files\Java\jdk17
 build_script:
   - ./gradlew assemble javadoc

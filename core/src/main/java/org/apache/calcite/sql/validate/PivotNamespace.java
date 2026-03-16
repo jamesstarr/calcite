@@ -42,7 +42,3 @@ public class PivotNamespace extends AbstractNamespace {
     return pivot;
   }
 }
-
-// End PivotNamespace.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

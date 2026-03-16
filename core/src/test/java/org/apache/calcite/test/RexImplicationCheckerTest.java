@@ -401,10 +401,6 @@ public class RexImplicationCheckerTest {
     final ImmutableList<TimeUnitRange> timeUnitRanges =
         ImmutableList.of(TimeUnitRange.YEAR, TimeUnitRange.MONTH);
     final Fixture f = new Fixture();
-    final RexUtil.ExprSimplifier defaultSimplifier =
-        new RexUtil.ExprSimplifier(f.simplify, RexUnknownAs.UNKNOWN, true);
-=======
->>>>>>> 72d688293 ([CALCITE-2726] ReduceExpressionRule oversimplifies filter conditions containing nulls)
 
     final RexNode literalTs =
         f.timestampLiteral(new TimestampString("2010-10-10 00:00:00"));

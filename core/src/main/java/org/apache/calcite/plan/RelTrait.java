@@ -110,8 +110,4 @@ public interface RelTrait {
   default <T extends RelTrait> T apply(Mappings.TargetMapping mapping) {
     return (T) this;
   }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> a34db3420 ([CALCITE-3889] Add apply(Mappings.Mapping) to RelTrait and RelTraitSet (#353))
 }

@@ -85,8 +85,6 @@ public class FilterMultiJoinMergeRule
 
     call.transformTo(newMultiJoin);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -107,27 +105,3 @@ public class FilterMultiJoinMergeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Filter.class, MultiJoin.class);
-
-    @Override default FilterMultiJoinMergeRule toRule() {
-      return new FilterMultiJoinMergeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Filter> filterClass,
-                                  Class<? extends MultiJoin> multiJoinClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(filterClass).oneInput(b1 ->
-                      b1.operand(multiJoinClass).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

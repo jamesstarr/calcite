@@ -432,6 +432,3 @@ public interface SqlWriterConfig {
     TALL
   }
 }
-// End SqlWriterConfig.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

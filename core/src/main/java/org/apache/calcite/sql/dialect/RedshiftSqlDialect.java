@@ -43,8 +43,6 @@ public class RedshiftSqlDialect extends SqlDialect {
       SqlNode fetch) {
     unparseFetchUsingLimit(writer, offset, fetch);
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean supportsCharSet() {
     return false;
@@ -54,16 +52,3 @@ public class RedshiftSqlDialect extends SqlDialect {
     return false;
   }
 }
-<<<<<<< HEAD
->>>>>>> 1f11671d4 (Disable charset support for MSSQL and Redshift dialects)
-
-  @Override public boolean supportsCharSet() {
-    return false;
-  }
-
-  @Override public boolean supportsOffsetFetch() {
-    return false;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

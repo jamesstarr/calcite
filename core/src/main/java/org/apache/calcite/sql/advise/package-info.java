@@ -25,7 +25,3 @@
  * <code>org.apache.calcite.sql.validate</code> package.
 */
 package org.apache.calcite.sql.advise;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

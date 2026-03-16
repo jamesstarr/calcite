@@ -1215,7 +1215,6 @@ public abstract class SqlImplementor {
 
   public Context matchRecognizeContext(Context context) {
     return new MatchRecognizeContext(dialect, ((AliasContext) context).aliases);
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
   }
 
   public Context tableFunctionScanContext(List<SqlNode> inputSqlNodes) {
@@ -1312,13 +1311,11 @@ public abstract class SqlImplementor {
 
   /** Result of implementing a node. */
   public class Result {
->>>>>>> ad6834f76 ([CALCITE-3122] Convert Pig Latin scripts into Calcite relational algebra and Calcite SQL)
     final SqlNode node;
     final String neededAlias;
     private final RelDataType neededType;
     private final Map<String, RelDataType> aliases;
     final Expressions.FluentList<Clause> clauses;
-=======
     private final boolean anon;
 
     public Result(SqlNode node, Collection<Clause> clauses, String neededAlias,
@@ -1653,9 +1650,6 @@ public abstract class SqlImplementor {
       return anon == this.anon ? this
           : new Result(node, clauses, neededAlias, neededType, aliases, anon);
     }
-<<<<<<< HEAD
-=======
-=======
   }
 
   /** Builder. */

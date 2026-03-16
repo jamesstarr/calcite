@@ -22,8 +22,6 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.Statistics;
 import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.calcite.util.Pair;
-=======
 import org.apache.calcite.util.Source;
 
 import java.util.List;

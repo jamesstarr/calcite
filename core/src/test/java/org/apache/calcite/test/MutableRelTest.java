@@ -25,8 +25,6 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.rel.mutable.MutableRel;
 import org.apache.calcite.rel.mutable.MutableRels;
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-=======
 import org.apache.calcite.rel.mutable.MutableScan;
 import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataType;
@@ -305,21 +303,6 @@ class MutableRelTest {
         "The converted new rel is different from the original rel.\n"
         + "Original rel: " + origRelStr + ";\nNew rel: " + newRelStr;
     assertEquals(origRelStr, newRelStr, msg3);
-<<<<<<< HEAD
-  }
-
-  private MutableScan mutableScanOf(RelBuilder builder, String... tableNames) {
-    final RelNode scan = builder.scan(tableNames).build();
-    return (MutableScan) MutableRels.toMutable(scan);
-  }
-
-  private static MutableRel createMutableRel(String sql) {
-    final SqlToRelTestBase test = new SqlToRelTestBase() {
-    };
-    RelNode rel = test.createTester().convertSqlToRel(sql).rel;
-    return MutableRels.toMutable(rel);
-=======
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
   }
 
   private MutableScan mutableScanOf(RelBuilder builder, String... tableNames) {

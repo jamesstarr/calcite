@@ -57,6 +57,3 @@ public class SqlJsonExistsFunction extends SqlFunction {
     writer.endFunCall(frame);
   }
 }
-
-// End SqlJsonExistsFunction.java
-=======

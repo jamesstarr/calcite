@@ -52,8 +52,6 @@ public class RelRecordType extends RelDataTypeImpl implements Serializable {
    */
   public RelRecordType(StructKind kind, List<RelDataTypeField> fields, boolean nullable) {
     super(fields);
-    this.kind = Preconditions.checkNotNull(kind);
-=======
     this.nullable = nullable;
     this.kind = requireNonNull(kind, "kind");
     if (fields.size() > THRESHOLD) {

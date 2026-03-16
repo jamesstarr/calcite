@@ -54,11 +54,6 @@ public class EnumerableTableScanRule extends ConverterRule {
   @Override public RelNode convert(RelNode rel) {
     LogicalTableScan scan = (LogicalTableScan) rel;
     final RelOptTable relOptTable = scan.getTable();
-=======
-    final Expression expression = relOptTable.getExpression(Object.class);
-    if (expression == null) {
-      return null;
-=======
     final Table table = relOptTable.unwrap(Table.class);
 
     // The QueryableTable can only be implemented as ENUMERABLE convention now,

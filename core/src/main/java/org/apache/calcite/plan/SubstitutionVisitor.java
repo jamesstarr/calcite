@@ -53,8 +53,6 @@ import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.rex.RexShuttle;
 import org.apache.calcite.rex.RexSimplify;
 import org.apache.calcite.rex.RexUtil;
-<<<<<<< HEAD
-=======
 import org.apache.calcite.rex.RexVisitor;
 import org.apache.calcite.rex.RexVisitorImpl;
 import org.apache.calcite.sql.SqlAggFunction;
@@ -1355,7 +1353,6 @@ public class SubstitutionVisitor {
           operand(MutableAggregate.class, target(0)), 1);
     }
 
->>>>>>> 101158d68 ([CALCITE-3914] Improve SubstitutionVisitor to consider RexCall of typ… (#319))
     public UnifyResult apply(UnifyRuleCall call) {
       final MutableAggregate query = (MutableAggregate) call.query;
       final MutableAggregate target = (MutableAggregate) call.target;
@@ -2733,6 +2730,4 @@ public class SubstitutionVisitor {
       }
     }
   }
-=======
-=======
 }

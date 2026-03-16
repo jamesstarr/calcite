@@ -629,8 +629,6 @@ abstract class DruidJsonFilter implements DruidJson {
       generator.writeEndObject();
     }
   }
-<<<<<<< HEAD
-=======
 
   private static SimpleDateFormat getDateFormatter() {
     final SimpleDateFormat dateFormatter = new SimpleDateFormat(
@@ -640,16 +638,3 @@ abstract class DruidJsonFilter implements DruidJson {
     return dateFormatter;
   }
 }
-<<<<<<< HEAD
->>>>>>> 41f568a78 ([CALCITE-2286] Support timestamp type for Druid adapter)
-
-  private static SimpleDateFormat getDateFormatter() {
-    final SimpleDateFormat dateFormatter = new SimpleDateFormat(
-        TimeExtractionFunction.ISO_TIME_FORMAT,
-        Locale.ROOT);
-    dateFormatter.setTimeZone(DateTimeUtils.UTC_ZONE);
-    return dateFormatter;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

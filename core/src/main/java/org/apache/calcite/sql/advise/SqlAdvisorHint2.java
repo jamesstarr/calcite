@@ -36,7 +36,3 @@ public class SqlAdvisorHint2 extends SqlAdvisorHint {
     this.replacement = replacement;
   }
 }
-
-// End SqlAdvisorHint2.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -154,7 +154,3 @@ class CassandraAdapterTest {
         .explainContains("CassandraTableScan(table=[[twissandra, Tweets_By_User]])");
   }
 }
-
-// End CassandraAdapterTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

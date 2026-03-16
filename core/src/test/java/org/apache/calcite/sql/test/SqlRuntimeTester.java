@@ -94,7 +94,3 @@ class SqlRuntimeTester extends AbstractSqlTester {
     SqlTests.checkEx(thrown, expectedMsgPattern, sap, stage);
   }
 }
-
-// End SqlRuntimeTester.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

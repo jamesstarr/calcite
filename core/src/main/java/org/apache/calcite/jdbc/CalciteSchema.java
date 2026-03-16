@@ -106,7 +106,6 @@ public abstract class CalciteSchema {
       this.functionMap = Objects.requireNonNull(functionMap);
       this.functionNames = Objects.requireNonNull(functionNames);
       this.nullaryFunctionMap = Objects.requireNonNull(nullaryFunctionMap);
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
     }
     if (typeMap == null) {
       this.typeMap = new NameMap<>();
@@ -350,7 +349,6 @@ public abstract class CalciteSchema {
     // Add implicit tables, case-sensitive.
     addImplicitTableToBuilder(builder);
     return builder.build();
->>>>>>> 2d7bf015a (Remove dead code: Compatible, CompatibleGuava11)
   }
 
   /** Returns the set of all types names. */
@@ -749,11 +747,6 @@ public abstract class CalciteSchema {
     public TableEntryImpl(CalciteSchema schema, String name, Table table,
         ImmutableList<String> sqls) {
       super(schema, name, sqls);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      assert table != null;
-=======
       this.table = Objects.requireNonNull(table);
     }
 

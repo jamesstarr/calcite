@@ -20,8 +20,6 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-=======
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;

@@ -50,7 +50,6 @@ public class JoinNode implements Node {
   }
 
   public void run() throws InterruptedException {
->>>>>>> 936380d89 ([CALCITE-3400] Implement left/right/semi/anti/full join in interpreter (Wang Yanlin))
 
     final int fieldCount = rel.getLeft().getRowType().getFieldCount()
         + rel.getRight().getRowType().getFieldCount();
@@ -168,83 +167,4 @@ public class JoinNode implements Node {
           context.values.length - values.length, values.length);
     }
   }
-<<<<<<< HEAD
-
-  /**
-   * Execution of the join action, returns the matched rows for the outer source row.
-   */
-  private List<Row> doJoin(Row outerRow, List<Row> innerRows,
-      JoinRelType joinRelType) throws InterruptedException {
-    boolean outerRowOnLeft = joinRelType != JoinRelType.RIGHT;
-    copyToContext(outerRow, outerRowOnLeft);
-    List<Row> matchInnerRows = new ArrayList<>();
-    for (Row innerRow: innerRows) {
-      copyToContext(innerRow, !outerRowOnLeft);
-      final Boolean execute = (Boolean) condition.execute(context);
-      if (execute != null && execute) {
-        matchInnerRows.add(innerRow);
-      }
-    }
-    doSend(outerRow, matchInnerRows, joinRelType);
-    return matchInnerRows;
-  }
-
-  /**
-   * If there exists matched rows with the outer row, sends the corresponding joined result,
-   * otherwise, checks if need to use null value for column.
-   */
-  private void doSend(Row outerRow, List<Row> matchInnerRows,
-      JoinRelType joinRelType) throws InterruptedException {
-    if (!matchInnerRows.isEmpty()) {
-      switch (joinRelType) {
-      case INNER:
-      case LEFT:
-      case RIGHT:
-      case FULL:
-        boolean outerRowOnLeft = joinRelType != JoinRelType.RIGHT;
-        copyToContext(outerRow, outerRowOnLeft);
-        for (Row row: matchInnerRows) {
-          copyToContext(row, !outerRowOnLeft);
-          sink.send(Row.asCopy(context.values));
-        }
-        break;
-      case SEMI:
-        sink.send(Row.asCopy(outerRow.getValues()));
-        break;
-      }
-    } else {
-      switch (joinRelType) {
-      case LEFT:
-      case RIGHT:
-      case FULL:
-        int nullColumnNum = context.values.length - outerRow.size();
-        // for full join, use left source as outer source,
-        // and send un-match rows in left source fist,
-        // the un-match rows in right source will be process later.
-        copyToContext(outerRow, joinRelType.generatesNullsOnRight());
-        int nullColumnStart = joinRelType.generatesNullsOnRight() ? outerRow.size() : 0;
-        System.arraycopy(new Object[nullColumnNum], 0,
-            context.values, nullColumnStart, nullColumnNum);
-        sink.send(Row.asCopy(context.values));
-        break;
-      case ANTI:
-        sink.send(Row.asCopy(outerRow.getValues()));
-        break;
-      }
-    }
-  }
-
-  /**
-   * Copies the value of row into context values.
-   */
-  private void copyToContext(Row row, boolean toLeftSide) {
-    Object[] values = row.getValues();
-    if (toLeftSide) {
-      System.arraycopy(values, 0, context.values, 0, values.length);
-    } else {
-      System.arraycopy(values, 0, context.values,
-          context.values.length - values.length, values.length);
-    }
-  }
-=======
 }

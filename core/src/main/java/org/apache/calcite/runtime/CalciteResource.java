@@ -736,7 +736,6 @@ public interface CalciteResource {
   @BaseMessage("Value count in PIVOT ({0,number,#}) must match number of FOR columns ({1,number,#})")
   ExInst<SqlValidatorException> pivotValueArityMismatch(int valueCount, int forCount);
 
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   @BaseMessage("Duplicate column name ''{0}'' in UNPIVOT")
   ExInst<SqlValidatorException> unpivotDuplicate(String columnName);
 
@@ -749,7 +748,6 @@ public interface CalciteResource {
   @BaseMessage("In UNPIVOT, cannot derive type for axis ''{0}''")
   ExInst<SqlValidatorException> unpivotCannotDeriveAxisType(String axisName);
 
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
   @BaseMessage("Pattern variable ''{0}'' has already been defined")
   ExInst<SqlValidatorException> patternVarAlreadyDefined(String varName);
 
@@ -833,8 +831,6 @@ public interface CalciteResource {
 
   @BaseMessage("View ''{0}'' not found")
   ExInst<SqlValidatorException> viewNotFound(String name);
-=======
-}
 
   @BaseMessage("Type ''{0}'' not found")
   ExInst<SqlValidatorException> typeNotFound(String name);
@@ -844,8 +840,6 @@ public interface CalciteResource {
 
   @BaseMessage("Dialect does not support feature: ''{0}''")
   ExInst<SqlValidatorException> dialectDoesNotSupportFeature(String featureName);
-<<<<<<< HEAD
-=======
 
   @BaseMessage("Substring error: negative substring length not allowed")
   ExInst<CalciteException> illegalNegativeSubstringLength();
@@ -966,126 +960,3 @@ public interface CalciteResource {
   @BaseMessage("Invalid input for EXTRACTVALUE: xml: ''{0}'', xpath expression: ''{1}''")
   ExInst<CalciteException> invalidInputForExtractValue(String xml, String xpath);
 }
-<<<<<<< HEAD
-
-  @BaseMessage("Substring error: negative substring length not allowed")
-  ExInst<CalciteException> illegalNegativeSubstringLength();
-
-  @BaseMessage("Trim error: trim character must be exactly 1 character")
-  ExInst<CalciteException> trimError();
-
-  @BaseMessage("Invalid types for arithmetic: {0} {1} {2}")
-  ExInst<CalciteException> invalidTypesForArithmetic(String clazzName0, String op,
-      String clazzName1);
-
-  @BaseMessage("Invalid types for comparison: {0} {1} {2}")
-  ExInst<CalciteException> invalidTypesForComparison(String clazzName0, String op,
-      String clazzName1);
-
-  @BaseMessage("Cannot convert {0} to {1}")
-  ExInst<CalciteException> cannotConvert(String o, String toType);
-
-  @BaseMessage("Invalid character for cast: {0}")
-  ExInst<CalciteException> invalidCharacterForCast(String s);
-
-  @BaseMessage("More than one value in list: {0}")
-  ExInst<CalciteException> moreThanOneValueInList(String list);
-
-  @BaseMessage("Failed to access field ''{0}'' of object of type {1}")
-  ExInstWithCause<CalciteException> failedToAccessField(String fieldName, String typeName);
-
-  @BaseMessage("Illegal jsonpath spec ''{0}'', format of the spec should be: ''<lax|strict> $'{'expr'}'''")
-  ExInst<CalciteException> illegalJsonPathSpec(String pathSpec);
-
-  @BaseMessage("Illegal jsonpath mode ''{0}''")
-  ExInst<CalciteException> illegalJsonPathMode(String pathMode);
-
-  @BaseMessage("Illegal jsonpath mode ''{0}'' in jsonpath spec: ''{1}''")
-  ExInst<CalciteException> illegalJsonPathModeInPathSpec(String pathMode, String pathSpec);
-
-  @BaseMessage("Strict jsonpath mode requires a non empty returned value, but is null")
-  ExInst<CalciteException> strictPathModeRequiresNonEmptyValue();
-
-  @BaseMessage("Illegal error behavior ''{0}'' specified in JSON_EXISTS function")
-  ExInst<CalciteException> illegalErrorBehaviorInJsonExistsFunc(String errorBehavior);
-
-  @BaseMessage("Empty result of JSON_VALUE function is not allowed")
-  ExInst<CalciteException> emptyResultOfJsonValueFuncNotAllowed();
-
-  @BaseMessage("Illegal empty behavior ''{0}'' specified in JSON_VALUE function")
-  ExInst<CalciteException> illegalEmptyBehaviorInJsonValueFunc(String emptyBehavior);
-
-  @BaseMessage("Illegal error behavior ''{0}'' specified in JSON_VALUE function")
-  ExInst<CalciteException> illegalErrorBehaviorInJsonValueFunc(String errorBehavior);
-
-  @BaseMessage("Strict jsonpath mode requires scalar value, and the actual value is: ''{0}''")
-  ExInst<CalciteException> scalarValueRequiredInStrictModeOfJsonValueFunc(String value);
-
-  @BaseMessage("Illegal wrapper behavior ''{0}'' specified in JSON_QUERY function")
-  ExInst<CalciteException> illegalWrapperBehaviorInJsonQueryFunc(String wrapperBehavior);
-
-  @BaseMessage("Empty result of JSON_QUERY function is not allowed")
-  ExInst<CalciteException> emptyResultOfJsonQueryFuncNotAllowed();
-
-  @BaseMessage("Illegal empty behavior ''{0}'' specified in JSON_VALUE function")
-  ExInst<CalciteException> illegalEmptyBehaviorInJsonQueryFunc(String emptyBehavior);
-
-  @BaseMessage("Strict jsonpath mode requires array or object value, and the actual value is: ''{0}''")
-  ExInst<CalciteException> arrayOrObjectValueRequiredInStrictModeOfJsonQueryFunc(String value);
-
-  @BaseMessage("Illegal error behavior ''{0}'' specified in JSON_VALUE function")
-  ExInst<CalciteException> illegalErrorBehaviorInJsonQueryFunc(String errorBehavior);
-
-  @BaseMessage("Null key of JSON object is not allowed")
-  ExInst<CalciteException> nullKeyOfJsonObjectNotAllowed();
-
-  @BaseMessage("Timeout of ''{0}'' ms for query execution is reached. Query execution started at ''{1}''")
-  ExInst<CalciteException> queryExecutionTimeoutReached(String timeout, String queryStart);
-
-  @BaseMessage("Including both WITHIN GROUP(...) and inside ORDER BY in a single JSON_ARRAYAGG call is not allowed")
-  ExInst<CalciteException> ambiguousSortOrderInJsonArrayAggFunc();
-
-  @BaseMessage("While executing SQL [{0}] on JDBC sub-schema")
-  ExInst<RuntimeException> exceptionWhilePerformingQueryOnJdbcSubSchema(String sql);
-
-  @BaseMessage("Not a valid input for JSON_TYPE: ''{0}''")
-  ExInst<CalciteException> invalidInputForJsonType(String value);
-
-  @BaseMessage("Not a valid input for JSON_DEPTH: ''{0}''")
-  ExInst<CalciteException> invalidInputForJsonDepth(String value);
-
-  @BaseMessage("Cannot serialize object to JSON: ''{0}''")
-  ExInst<CalciteException> exceptionWhileSerializingToJson(String value);
-
-  @BaseMessage("Not a valid input for JSON_LENGTH: ''{0}''")
-  ExInst<CalciteException> invalidInputForJsonLength(String value);
-
-  @BaseMessage("Not a valid input for JSON_KEYS: ''{0}''")
-  ExInst<CalciteException> invalidInputForJsonKeys(String value);
-
-  @BaseMessage("Invalid input for JSON_REMOVE: document: ''{0}'', jsonpath expressions: ''{1}''")
-  ExInst<CalciteException> invalidInputForJsonRemove(String value, String pathSpecs);
-
-  @BaseMessage("Not a valid input for JSON_STORAGE_SIZE: ''{0}''")
-  ExInst<CalciteException> invalidInputForJsonStorageSize(String value);
-
-  @BaseMessage("Not a valid input for REGEXP_REPLACE: ''{0}''")
-  ExInst<CalciteException> invalidInputForRegexpReplace(String value);
-
-  @BaseMessage("Illegal xslt specified : ''{0}''")
-  ExInst<CalciteException> illegalXslt(String xslt);
-
-  @BaseMessage("Invalid input for XMLTRANSFORM xml: ''{0}''")
-  ExInst<CalciteException> invalidInputForXmlTransform(String xml);
-
-  @BaseMessage("Invalid input for EXTRACT xpath: ''{0}'', namespace: ''{1}''")
-  ExInst<CalciteException> invalidInputForExtractXml(String xpath, @Nullable String namespace);
-
-  @BaseMessage("Invalid input for EXISTSNODE xpath: ''{0}'', namespace: ''{1}''")
-  ExInst<CalciteException> invalidInputForExistsNode(String xpath, @Nullable String namespace);
-
-  @BaseMessage("Invalid input for EXTRACTVALUE: xml: ''{0}'', xpath expression: ''{1}''")
-  ExInst<CalciteException> invalidInputForExtractValue(String xml, String xpath);
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

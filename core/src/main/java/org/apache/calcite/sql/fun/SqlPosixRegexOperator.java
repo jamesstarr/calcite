@@ -132,7 +132,3 @@ public class SqlPosixRegexOperator extends SqlBinaryOperator {
     writer.endList(frame);
   }
 }
-
-// End SqlPosixRegexOperator.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

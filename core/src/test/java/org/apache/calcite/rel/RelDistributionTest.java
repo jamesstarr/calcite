@@ -24,7 +24,6 @@ import org.apache.calcite.util.mapping.Mappings;
 import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.Test;
->>>>>>> ca3894a5a ([CALCITE-2457] JUnit 4 -> 5: trivial renames)
 
 import static org.apache.calcite.rel.RelDistributions.ANY;
 
@@ -54,7 +53,6 @@ class RelDistributionTest {
     //noinspection EqualsWithItself
     assertThat(distribution2.compareTo(distribution2), is(0));
   }
->>>>>>> dc2f3eda0 ([CALCITE-3969] Trait keys remapping may throw exception when some tra… (#375))
 
   @Test void testRelDistributionMapping() {
     final int n = 10; // Mapping source count.
@@ -96,7 +94,4 @@ class RelDistributionTest {
   private static RelDistribution hash(int... keys) {
     return RelDistributions.hash(ImmutableIntList.of(keys));
   }
-<<<<<<< HEAD
-=======
-=======
 }

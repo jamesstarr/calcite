@@ -130,15 +130,11 @@ public class AggregateUnionAggregateRule
     }
 
     relBuilder.union(true);
->>>>>>> 0179410f6 ([CALCITE-2647] In RelBuilder, add a groupKey method that assumes only one grouping set)
-=======
     relBuilder.rename(union.getRowType().getFieldNames());
     relBuilder.aggregate(relBuilder.groupKey(topAggRel.getGroupSet()),
         topAggRel.getAggCallList());
     call.transformTo(relBuilder.build());
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -180,47 +176,3 @@ public class AggregateUnionAggregateRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withDescription("AggregateUnionAggregateRule")
-            .as(Config.class)
-            .withOperandFor(LogicalAggregate.class, LogicalUnion.class,
-                    RelNode.class, RelNode.class);
-
-    Config AGG_FIRST = DEFAULT
-            .withDescription("AggregateUnionAggregateRule:first-input-agg")
-            .as(Config.class)
-            .withOperandFor(LogicalAggregate.class, LogicalUnion.class,
-                    LogicalAggregate.class, RelNode.class);
-
-    Config AGG_SECOND = DEFAULT
-            .withDescription("AggregateUnionAggregateRule:second-input-agg")
-            .as(Config.class)
-            .withOperandFor(LogicalAggregate.class, LogicalUnion.class,
-                    RelNode.class, LogicalAggregate.class);
-
-    @Override default AggregateUnionAggregateRule toRule() {
-      return new AggregateUnionAggregateRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-                                  Class<? extends Union> unionClass,
-                                  Class<? extends RelNode> firstUnionInputClass,
-                                  Class<? extends RelNode> secondUnionInputClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(aggregateClass)
-                .predicate(Aggregate::isSimple)
-                .oneInput(b1 ->
-                   b1.operand(unionClass).inputs(
-                       b2 -> b2.operand(firstUnionInputClass).anyInputs(),
-                       b3 -> b3.operand(secondUnionInputClass).anyInputs())))
-                .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

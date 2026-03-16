@@ -342,8 +342,6 @@ class SqlTest {
       return checking(expectUnordered(expectedLines));
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Reads the DEPTS table from the JSON schema. */
   @Test void testJsonSalesDepts() throws SQLException {
@@ -418,80 +416,3 @@ class SqlTest {
         .ok();
   }
 }
-<<<<<<< HEAD
-
-  /** Reads the DEPTS table from the JSON schema. */
-  @Test void testJsonSalesDepts() throws SQLException {
-    final String sql = "select * from sales.depts";
-    sql("sales-json", sql)
-        .returns("DEPTNO=10; NAME=Sales",
-            "DEPTNO=20; NAME=Marketing",
-            "DEPTNO=30; NAME=Accounts")
-        .ok();
-  }
-
-  /** Reads the EMPS table from the JSON schema. */
-  @Test void testJsonSalesEmps() throws SQLException {
-    final String sql = "select * from sales.emps";
-    final String[] lines = {
-        "EMPNO=100; NAME=Fred; DEPTNO=10; GENDER=; CITY=; EMPID=30; AGE=25; SLACKER=true; MANAGER=false; JOINEDAT=1996-08-03",
-        "EMPNO=110; NAME=Eric; DEPTNO=20; GENDER=M; CITY=San Francisco; EMPID=3; AGE=80; SLACKER=null; MANAGER=false; JOINEDAT=2001-01-01",
-        "EMPNO=110; NAME=John; DEPTNO=40; GENDER=M; CITY=Vancouver; EMPID=2; AGE=null; SLACKER=false; MANAGER=true; JOINEDAT=2002-05-03",
-        "EMPNO=120; NAME=Wilma; DEPTNO=20; GENDER=F; CITY=; EMPID=1; AGE=5; SLACKER=null; MANAGER=true; JOINEDAT=2005-09-07",
-        "EMPNO=130; NAME=Alice; DEPTNO=40; GENDER=F; CITY=Vancouver; EMPID=2; AGE=null; SLACKER=false; MANAGER=true; JOINEDAT=2007-01-01",
-    };
-    sql("sales-json", sql).returns(lines).ok();
-  }
-
-  /** Reads the EMPTY table from the JSON schema. The JSON file has no lines,
-   * therefore the table has a system-generated column called
-   * "EmptyFileHasNoColumns". */
-  @Test void testJsonSalesEmpty() throws SQLException {
-    final String sql = "select * from sales.\"EMPTY\"";
-    checkSql(sql, "sales-json", resultSet -> {
-      try {
-        assertThat(resultSet.getMetaData().getColumnCount(), is(1));
-        assertThat(resultSet.getMetaData().getColumnName(1),
-            is("EmptyFileHasNoColumns"));
-        assertThat(resultSet.getMetaData().getColumnType(1),
-            is(Types.BOOLEAN));
-        String actual = toString(resultSet);
-        assertThat(actual, is(""));
-      } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
-      }
-      return null;
-    });
-  }
-
-  /** Test returns the result of two json file joins. */
-  @Test void testJsonJoinOnString() {
-    final String sql = "select emps.EMPNO, emps.NAME, depts.deptno from emps\n"
-        + "join depts on emps.deptno = depts.deptno";
-    final String[] lines = {
-        "EMPNO=100; NAME=Fred; DEPTNO=10",
-        "EMPNO=110; NAME=Eric; DEPTNO=20",
-        "EMPNO=120; NAME=Wilma; DEPTNO=20",
-    };
-    sql("sales-json", sql).returns(lines).ok();
-  }
-
-  /** The folder contains both JSON files and CSV files joins. */
-  @Test void testJsonWithCsvJoin() {
-    final String sql = "select emps.empno,\n"
-        + " NAME,\n"
-        + " \"DATE\".JOINEDAT\n"
-        + " from \"DATE\"\n"
-        + "join emps on emps.empno = \"DATE\".EMPNO limit 3";
-    final String[] lines = {
-        "EMPNO=100; NAME=Fred; JOINEDAT=1996-08-03",
-        "EMPNO=110; NAME=Eric; JOINEDAT=2001-01-01",
-        "EMPNO=110; NAME=Eric; JOINEDAT=2002-05-03",
-    };
-    sql("sales-json", sql)
-        .returns(lines)
-        .ok();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

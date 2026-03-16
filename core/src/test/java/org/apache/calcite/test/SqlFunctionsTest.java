@@ -946,8 +946,6 @@ class SqlFunctionsTest {
     assertThat(SqlFunctions.multisetUnionDistinct(z, addc),
         is(Arrays.asList("a", "c", "d")));
   }
-<<<<<<< HEAD
-=======
 
   @Test void testMd5() {
     assertThat("d41d8cd98f00b204e9800998ecf8427e", is(md5("")));
@@ -977,36 +975,3 @@ class SqlFunctionsTest {
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> d227dc1be ([CALCITE-3263] Add MD5, SHA1 SQL functions (Shuming Li))
-
-  @Test void testMd5() {
-    assertThat("d41d8cd98f00b204e9800998ecf8427e", is(md5("")));
-    assertThat("d41d8cd98f00b204e9800998ecf8427e", is(md5(ByteString.of("", 16))));
-    assertThat("902fbdd2b1df0c4f70b4a5d23525e932", is(md5("ABC")));
-    assertThat("902fbdd2b1df0c4f70b4a5d23525e932",
-        is(md5(new ByteString("ABC".getBytes(UTF_8)))));
-    try {
-      String o = md5((String) null);
-      fail("Expected NPE, got " + o);
-    } catch (NullPointerException e) {
-      // ok
-    }
-  }
-
-  @Test void testSha1() {
-    assertThat("da39a3ee5e6b4b0d3255bfef95601890afd80709", is(sha1("")));
-    assertThat("da39a3ee5e6b4b0d3255bfef95601890afd80709", is(sha1(ByteString.of("", 16))));
-    assertThat("3c01bdbb26f358bab27f267924aa2c9a03fcfdb8", is(sha1("ABC")));
-    assertThat("3c01bdbb26f358bab27f267924aa2c9a03fcfdb8",
-        is(sha1(new ByteString("ABC".getBytes(UTF_8)))));
-    try {
-      String o = sha1((String) null);
-      fail("Expected NPE, got " + o);
-    } catch (NullPointerException e) {
-      // ok
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

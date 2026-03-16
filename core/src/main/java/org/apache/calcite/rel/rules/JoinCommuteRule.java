@@ -216,8 +216,6 @@ public class JoinCommuteRule
     Config DEFAULT = EMPTY.as(Config.class)
             .withOperandFor(LogicalJoin.class)
             .withSwapOuter(false);
-<<<<<<< HEAD
-=======
 
     @Override default JoinCommuteRule toRule() {
       return new JoinCommuteRule(this);
@@ -253,42 +251,3 @@ public class JoinCommuteRule
     Config withAllowAlwaysTrueCondition(boolean allowAlwaysTrueCondition);
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-    @Override default JoinCommuteRule toRule() {
-      return new JoinCommuteRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass) {
-      return withOperandSupplier(b ->
-              b.operand(joinClass)
-                      // FIXME Enable this rule for joins with system fields
-                      .predicate(j ->
-                              j.getLeft().getId() != j.getRight().getId()
-                                      && j.getSystemFieldList().isEmpty())
-                      .anyInputs())
-              .as(Config.class);
-    }
-
-    /** Whether to swap outer joins; default false. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean isSwapOuter();
-
-    /** Sets {@link #isSwapOuter()}. */
-    Config withSwapOuter(boolean swapOuter);
-
-    /** Whether to emit the new join tree if the join condition is {@code TRUE}
-     * (that is, cartesian joins); default true. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean isAllowAlwaysTrueCondition();
-
-    /** Sets {@link #isAllowAlwaysTrueCondition()}. */
-    Config withAllowAlwaysTrueCondition(boolean allowAlwaysTrueCondition);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

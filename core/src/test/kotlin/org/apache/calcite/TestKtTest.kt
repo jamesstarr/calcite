@@ -1,4 +1,3 @@
->>>>>>> 8718191eb (Add license to TestKtTest and add apache-rat:check to Travis CI)
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,28 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<<<<<<< HEAD
 package org.apache.calcite
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-=======
-=======
-package org.apache.calcite
-
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
->>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
 
 class TestKtTest {
     @Test
     fun `a test to verify how Kotlin test passes in CI`() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        JUnitAsserter.hashCode() // make maven-dependency-plugin happy
-=======
->>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
         assertEquals("Hello, world", "Hello, world", message = "42")
     }
 }

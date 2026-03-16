@@ -298,8 +298,6 @@ public class RexLiteral extends RexNode {
     switch (typeName) {
     case VARIANT:
       return value instanceof VariantValue;
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
-=======
     case UUID:
       return value instanceof String;
     case BOOLEAN:
@@ -389,11 +387,6 @@ public class RexLiteral extends RexNode {
     if (value == null) {
       return includeType == RexDigestIncludeType.NO_TYPE ? "null" : "null:" + fullTypeString;
     }
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    printAsJava(value, pw, typeName, false, includeType);
-    pw.flush();
-=======
     StringBuilder sb = new StringBuilder();
     appendAsJava(value, sb, typeName, false, includeType);
 

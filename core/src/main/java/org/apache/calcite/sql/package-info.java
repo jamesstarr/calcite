@@ -92,7 +92,3 @@
  * {@link org.apache.calcite.sql.SqlDialect} defines how this happens.</p>
  */
 package org.apache.calcite.sql;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

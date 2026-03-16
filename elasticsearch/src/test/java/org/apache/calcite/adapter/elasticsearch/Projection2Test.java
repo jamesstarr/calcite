@@ -49,7 +49,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Checks renaming of fields (also upper, lower cases) during projections
  */
-=======
 @ResourceLock(value = "elasticsearch-scrolls", mode = ResourceAccessMode.READ)
 class Projection2Test {
 

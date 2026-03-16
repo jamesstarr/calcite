@@ -255,7 +255,6 @@ class BabelParserTest extends SqlParserTest {
         + "FROM (VALUES (ROW(1, 2))) AS `TBL` (`X`, `Y`)";
     sql(sql).ok(expected);
   }
-=======
 
   @Test void testCreateVariantTable() {
     final String sql = "create table foo (bar variant not null)";

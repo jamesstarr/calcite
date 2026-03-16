@@ -31,7 +31,3 @@ class ServerUnParserTest extends ServerParserTest {
     return true;
   }
 }
-
-// End ServerUnParserTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

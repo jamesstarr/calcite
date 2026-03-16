@@ -23,7 +23,3 @@
  * those tables.</p>
  */
 package org.apache.calcite.adapter.csv;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

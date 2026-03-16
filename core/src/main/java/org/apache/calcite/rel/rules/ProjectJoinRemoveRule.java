@@ -124,6 +124,3 @@ public class ProjectJoinRemoveRule extends RelOptRule implements SubstitutionRul
     call.transformTo(node);
   }
 }
-
-// End ProjectJoinRemoveRule.java
-=======

@@ -100,7 +100,3 @@ class DeterministicAutomatonTest {
     assertThat(da.getEndStates().size(), is(1));
   }
 }
-
-// End DeterministicAutomatonTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

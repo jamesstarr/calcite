@@ -139,6 +139,3 @@ public class RexNormalizeTest extends RexProgramBuilderBase {
     return reason.toString();
   }
 }
-// End RexNormalizeTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

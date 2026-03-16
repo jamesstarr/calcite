@@ -50,7 +50,3 @@ public class JsonScannableTable extends JsonTable
     };
   }
 }
-
-// End JsonScannableTable.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

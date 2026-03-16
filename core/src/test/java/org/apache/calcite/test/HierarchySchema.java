@@ -87,7 +87,3 @@ public class HierarchySchema {
     }
   }
 }
-
-// End HierarchySchema.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

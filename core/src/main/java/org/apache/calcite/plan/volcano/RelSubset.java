@@ -334,8 +334,6 @@ public class RelSubset extends AbstractRelNode {
     for (RelSubset s : set.subsets) {
       if (rel.getTraitSet().satisfies(s.traitSet)) {
         checkAndEnqueue(planner, mq, rel, s, q);
-<<<<<<< HEAD
-=======
       }
     }
 
@@ -388,45 +386,6 @@ public class RelSubset extends AbstractRelNode {
     subset.timestamp++;
   }
 
-<<<<<<< HEAD
-  private static final Comparator<RelSubset> COST_COMPARATOR = new Comparator<RelSubset>() {
-    @Override public int compare(RelSubset o1, RelSubset o2) {
-      if (o1.bestCost.equals(o2.bestCost)) {
-        return 0;
-      }
-      if (o1.bestCost.isLt(o2.bestCost)) {
-        return -1;
-      }
-      return 1;
-    }
-  };
-
-  /**
-   * Check if the new cost of rel results in a new best cost for subset, end if so
-   * update subset's best and bestCost, and enqueue for further propagation of
-   * cost improvement
-   */
-  private static void checkAndEnqueue(final VolcanoPlanner planner, final RelMetadataQuery mq,
-      final RelNode rel, final RelSubset subset, PriorityQueue<RelSubset> q) {
-    final RelOptCost cost = planner.getCost(rel, mq);
-    if (cost.isLt(subset.bestCost)) {
-      LOGGER.trace("Subset cost improved: subset [{}] cost was {} now {}",
-              subset, subset.bestCost, cost);
-      q.remove(subset);
-      subset.bestCost = cost;
-      subset.best = rel;
-      // since best was changed, cached metadata for this subset should be removed
-      mq.clearCache(subset);
-      subset.getParents().forEach(mq::clearCache);
-      // Lower cost means lower importance. Other nodes will change
-      // too, but we'll get to them later.
-      q.add(subset);
-    }
-    subset.timestamp++;
-  }
-
-=======
->>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
   @Override public void collectVariablesUsed(Set<CorrelationId> variableSet) {
     variableSet.addAll(set.variablesUsed);
   }

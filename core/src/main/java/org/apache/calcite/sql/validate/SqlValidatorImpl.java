@@ -303,9 +303,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
    * @param catalogReader Catalog reader
    * @param typeFactory   Type factory
    * @param config        Config
->>>>>>> e62a96083 ([CALCITE-3900] Add Config for SqlValidator)
    */
-  @Deprecated // to be removed before 1.24
   protected SqlValidatorImpl(
       SqlOperatorTable opTab,
       SqlValidatorCatalogReader catalogReader,
@@ -575,8 +573,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return null;
   }
 
-<<<<<<< HEAD
-=======
   private static SqlNode expandCommonColumn(SqlSelect sqlSelect,
       SqlNode selectItem, SelectScope scope, SqlValidatorImpl validator) {
     if (!(selectItem instanceof SqlIdentifier)) {
@@ -597,7 +593,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       return selectItem;
     }
 
->>>>>>> a64728a68 ([CALCITE-2672] Qualifying the common column should not be allowed in … (#212))
     return expandExprFromJoin((SqlJoin) from, identifier, scope);
   }
 
@@ -7068,8 +7063,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     }
   }
 
->>>>>>> 0c5880c91 (Revert "Reapply "[CALCITE-2227] Standards-compliant column ordering for NATURAL JOIN and JOIN USING""")
-=======
   /** Permutation of fields in NATURAL JOIN or USING. */
   private class Permute {
     final List<ImmutableIntList> sources;
@@ -7205,8 +7198,6 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
      */
     VALID
   }
-=======
-=======
 
   /**
    * Used for implementing the dot operator.

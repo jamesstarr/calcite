@@ -31,7 +31,6 @@ import redis.embedded.RedisServer;
 /**
  * RedisITCaseBase.
  */
-=======
 @Execution(ExecutionMode.SAME_THREAD)
 public abstract class RedisCaseBase {
 

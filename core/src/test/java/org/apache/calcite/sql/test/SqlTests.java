@@ -69,27 +69,6 @@ public abstract class SqlTests {
    */
   public static final ParameterChecker ANY_PARAMETER_CHECKER = parameterRowType -> {
   };
-<<<<<<< HEAD
-
-  /**
-   * Checker that allows any result.
-   */
-  public static final ResultChecker ANY_RESULT_CHECKER = result -> {
-    while (true) {
-      if (!result.next()) {
-        break;
-      }
-    }
-  };
-
-  private static final Pattern LINE_COL_PATTERN =
-      Pattern.compile("At line ([0-9]+), column ([0-9]+)");
-
-  private static final Pattern LINE_COL_TWICE_PATTERN =
-      Pattern.compile(
-          "(?s)From line ([0-9]+), column ([0-9]+) to line ([0-9]+), column ([0-9]+): (.*)");
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   /**
    * Checker that allows any result.

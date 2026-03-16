@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
->>>>>>> 3b8fd86b8 ([CALCITE-1935] Implement MATCH_RECOGNIZE, part 1: add basic classes: LogicalMatch, BindableMatch, EnumerableMatch, MatchRule (Zhiqiang-He))
 package org.apache.calcite.interpreter;
 
 import org.apache.calcite.rel.core.Match;
@@ -35,36 +34,4 @@ public class MatchNode extends AbstractSingleNode<Match> {
     }
     sink.end();
   }
-<<<<<<< HEAD
-========
-package org.apache.calcite.adapter.geode.rel;
-
-import java.util.List;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.assertEquals;
-
-/**
- * Various validations for geode tests.
- */
-class GeodeAssertions {
-
-  private GeodeAssertions() {}
-
-  static Consumer<List> query(final String query) {
-    return actual -> {
-      String actualString =
-          actual == null || actual.isEmpty()
-              ? null
-              : ((String) actual.get(0));
-
-      assertEquals(query, actualString);
-    };
-  }
-
->>>>>>>> 1b41ebada ([CALCITE-2588] Run Geode Adapter tests with an Embedded Instance):geode/src/test/java/org/apache/calcite/adapter/geode/rel/GeodeAssertions.java
-}
-
-// End GeodeAssertions.java
-=======
 }

@@ -193,7 +193,6 @@ class JdbcAdapterTest {
             + "ORDER BY \"EMPNO\" NULLS LAST");
   }
 
->>>>>>> 44565c900 ([CALCITE-3621] Push down sort to DB, SQL of Sort rel contains explici… (#46))
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3751">[CALCITE-3751]
    * JDBC adapter wrongly pushes ORDER BY into sub-query</a>. */
@@ -254,30 +253,6 @@ class JdbcAdapterTest {
             + "      JdbcProject(EMPNO=[$0], ENAME=[$1], SAL=[$5])\n"
             + "        JdbcTableScan(table=[[SCOTT, EMP]])\n"
             + "      JdbcTableScan(table=[[SCOTT, SALGRADE]])")
-<<<<<<< HEAD
-        .runs()
-        .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
-        .planHasSql("SELECT \"t\".\"EMPNO\", \"t\".\"ENAME\", \"SALGRADE\".\"GRADE\"\n"
-            + "FROM (SELECT \"EMPNO\", \"ENAME\", \"SAL\"\n"
-            + "FROM \"SCOTT\".\"EMP\") AS \"t\"\n"
-            + "INNER JOIN \"SCOTT\".\"SALGRADE\" ON \"t\".\"SAL\" >= \"SALGRADE\".\"LOSAL\" "
-            + "AND \"t\".\"SAL\" <= \"SALGRADE\".\"HISAL\"");
-  }
-
-  @Test void testMixedJoinPlan() {
-    CalciteAssert.model(JdbcTest.SCOTT_MODEL)
-        .query("select e.empno, e.ename, e.empno, e.ename\n"
-            + "from scott.emp e inner join scott.emp m on\n"
-            + "e.mgr = m.empno and e.sal > m.sal")
-        .explainContains("PLAN=JdbcToEnumerableConverter\n"
-            + "  JdbcProject(EMPNO=[$0], ENAME=[$1], EMPNO0=[$0], ENAME0=[$1])\n"
-            + "    JdbcJoin(condition=[AND(=($2, $4), >($3, $5))], joinType=[inner])\n"
-            + "      JdbcProject(EMPNO=[$0], ENAME=[$1], MGR=[$3], SAL=[$5])\n"
-            + "        JdbcTableScan(table=[[SCOTT, EMP]])\n"
-            + "      JdbcProject(EMPNO=[$0], SAL=[$5])\n"
-            + "        JdbcTableScan(table=[[SCOTT, EMP]])")
-=======
->>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
         .runs()
         .enable(CalciteAssert.DB == CalciteAssert.DatabaseInstance.HSQLDB)
         .planHasSql("SELECT \"t\".\"EMPNO\", \"t\".\"ENAME\", \"SALGRADE\".\"GRADE\"\n"
@@ -928,9 +903,6 @@ class JdbcAdapterTest {
     });
   }
 
-<<<<<<< HEAD
-  @Test void testTableModifyInsertWithSubQuery() throws Exception {
-=======
   @Test void testTableModifyUpdate() throws Exception {
     final AssertThat that = CalciteAssert
         .model(JdbcTest.FOODMART_MODEL)
@@ -996,8 +968,6 @@ class JdbcAdapterTest {
         .typeIs("[employee_id INTEGER NOT NULL, position_id INTEGER]");
   }
 
-  @Test public void pushBindParameters() throws Exception {
-=======
   @Test void pushBindParameters() throws Exception {
     final String sql = "select empno, ename from emp where empno = ?";
     CalciteAssert.model(JdbcTest.SCOTT_MODEL)

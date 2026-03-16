@@ -41,22 +41,13 @@ Site generation currently works best with ruby-2.5.1.
 ### Add javadoc
 
 1. `cd ..`
-2. `mvn -DskipTests site`
-=======
 2. `./gradlew javadocAggregate`
-3. `rm -rf site/target/apidocs site/target/testapidocs`
-   `rmdir site\target\apidocs site\target\testapidocs /S /Q` (Windows)
-4. `mkdir site/target`
-   `mkdir site\target` (Windows)
-4. `mv build/docs/javadocAggregate site/target/apidocs`
-   `for /d %a in (target\site\apidocs* target\site\testapidocs*) do move %a site\target` (Windows)
->>>>>>> fcc1c2e7a ([CALCITE-2436] Steps for building site under Windows, misprint fix in SQL Language page)
-=======
+3. `rm -rf site/target/javadocAggregate`
+   `rmdir site\target\javadocAggregate /S /Q` (Windows)
 4. `mkdir site/target`
    `mkdir site\target` (Windows)
 4. `mv build/docs/javadocAggregate site/target`
    `for /d %a in (build\docs\javadocAggregate*) do move %a site\target` (Windows)
->>>>>>> 1b9f9a3c6 (Site: Fix links to javadoc (#256))
 
 ### Running locally
 
@@ -102,25 +93,14 @@ As you make changes to the site, the site will automatically rebuild.
 4. `git reset origin/master --soft`
 
 If you have not regenerated the javadoc and they are missing, restore them:
-=======
 
-6. `git reset -- apidocs/`
-7. `git reset -- testapidocs/`
-8. `git checkout -- apidocs/`
-9. `git checkout -- testapidocs/`
-
-Restore the avatica site
-
-10. `git reset -- avatica/`
-11. `git checkout -- avatica/`
->>>>>>> ebd43d0fa (Update instructions for pushing to the git site repository)
-=======
+6. `git reset -- javadocAggregate/`
+7. `git checkout -- javadocAggregate/`
 
 Restore the avatica site
 
 8. `git reset -- avatica/`
 9. `git checkout -- avatica/`
->>>>>>> 1b9f9a3c6 (Site: Fix links to javadoc (#256))
 
 10. `git add .`
 11. Commit: `git commit -m "Your commit message goes here"`
@@ -150,14 +130,8 @@ sync with "master". Immediately after a release, the release manager
 will publish the site, including all of the features that have just
 been released. When making an edit to the site, a Calcite committer
 must commit the change to the git "master" branch (as well as
-subversion, to publish the site, of course). If the edit is to appear
-=======
 git, to publish the site, of course). If the edit is to appear
 on the site immediately, the committer should then cherry-pick the
 change into the "site" branch.  If there have been no feature-related
 changes on the site since the release, then "site" should be a
 fast-forward merge of "master".
-<<<<<<< HEAD
->>>>>>> e7452f80f (Site: Add committer Kevin Risden)
-=======
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)

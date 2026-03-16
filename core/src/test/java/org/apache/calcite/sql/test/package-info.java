@@ -19,7 +19,3 @@
  * Regression tests for the SQL model.
  */
 package org.apache.calcite.sql.test;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

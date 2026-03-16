@@ -31,7 +31,3 @@ import java.lang.annotation.Target;
 public @interface WithLex {
   Lex value() default Lex.ORACLE;
 }
-
-// End WithLex.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

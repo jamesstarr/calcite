@@ -66,9 +66,6 @@ public interface TypeCoercion {
   /**
    * Similar to {@link #getWiderTypeForTwo}, but can handle
    * sequence types. {@link #getWiderTypeForTwo} doesn't satisfy the associative law,
-   * i.e. (a op b) op c may not equal to a op (b op c). This is only a problem for StringType or
-   * nested StringType in collection type like Array. Excluding these types,
-=======
    * i.e. (a op b) op c may not equal to a op (b op c). This is only a problem for STRING or
    * nested STRING in collection type like ARRAY. Excluding these types,
    * {@link #getWiderTypeForTwo} satisfies the associative law. For instance,

@@ -123,7 +123,3 @@ class MutableNode {
     return null;
   }
 }
-
-// End MutableNode.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

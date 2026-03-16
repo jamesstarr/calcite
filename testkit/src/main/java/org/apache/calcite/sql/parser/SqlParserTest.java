@@ -7987,7 +7987,6 @@ public class SqlParserTest {
     sql(sql2).ok(expected2);
   }
 
->>>>>>> 3c22ca8ae ([CALCITE-5194] Cannot parse parenthesized UNION in FROM)
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-5194">[CALCITE-5194]
    * Cannot parse parenthesized UNION in FROM</a>. */
@@ -8581,7 +8580,6 @@ public class SqlParserTest {
     sql(sql).ok(expected);
   }
 
->>>>>>> 33669bec7 ([CALCITE-5439] Validation of Pivot fails after creating a deep copy of SqlNode (#152))
   @Test void testPivotThroughShuttle() {
     final String sql = ""
         + "SELECT *\n"
@@ -8604,9 +8602,6 @@ public class SqlParserTest {
     assertThat(toLinux(shuttled.toString()), is(expected));
   }
 
-<<<<<<< HEAD
-=======
-=======
   @Test void testMatchRecognize1() {
     final String sql = "select *\n"
         + "  from t match_recognize\n"

@@ -37,8 +37,6 @@ import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexProgram;
 import org.apache.calcite.rex.RexProgramBuilder;
 import org.apache.calcite.rex.RexShuttle;
->>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
-=======
 import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Util;

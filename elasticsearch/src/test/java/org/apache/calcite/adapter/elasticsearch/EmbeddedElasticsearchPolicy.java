@@ -16,6 +16,16 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
+import org.apache.calcite.util.Closer;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -205,6 +215,4 @@ class EmbeddedElasticsearchPolicy {
   private TransportAddress httpAddress() {
     return node.httpAddress();
   }
-
-=======
 }

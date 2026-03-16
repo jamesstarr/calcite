@@ -535,16 +535,6 @@ public class Interpreter extends AbstractEnumerable<Object[]>
         nodes.put(rel, nodeInfo);
         for (Edge edge : edges2) {
           nodeInfo.sinks.put(edge, new ListSink(new ArrayDeque<>()));
-<<<<<<< HEAD
-        }
-      } else {
-        for (Edge edge : edges2) {
-          if (nodeInfo.sinks.containsKey(edge)) {
-            continue;
-          }
-          nodeInfo.sinks.put(edge, new ListSink(new ArrayDeque<>()));
-=======
->>>>>>> 42ca94873 (Apply small refactorings to Calcite codebase (Java 5, Java 7, Java 8))
         }
       } else {
         for (Edge edge : edges2) {

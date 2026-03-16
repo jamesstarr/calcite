@@ -108,8 +108,6 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
 
     // Register convertlets for specific objects.
     registerOp(SqlStdOperatorTable.CAST, this::convertCast);
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
-=======
     registerOp(SqlLibraryOperators.INFIX_CAST, this::convertCast);
     registerOp(SqlStdOperatorTable.IS_DISTINCT_FROM,
         (cx, call) -> convertIsDistinctFrom(cx, call, false));
@@ -119,8 +117,6 @@ public class StandardConvertletTable extends ReflectiveConvertletTable {
     registerOp(SqlStdOperatorTable.PLUS, this::convertPlus);
     registerOp(
         SqlStdOperatorTable.EQUALS,
-<<<<<<< HEAD
-=======
         new SqlRexConvertlet() {
           public RexNode convertCall(SqlRexContext cx, SqlCall call) {
             return convertEqualsOrNotEquals(cx, call);

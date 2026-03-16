@@ -893,6 +893,3 @@ class TypeCoercionTest extends SqlValidatorTestCase {
   }
 
 }
-
-// End TypeCoercionTest.java
-=======

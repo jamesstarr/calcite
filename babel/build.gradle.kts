@@ -15,9 +15,6 @@
  * limitations under the License.
  *
  */
-
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 plugins {
     kotlin("jvm")
     id("com.github.vlsi.ide")
@@ -25,7 +22,6 @@ plugins {
     calcite.javacc
 }
 
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 // Disable ALL Babel tasks after they are created
 afterEvaluate {
     // Disable all tasks in this project
@@ -34,10 +30,6 @@ afterEvaluate {
     }
 }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 dependencies {
     api(project(":core"))
 

@@ -1065,7 +1065,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
         && type.getPrecision() >= type1.getPrecision();
   }
 
-=======
   /**
    * Rewrite LogicalSnapshot.
    *
@@ -2894,8 +2893,6 @@ public class RelDecorrelator implements ReflectiveVisitor {
         MultimapBuilder.SortedSetMultimapBuilder.hashKeys()
             .treeSetValues()
             .build();
-<<<<<<< HEAD
-=======
 
     final Map<RexFieldAccess, CorRef> mapFieldAccessToCorVar = new HashMap<>();
 

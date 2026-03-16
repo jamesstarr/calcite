@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-<<<<<<< HEAD
-=======
 
 /**
  * Planner rule that recognizes a {@link org.apache.calcite.rel.core.Aggregate}
@@ -161,8 +159,3 @@ public class AggregateProjectMergeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79d8735c6 ([CALCITE-2712] Add rule to remove null-generating side of a Join)
-// End AggregateProjectMergeRule.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -243,8 +243,6 @@ public class Utilities {
             : v1 == null ? -1
                 : FlatLists.ComparableListImpl.compare(v0, v1);
   }
-<<<<<<< HEAD
-=======
 
   public static Collator generateCollator(Locale locale, int strength) {
     final Collator collator = Collator.getInstance(locale);
@@ -257,18 +255,3 @@ public class Utilities {
     return Pattern.builder();
   }
 }
-<<<<<<< HEAD
-
-  public static Collator generateCollator(Locale locale, int strength) {
-    final Collator collator = Collator.getInstance(locale);
-    collator.setStrength(strength);
-    return collator;
-  }
-
-  /** Creates a pattern builder. */
-  public static Pattern.PatternBuilder patternBuilder() {
-    return Pattern.builder();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

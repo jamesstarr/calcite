@@ -16,12 +16,6 @@
  */
 package org.apache.calcite.prepare;
 
-<<<<<<< HEAD
-import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
-import org.apache.calcite.config.CalciteSystemProperty;
->>>>>>> 6a8c91b46 (Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234))
-=======
->>>>>>> 0e675a2f7 (Revert "Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234)" (#237))
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.linq4j.tree.Expression;
 import org.apache.calcite.materialize.Lattice;
@@ -114,18 +108,6 @@ public class RelOptTableImpl extends Prepare.AbstractPreparingTable {
       Expression expression) {
     return new RelOptTableImpl(schema, rowType, names, null,
         c -> expression, null);
-<<<<<<< HEAD
-  }
-
-  public static RelOptTableImpl create(
-      RelOptSchema schema,
-      RelDataType rowType,
-      List<String> names,
-      Table table,
-      Expression expression) {
-    return new RelOptTableImpl(schema, rowType, names, table,
-        c -> expression, table.getStatistic().getRowCount());
-=======
   }
 
   public static RelOptTableImpl create(

@@ -65,6 +65,7 @@ public class SemiJoinProjectTransposeRule
 
   }
 
+  //~ Methods ----------------------------------------------------------------
 
   @Override public void onMatch(RelOptRuleCall call) {
     LogicalJoin semiJoin = call.rel(0);
@@ -73,7 +74,6 @@ public class SemiJoinProjectTransposeRule
     // Convert the LHS semi-join keys to reference the child projection
     // expression; all projection expressions must be RexInputRefs,
     // otherwise, we wouldn't have created this semi-join.
->>>>>>> 6d818df58 ([CALCITE-2696] Improve design of join-like relational expressions)
 
 
     // convert the semijoin condition to reflect the LHS with the project
@@ -178,8 +178,6 @@ public class SemiJoinProjectTransposeRule
     return mergedProgram.expandLocalRef(
         mergedProgram.getCondition());
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -200,26 +198,3 @@ public class SemiJoinProjectTransposeRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(LogicalJoin.class, LogicalProject.class);
-
-    @Override default SemiJoinProjectTransposeRule toRule() {
-      return new SemiJoinProjectTransposeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass,
-        Class<? extends Project> projectClass) {
-      return withOperandSupplier(b ->
-          b.operand(joinClass).predicate(Join::isSemiJoin).inputs(b2 ->
-              b2.operand(projectClass).anyInputs()))
-          .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

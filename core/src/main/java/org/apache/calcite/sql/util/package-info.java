@@ -19,7 +19,3 @@
  * Utility classes for the SQL object model, parsing, and validation.
  */
 package org.apache.calcite.sql.util;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

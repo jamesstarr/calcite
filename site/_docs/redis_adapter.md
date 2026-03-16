@@ -258,8 +258,6 @@ sqlline> select * from "csv_02";
 | 20     | Sales |
 | 10     | Sales |
 +--------+-------+
->>>>>>> f3df0243a (Improve 1.22.0 release note and document (#121))
-=======
 
 {% endhighlight %}
 

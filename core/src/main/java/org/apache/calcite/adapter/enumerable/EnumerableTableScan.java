@@ -89,7 +89,6 @@ public class EnumerableTableScan
     return new EnumerableTableScan(cluster, traitSet, relOptTable, elementType);
   }
 
->>>>>>> 89d1f11c6 ([CALCITE-3167] Make equals and hashCode methods final in AbstractRelNode, and remove overriding methods in EnumerableTableScan (Jin Xing))
   /** Returns whether EnumerableTableScan can generate code to handle a
    * particular variant of the Table SPI.
    * @deprecated
@@ -239,8 +238,6 @@ public class EnumerableTableScan
     switch (relFieldType.getSqlTypeName()) {
     case ARRAY:
     case MULTISET:
-=======
-=======
       final RelDataType fieldType = relFieldType.getComponentType();
       if (fieldType.isStruct()) {
         // We can't represent a multiset or array as a List<Employee>, because
@@ -258,7 +255,6 @@ public class EnumerableTableScan
       } else {
         return e;
       }
->>>>>>> 0e675a2f7 (Revert "Revert "[CALCITE-3769] Deprecate TableScanRule (#199)" (#234)" (#237))
     default:
       return e;
     }

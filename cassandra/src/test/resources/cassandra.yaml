@@ -48,10 +48,7 @@ hinted_handoff_throttle_in_kb: 1024
 # cross-dc handoff tends to be slower
 max_hints_delivery_threads: 2
 
-hints_directory: target/embeddedCassandra/hints
-=======
 hints_directory: build/embeddedCassandra/hints
->>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 
 # The following setting populates the page cache on memtable flush and compaction
 # WARNING: Enable this setting only when the whole node's data fits in memory.
@@ -109,8 +106,6 @@ partitioner: org.apache.cassandra.dht.Murmur3Partitioner
 
 # directories where Cassandra should store data on disk.
 data_file_directories:
-    - target/embeddedCassandra/data
-=======
     - build/embeddedCassandra/data
 
 # commit log
@@ -179,10 +174,7 @@ row_cache_save_period: 0
 # row_cache_keys_to_save: 100
 
 # saved caches
-saved_caches_directory: target/embeddedCassandra/saved_caches
-=======
 saved_caches_directory: build/embeddedCassandra/saved_caches
->>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
 
 # commitlog_sync may be either "periodic" or "batch."
 # When in batch mode, Cassandra won't ack writes until the commit log
@@ -606,8 +598,5 @@ encryption_options:
     # algorithm: SunX509
     # store_type: JKS
     # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA]
-=======
-    # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA]
 
 # End cassandra.yaml
->>>>>>> d689de383 ([CALCITE-2480] NameSet.contains wrongly returns false when element in set is upper-case and seek is lower-case)

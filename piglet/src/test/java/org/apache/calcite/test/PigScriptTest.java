@@ -74,7 +74,3 @@ class PigScriptTest extends PigRelTestBase {
     assertThat(rel, hasTree(expectedPlan));
   }
 }
-
-// End PigScriptTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

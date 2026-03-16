@@ -2087,7 +2087,6 @@ public class CalciteAssert {
 
   /** Specification for common test schemas. */
   public enum SchemaSpec {
-=======
     REFLECTIVE_FOODMART("foodmart"),
     FAKE_FOODMART("foodmart"),
     JDBC_FOODMART("foodmart"),
@@ -2183,8 +2182,6 @@ public class CalciteAssert {
       return properties;
     }
   }
-<<<<<<< HEAD
-=======
 
   /**
    * We want a consumer which can throw SqlException
@@ -2266,86 +2263,3 @@ public class CalciteAssert {
     }
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * We want a consumer which can throw SqlException
-   */
-  public interface PreparedStatementConsumer {
-    void accept(PreparedStatement statement) throws SQLException;
-  }
-
-  /** An expected string that may contain either Java or a SQL string embedded
-   * in the Java. */
-  private static class JavaSql {
-    private static final String START =
-        ".unwrap(javax.sql.DataSource.class), \"";
-    private static final String END = "\"";
-
-    private final String java;
-    private final String sql;
-
-    JavaSql(String java, String sql) {
-      this.java = Objects.requireNonNull(java);
-      this.sql = sql;
-    }
-
-    static JavaSql fromJava(String java) {
-      return new JavaSql(java, null);
-    }
-
-    static JavaSql fromSql(String sql) {
-      return new JavaSql(wrap(sql), sql);
-    }
-
-    private static String wrap(String sql) {
-      return START
-          + sql.replace("\\", "\\\\")
-              .replace("\"", "\\\"")
-              .replace("\n", "\\\\n")
-          + END;
-    }
-
-    /** Extracts the SQL statement(s) from within a Java plan. */
-    public List<String> extractSql() {
-      return unwrap(java);
-    }
-
-    static @Nonnull List<String> unwrap(String java) {
-      final List<String> sqlList = new ArrayList<>();
-      final StringBuilder b = new StringBuilder();
-      hLoop:
-      for (int h = 0;;) {
-        final int i = java.indexOf(START, h);
-        if (i < 0) {
-          return sqlList;
-        }
-        for (int j = i + START.length(); j < java.length();) {
-          char c = java.charAt(j++);
-          switch (c) {
-          case '"':
-            sqlList.add(b.toString());
-            b.setLength(0);
-            h = j;
-            continue hLoop;
-          case '\\':
-            c = java.charAt(j++);
-            if (c == 'n') {
-              b.append('\n');
-              break;
-            }
-            if (c == 'r') {
-              // Ignore CR, thus converting Windows strings to Unix.
-              break;
-            }
-            // fall through for '\\' and '\"'
-          default:
-            b.append(c);
-          }
-        }
-        return sqlList; // last SQL literal was incomplete
-      }
-    }
-  }
-}
-=======

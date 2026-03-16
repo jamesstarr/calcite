@@ -71,7 +71,3 @@ class ModularInteger {
     return value + " mod " + modulus;
   }
 }
-
-// End ModularInteger.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

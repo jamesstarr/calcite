@@ -840,7 +840,6 @@ class LatticeSuggesterTest {
                   .build())
           .build());
     }
->>>>>>> ab7e82741 ([CALCITE-3235] Add CONCAT function for Redshift (Ryan Fu))
 
     Tester withDialect(SqlDialect dialect) {
       return withParser(dialect::configureParser);
@@ -851,11 +850,5 @@ class LatticeSuggesterTest {
           .getOperatorTable(EnumSet.of(SqlLibrary.STANDARD, library));
       return withConfig(builder().operatorTable(opTab).build());
     }
-<<<<<<< HEAD
-  }
-}
-=======
-=======
-=======
   }
 }

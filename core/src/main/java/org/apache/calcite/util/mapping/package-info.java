@@ -19,7 +19,3 @@
  * Support for algebraic maps.
  */
 package org.apache.calcite.util.mapping;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

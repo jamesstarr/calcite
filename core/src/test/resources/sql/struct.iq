@@ -18,9 +18,6 @@
 !use post
 !set outputformat mysql
 
-!if (fixed.calcite2776) {
-=======
->>>>>>> 4b83cdce6 ([CALCITE-3116] Upgrade to Avatica 1.15)
 # [CALCITE-2677] Struct types with one field are not mapped correctly to Java Classes
 select * from (values
     (1, ROW(1)),
@@ -34,9 +31,6 @@ select * from (values
 (2 rows)
 
 !ok
-!}
-=======
->>>>>>> 4b83cdce6 ([CALCITE-3116] Upgrade to Avatica 1.15)
 
 # [CALCITE-3482] Equality of nested ROWs returns false for identical literal value
 select * from

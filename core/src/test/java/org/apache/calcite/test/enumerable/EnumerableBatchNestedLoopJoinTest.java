@@ -225,7 +225,3 @@ class EnumerableBatchNestedLoopJoinTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
-
-// End EnumerableBatchNestedLoopJoinTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

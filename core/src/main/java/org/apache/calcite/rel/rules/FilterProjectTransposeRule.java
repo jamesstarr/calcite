@@ -198,8 +198,6 @@ public class FilterProjectTransposeRule
 
     call.transformTo(newProjRel);
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Simplifies the filter condition using a simplifier created by the
@@ -286,92 +284,3 @@ public class FilterProjectTransposeRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Simplifies the filter condition using a simplifier created by the
-   * information in the current call.
-   *
-   * <p>This method is an attempt to replicate the simplification behavior of
-   * {@link RelBuilder#filter(RexNode...)} which cannot be used in the case of
-   * copying nodes. The main difference with the behavior of that method is that
-   * it does not drop entirely the filter if the condition is always false.
-   */
-  private RexNode simplifyFilterCondition(RexNode condition, RelOptRuleCall call) {
-    final RexBuilder xBuilder = call.builder().getRexBuilder();
-    final RexExecutor executor =
-        Util.first(call.getPlanner().getContext().unwrap(RexExecutor.class),
-            Util.first(call.getPlanner().getExecutor(), RexUtil.EXECUTOR));
-    // unknownAsFalse => true since in the WHERE clause:
-    // 1>null evaluates to unknown and WHERE unknown behaves exactly like WHERE false
-    RexSimplify simplifier =
-        new RexSimplify(xBuilder, RelOptPredicateList.EMPTY, executor);
-    return RexUtil.removeNullabilityCast(
-        xBuilder.getTypeFactory(), simplifier.simplifyUnknownAsFalse(condition));
-  }
-
-  /** Rule configuration.
-   *
-   * <p>If {@code copyFilter} is true, creates the same kind of Filter as
-   * matched in the rule, otherwise it creates a Filter using the RelBuilder
-   * obtained by the {@code relBuilderFactory}.
-   * Similarly for {@code copyProject}.
-   *
-   * <p>Defining predicates for the Filter (using {@code filterPredicate})
-   * and/or the Project (using {@code projectPredicate} allows making the rule
-   * more restrictive. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Filter.class,
-              f -> !RexUtil.containsCorrelation(f.getCondition()),
-                    Project.class, p -> true)
-            .withCopyFilter(true)
-            .withCopyProject(true);
-
-    @Override default FilterProjectTransposeRule toRule() {
-      return new FilterProjectTransposeRule(this);
-    }
-
-    /** Whether to create a {@link Filter} of the same convention as the
-     * matched Filter. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean isCopyFilter();
-
-    /** Sets {@link #isCopyFilter()}. */
-    Config withCopyFilter(boolean copyFilter);
-
-    /** Whether to create a {@link Project} of the same convention as the
-     * matched Project. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean isCopyProject();
-
-    /** Sets {@link #isCopyProject()}. */
-    Config withCopyProject(boolean copyProject);
-
-    /** Defines an operand tree for the given 2 classes. */
-    default Config withOperandFor(Class<? extends Filter> filterClass,
-                                  Predicate<Filter> filterPredicate,
-                                  Class<? extends Project> projectClass,
-                                  Predicate<Project> projectPredicate) {
-      return withOperandSupplier(b0 ->
-              b0.operand(filterClass).predicate(filterPredicate).oneInput(b1 ->
-                      b1.operand(projectClass).predicate(projectPredicate).anyInputs()))
-              .as(Config.class);
-    }
-
-    /** Defines an operand tree for the given 3 classes. */
-    default Config withOperandFor(Class<? extends Filter> filterClass,
-                                  Class<? extends Project> projectClass,
-                                  Class<? extends RelNode> relClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(filterClass).oneInput(b1 ->
-                      b1.operand(projectClass).oneInput(b2 ->
-                              b2.operand(relClass).anyInputs())))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

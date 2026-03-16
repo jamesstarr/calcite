@@ -167,12 +167,6 @@ public abstract class Sources {
 
     private FileSource(URL url) {
       this.url = Objects.requireNonNull(url);
-      if (url.getProtocol().equals("file")) {
-        this.file = new File(url.getFile());
-      } else {
-        this.file = null;
-      }
-=======
       this.file = urlToFile(url);
       this.urlGenerated = false;
     }

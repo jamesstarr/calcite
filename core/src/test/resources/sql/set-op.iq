@@ -19,7 +19,6 @@
 !set outputformat mysql
 
 # Intersect all
->>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
 intersect all
@@ -31,27 +30,8 @@ intersect all
 | 1 | a |
 +---+---+
 (2 rows)
-<<<<<<< HEAD
 
 !ok
-=======
-#select * from
-#(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
-#intersect all
-#(select x, y from (values (1, 'a'), (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
-#+---+---+
-#| X | Y |
-#+---+---+
-#| 1 | a |
-#| 1 | a |
-#+---+---+
-#(2 rows)
-
-#!ok
-=======
-
-!ok
->>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
 # Intersect
 select * from
@@ -68,32 +48,12 @@ intersect
 !ok
 
 # Intersect all with null value rows
->>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
 intersect all
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
-<<<<<<< HEAD
-
-+---+---+
-| X | Y |
-+---+---+
-|   |   |
-|   |   |
-+---+---+
-(2 rows)
-
-!ok
-=======
-#select * from
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
-#intersect all
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
-=======
 
 +---+---+
 | X | Y |
@@ -197,7 +157,6 @@ union
 !ok
 
 # Except all
->>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
 except all
@@ -211,29 +170,8 @@ except all
 | 3 | c |
 +---+---+
 (4 rows)
-<<<<<<< HEAD
 
 !ok
-=======
-#select * from
-#(select x, y from (values (1, 'a'), (1, 'a'), (1, 'a'), (2, 'b'), (3, 'c')) as t(x, y))
-#except all
-#(select x, y from (values (1, 'a'), (2, 'c'), (4, 'x')) as t2(x, y));
-#+---+---+
-#| X | Y |
-#+---+---+
-#| 1 | a |
-#| 1 | a |
-#| 2 | b |
-#| 3 | c |
-#+---+---+
-#(4 rows)
-
-#!ok
-=======
-
-!ok
->>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 
 # Except
 select * from
@@ -251,31 +189,12 @@ except
 !ok
 
 # Except all with null value rows
->>>>>>> 4c84a9cf2 ([CALCITE-3408] Add support for enumerable intersect/minus all (Wang Yanlin))
 select * from
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
 except all
 (select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
   (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
-<<<<<<< HEAD
-
-+---+---+
-| X | Y |
-+---+---+
-|   |   |
-+---+---+
-(1 row)
-
-!ok
-=======
-#select * from
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1))), (cast(NULL as int), cast(NULL as varchar(1)))) as t(x, y))
-#except all
-#(select x, y from (values (cast(NULL as int), cast(NULL as varchar(1))),
-#  (cast(NULL as int), cast(NULL as varchar(1)))) as t2(x, y));
-=======
 
 +---+---+
 | X | Y |

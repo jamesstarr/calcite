@@ -30,9 +30,6 @@ import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.plan.SubstitutionVisitor;
 import org.apache.calcite.plan.ViewExpanders;
-import org.apache.calcite.prepare.CalcitePrepareImpl;
-=======
->>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
 import org.apache.calcite.prepare.RelOptTableImpl;
 import org.apache.calcite.rel.core.Aggregate;
 import org.apache.calcite.rel.core.AggregateCall;
@@ -247,8 +244,6 @@ public class AggregateStarTableRule
     }
     return -1;
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -271,28 +266,3 @@ public class AggregateStarTableRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Aggregate.class, StarTable.StarTableScan.class);
-
-    @Override default AggregateStarTableRule toRule() {
-      return new AggregateStarTableRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-                                  Class<StarTable.StarTableScan> scanClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(aggregateClass)
-                      .predicate(Aggregate::isSimple)
-                      .oneInput(b1 ->
-                              b1.operand(scanClass).noInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

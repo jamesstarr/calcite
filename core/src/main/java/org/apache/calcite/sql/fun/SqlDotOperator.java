@@ -97,15 +97,10 @@ public class SqlDotOperator extends SqlSpecialOperator {
     final RelDataType nodeType =
         validator.deriveType(scope, operand);
     assert nodeType != null;
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
     if (nodeType.getSqlTypeName() == SqlTypeName.VARIANT) {
       // Result is always a nullable VARIANT
       return validator.getTypeFactory().createTypeWithNullability(nodeType, true);
     }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
     if (!nodeType.isStruct()) {
       throw SqlUtil.newContextException(operand.getParserPosition(),
           Static.RESOURCE.incompatibleTypes());

@@ -158,199 +158,26 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     if (provider instanceof JaninoRelMetadataProvider) {
       return (JaninoRelMetadataProvider) provider;
     }
-
-    buff.append("  private final java.util.List relClasses;\n")
-        .append("  private final org.apache.calcite.rel.metadata.MetadataDef def;\n");
-    for (Pair<String, MetadataHandler> pair : providerList) {
-      buff.append("  public final ").append(pair.right.getClass().getName())
-          .append(' ').append(pair.left).append(";\n");
-    }
-    buff.append("  public ").append(name).append("(java.util.List relClasses,\n")
-        .append("      org.apache.calcite.rel.metadata.MetadataDef def");
-    for (Pair<String, MetadataHandler> pair : providerList) {
-      buff.append(",\n")
-          .append("      ")
-          .append(pair.right.getClass().getName())
-          .append(' ')
-          .append(pair.left);
-    }
-    buff.append(") {\n")
-        .append("    this.relClasses = relClasses;\n")
-        .append("    this.def = def;\n");
-
-    for (Pair<String, MetadataHandler> pair : providerList) {
-      buff.append("    this.").append(pair.left).append(" = ").append(pair.left)
-          .append(";\n");
-    }
-    buff.append("  }\n")
-        .append("  public ")
-        .append(MetadataDef.class.getName())
-        .append(" getDef() {\n")
-        .append("    return def;")
-        .append("  }\n");
-    for (Ord<Method> method : Ord.zip(def.methods)) {
-      buff.append("  public ")
-          .append(method.e.getReturnType().getName())
-          .append(" ")
-          .append(method.e.getName())
-          .append("(\n")
-          .append("      ")
-          .append(RelNode.class.getName())
-          .append(" r,\n")
-          .append("      ")
-          .append(RelMetadataQuery.class.getName())
-          .append(" mq");
-      paramList(buff, method.e)
-          .append(") {\n");
-      buff.append("    final java.util.List key = ")
-          .append(
-              (method.e.getParameterTypes().length < 4
-              ? org.apache.calcite.runtime.FlatLists.class
-              : ImmutableList.class).getName())
-          .append(".of(");
-      if (method.i == 0) {
-        buff.append("def");
-      } else {
-        buff.append("def.methods.get(")
-            .append(method.i)
-            .append(")");
-      }
-      safeArgList(buff, method.e)
-          .append(");\n")
-          .append("    final Object v = mq.map.get(r, key);\n")
-          .append("    if (v != null) {\n")
-          .append("      if (v == ")
-          .append(NullSentinel.class.getName())
-          .append(".ACTIVE) {\n")
-          .append("        throw ")
-          .append(CyclicMetadataException.class.getName())
-          .append(".INSTANCE;\n")
-          .append("      }\n")
-          .append("      if (v == ")
-          .append(NullSentinel.class.getName())
-          .append(".INSTANCE) {\n")
-          .append("        return null;\n")
-          .append("      }\n")
-          .append("      return (")
-          .append(method.e.getReturnType().getName())
-          .append(") v;\n")
-          .append("    }\n")
-          .append("    mq.map.put(r, key,")
-          .append(NullSentinel.class.getName())
-          .append(".ACTIVE);\n")
-          .append("    try {\n")
-          .append("      final ")
-          .append(method.e.getReturnType().getName())
-          .append(" x = ")
-          .append(method.e.getName())
-          .append("_(r, mq");
-      argList(buff, method.e)
-          .append(");\n")
-          .append("      mq.map.put(r, key, ")
-          .append(NullSentinel.class.getName())
-          .append(".mask(x));\n")
-          .append("      return x;\n")
-          .append("    } catch (")
-          .append(Exception.class.getName())
-          .append(" e) {\n")
-          .append("      mq.map.row(r).clear();\n")
-          .append("      throw e;\n")
-          .append("    }\n")
-          .append("  }\n")
-          .append("\n")
-          .append("  private ")
-          .append(method.e.getReturnType().getName())
-          .append(" ")
-          .append(method.e.getName())
-          .append("_(\n")
-          .append("      ")
-          .append(RelNode.class.getName())
-          .append(" r,\n")
-          .append("      ")
-          .append(RelMetadataQuery.class.getName())
-          .append(" mq");
-      paramList(buff, method.e)
-          .append(") {\n");
-      buff.append("    switch (relClasses.indexOf(r.getClass())) {\n");
-
-      // Build a list of clauses, grouping clauses that have the same action.
-      final Multimap<String, Integer> clauses = LinkedHashMultimap.create();
-      final StringBuilder buf2 = new StringBuilder();
-      for (Ord<Class<? extends RelNode>> relClass : Ord.zip(relClasses)) {
-        if (relClass.e == HepRelVertex.class) {
-          buf2.append("      return ")
-              .append(method.e.getName())
-              .append("(((")
-              .append(relClass.e.getName())
-              .append(") r).getCurrentRel(), mq");
-          argList(buf2, method.e)
-              .append(");\n");
-        } else {
-          final Method handler = space.find(relClass.e, method.e);
-          final String v = findProvider(providerList, handler.getDeclaringClass());
-          buf2.append("      return ")
-              .append(v)
-              .append(".")
-              .append(method.e.getName())
-              .append("((")
-              .append(handler.getParameterTypes()[0].getName())
-              .append(") r, mq");
-          argList(buf2, method.e)
-              .append(");\n");
-        }
-        clauses.put(buf2.toString(), relClass.i);
-        buf2.setLength(0);
-      }
-      buf2.append("      throw new ")
-          .append(NoHandler.class.getName())
-          .append("(r.getClass());\n")
-          .append("    }\n")
-          .append("  }\n");
-      clauses.put(buf2.toString(), -1);
-      for (Map.Entry<String, Collection<Integer>> pair : clauses.asMap().entrySet()) {
-        if (pair.getValue().contains(relClasses.indexOf(RelNode.class))) {
-          buff.append("    default:\n");
-        } else {
-          for (Integer integer : pair.getValue()) {
-            buff.append("    case ").append(integer).append(":\n");
-          }
-        }
-        buff.append(pair.getKey());
-      }
-    }
-    final List<Object> argList = new ArrayList<>();
-    argList.add(ImmutableList.copyOf(relClasses));
-    argList.add(def);
-    argList.addAll(Pair.right(providerList));
-    try {
-      return compile(name, buff.toString(), def, argList);
-    } catch (CompileException | IOException e) {
-      throw new RuntimeException("Error compiling:\n"
-          + buff, e);
-    }
+    return new JaninoRelMetadataProvider(provider);
   }
 
-  private static String simpleNameForHandler(Class<? extends MetadataHandler<?>> clazz) {
-    String simpleName = clazz.getSimpleName();
-    //Previously the pattern was to have a nested in class named Handler
-    //So we need to add the parents class to get a unique name
-    if (simpleName.equals("Handler")) {
-      String[] parts = clazz.getName().split("\\.|\\$");
-      return parts[parts.length - 2] + parts[parts.length - 1];
-    } else {
-      return simpleName;
+  // helper for initialization
+  private static <K, V> CacheBuilder<K, V> maxSize(CacheBuilder<K, V> builder,
+      int size) {
+    if (size >= 0) {
+      builder.maximumSize(size);
     }
+    return builder;
   }
 
-  private static String findProvider(
-      List<Pair<String, MetadataHandler>> providerList,
-      Class<?> declaringClass) {
-    for (Pair<String, MetadataHandler> pair : providerList) {
-      if (declaringClass.isInstance(pair.right)) {
-        return pair.left;
-      }
-    }
-    throw new AssertionError("not found: " + declaringClass);
+  @Override public boolean equals(Object obj) {
+    return obj == this
+        || obj instanceof JaninoRelMetadataProvider
+        && ((JaninoRelMetadataProvider) obj).provider.equals(provider);
+  }
+
+  @Override public int hashCode() {
+    return 109 + provider.hashCode();
   }
 
   @Deprecated // to be removed before 2.0
@@ -359,28 +186,11 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     throw new UnsupportedOperationException();
   }
 
-  /** Returns e.g. ", ignoreNulls". */
-  private static StringBuilder safeArgList(StringBuilder buff, Method method) {
-    for (Ord<Class<?>> t : Ord.zip(method.getParameterTypes())) {
-      if (Primitive.is(t.e)) {
-        buff.append(", a").append(t.i);
-      } else if (RexNode.class.isAssignableFrom(t.e)) {
-        // For RexNode, convert to string, because equals does not look deep.
-        //   a1 == null ? "" : a1.toString()
-        buff.append(", a").append(t.i).append(" == null ? \"\" : a")
-            .append(t.i).append(".toString()");
-      } else {
-        buff.append(", ") .append(NullSentinel.class.getName())
-            .append(".mask(a").append(t.i).append(")");
-      }
-    }
-    return buff;
+  public <M extends Metadata> Multimap<Method, MetadataHandler<M>>
+      handlers(MetadataDef<M> def) {
+    return provider.handlers(def);
   }
 
-      MetadataDef<M> def, Multimap<Method, ? extends MetadataHandler<?>> map) {
-    return JaninoMetadataHandlerCreator.newInstance(def.handlerClass,
-        map);
-=======
   private static <M extends Metadata> MetadataHandler<M> load3(
       MetadataDef<M> def, Multimap<Method, MetadataHandler<M>> map,
       ImmutableList<Class<? extends RelNode>> relClasses) {
@@ -701,18 +511,6 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     }
   }
 
-  /** Exception that indicates there there should be a handler for
-   * this class but there is not. The action is probably to
-   * re-generate the handler class. */
-  public static class NoHandler extends ControlFlowException {
-    public final Class<? extends RelNode> relClass;
-
-    public NoHandler(Class<? extends RelNode> relClass) {
-      this.relClass = relClass;
-    }
-  }
-
-=======
   /** Key for the cache. */
   private static class Key {
     public final MetadataDef def;
@@ -741,9 +539,3 @@ public class JaninoRelMetadataProvider implements RelMetadataProvider {
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 609a4b7fe ([CALCITE-4546] Change MD dispatch)
-
-// End JaninoRelMetadataProvider.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

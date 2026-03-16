@@ -191,8 +191,6 @@ public class RelCollations {
     }
     return new RelCollationImpl(fieldCollations.build());
   }
-<<<<<<< HEAD
-=======
 
   /** Creates a copy of this collation that changes the ordinals of input
    * fields. */
@@ -212,26 +210,3 @@ public class RelCollations {
             fc -> fc.withFieldIndex(mapping.getTarget(fc.getFieldIndex()))));
   }
 }
-<<<<<<< HEAD
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
-
-  /** Creates a copy of this collation that changes the ordinals of input
-   * fields. */
-  public static RelCollation permute(RelCollation collation,
-      Map<Integer, Integer> mapping) {
-    return of(
-        Util.transform(collation.getFieldCollations(),
-            fc -> fc.withFieldIndex(mapping.get(fc.getFieldIndex()))));
-  }
-
-  /** Creates a copy of this collation that changes the ordinals of input
-   * fields. */
-  public static RelCollation permute(RelCollation collation,
-      Mappings.TargetMapping mapping) {
-    return of(
-        Util.transform(collation.getFieldCollations(),
-            fc -> fc.withFieldIndex(mapping.getTarget(fc.getFieldIndex()))));
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

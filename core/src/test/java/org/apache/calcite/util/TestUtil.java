@@ -17,6 +17,7 @@
 package org.apache.calcite.util;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.junit.jupiter.api.Assertions;
 
 import java.io.PrintWriter;
@@ -223,45 +224,6 @@ public abstract class TestUtil {
       throw new IllegalArgumentException("Can't parse (detect) JDK version from " + version);
     }
     return Integer.parseInt(matcher.group());
-<<<<<<< HEAD
-  }
-
-  /** Checks if exceptions have give substring. That is handy to prevent logging SQL text twice */
-  public static boolean hasMessage(Throwable t, String substring) {
-    while (t != null) {
-      String message = t.getMessage();
-      if (message != null && message.contains(substring)) {
-        return true;
-      }
-      t = t.getCause();
-    }
-    return false;
-  }
-
-  /** Rethrows given exception keeping stacktraces clean and compact. */
-  public static <E extends Throwable> RuntimeException rethrow(Throwable e) throws E {
-    if (e instanceof InvocationTargetException) {
-      e = e.getCause();
-    }
-    throw (E) e;
-  }
-
-  /** Rethrows given exception keeping stacktraces clean and compact. */
-  public static <E extends Throwable> RuntimeException rethrow(Throwable e,
-      String message) throws E {
-    e.addSuppressed(new ExtraInformation(message));
-    throw (E) e;
-  }
-
-  /** Returns string representation of the given {@link Throwable}. */
-  public static String printStackTrace(Throwable t) {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    t.printStackTrace(pw);
-    pw.flush();
-    return sw.toString();
-=======
->>>>>>> 66076440e ([CALCITE-2428] Cassandra unit test fails to parse JDK version string (Andrei Sereda))
   }
 
   /** Checks if exceptions have give substring. That is handy to prevent logging SQL text twice */

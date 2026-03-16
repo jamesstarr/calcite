@@ -1311,8 +1311,6 @@ public class SqlValidatorUtil {
           SqlParserPos.ZERO);
     }
   }
-<<<<<<< HEAD
-=======
 
   /**
    * A {@link AbstractTable} that can specify the row type explicitly.
@@ -1344,37 +1342,3 @@ public class SqlValidatorUtil {
     }
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * A {@link AbstractTable} that can specify the row type explicitly.
-   */
-  private static class ExplicitRowTypeTable extends AbstractTable {
-    private final RelDataType rowType;
-
-    ExplicitRowTypeTable(RelDataType rowType) {
-      this.rowType = Objects.requireNonNull(rowType);
-    }
-
-    @Override public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-      return this.rowType;
-    }
-  }
-
-  /**
-   * A {@link AbstractSchema} that can specify the table map explicitly.
-   */
-  private static class ExplicitTableSchema extends AbstractSchema {
-    private final Map<String, Table> tableMap;
-
-    ExplicitTableSchema(Map<String, Table> tableMap) {
-      this.tableMap = Objects.requireNonNull(tableMap);
-    }
-
-    @Override protected Map<String, Table> getTableMap() {
-      return tableMap;
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

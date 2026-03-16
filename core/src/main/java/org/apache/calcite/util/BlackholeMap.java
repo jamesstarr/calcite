@@ -112,7 +112,3 @@ final class BlackholeMap<K, V> extends AbstractMap<K, V> {
     return (Map<K, V>) INSTANCE;
   }
 }
-
-// End BlackholeMap.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

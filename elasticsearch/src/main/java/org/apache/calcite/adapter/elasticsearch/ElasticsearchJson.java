@@ -213,6 +213,17 @@ final class ElasticsearchJson {
   static class Result {
     private final SearchHits hits;
     private final Aggregations aggregations;
+    private final String scrollId;
+    private final long took;
+
+    /**
+     * Constructor for this instance.
+     * @param hits list of matched documents
+     * @param took time taken (in took) for this query to execute
+     */
+    @JsonCreator
+    Result(@JsonProperty("hits") SearchHits hits,
+        @JsonProperty("aggregations") Aggregations aggregations,
         @JsonProperty("_scroll_id") String scrollId,
         @JsonProperty("took") long took) {
       this.hits = Objects.requireNonNull(hits, "hits");
@@ -741,6 +752,5 @@ final class ElasticsearchJson {
     }
 
   }
-=======
 
 }

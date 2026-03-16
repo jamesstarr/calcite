@@ -191,15 +191,11 @@ public class Collect extends SingleRel {
     return Iterables.getOnlyElement(rowType().getFieldList()).getName();
   }
 
->>>>>>> 06bb6f836 ([CALCITE-4946] Add method RelBuilder.size())
   /** Returns the collection type (ARRAY, MAP, or MULTISET). */
   public SqlTypeName getCollectionType() {
     return getCollectionType(rowType());
   }
 
-<<<<<<< HEAD
-=======
-=======
   private static SqlTypeName getCollectionType(RelDataType rowType) {
     return Iterables.getOnlyElement(rowType.getFieldList())
         .getType().getSqlTypeName();

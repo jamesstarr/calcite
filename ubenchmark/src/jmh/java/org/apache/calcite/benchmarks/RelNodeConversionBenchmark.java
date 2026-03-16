@@ -206,7 +206,3 @@ public class RelNodeConversionBenchmark {
   }
 
 }
-
-// End RelNodeConversionBenchmark.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -100,6 +100,3 @@ public class RowSqlTypeRtti extends RuntimeTypeInformation {
     return null;
   }
 }
-// End RowSqlTypeRtti.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

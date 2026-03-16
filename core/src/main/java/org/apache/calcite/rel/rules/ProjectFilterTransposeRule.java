@@ -138,8 +138,6 @@ public class ProjectFilterTransposeRule
             .withPreserveExprCondition(PushProjector.ExprCondition.FALSE)
             .withWholeProject(false)
             .withWholeFilter(false);
-<<<<<<< HEAD
-=======
 
     Config PROJECT = DEFAULT.withWholeProject(true);
 
@@ -195,62 +193,3 @@ public class ProjectFilterTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-    Config PROJECT = DEFAULT.withWholeProject(true);
-
-    Config PROJECT_FILTER = PROJECT.withWholeFilter(true);
-
-    @Override default ProjectFilterTransposeRule toRule() {
-      return new ProjectFilterTransposeRule(this);
-    }
-
-    /** Expressions that should be preserved in the projection. */
-    @ImmutableBeans.Property
-    PushProjector.ExprCondition preserveExprCondition();
-
-    /** Sets {@link #preserveExprCondition()}. */
-    Config withPreserveExprCondition(PushProjector.ExprCondition condition);
-
-    /** Whether to push whole expressions from the project;
-     * if false (the default), only pushes references. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean isWholeProject();
-
-    /** Sets {@link #isWholeProject()}. */
-    Config withWholeProject(boolean wholeProject);
-
-    /** Whether to push whole expressions from the filter;
-     * if false (the default), only pushes references. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean isWholeFilter();
-
-    /** Sets {@link #isWholeFilter()}. */
-    Config withWholeFilter(boolean wholeFilter);
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Project> projectClass,
-                                  Class<? extends Filter> filterClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(projectClass).oneInput(b1 ->
-                      b1.operand(filterClass).anyInputs()))
-              .as(Config.class);
-    }
-
-    /** Defines an operand tree for the given 3 classes. */
-    default Config withOperandFor(Class<? extends Project> projectClass,
-                                  Class<? extends Filter> filterClass,
-                                  Class<? extends RelNode> inputClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(projectClass).oneInput(b1 ->
-                      b1.operand(filterClass).oneInput(b2 ->
-                              b2.operand(inputClass).anyInputs())))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

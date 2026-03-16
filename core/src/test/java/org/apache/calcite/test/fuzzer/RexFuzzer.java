@@ -213,7 +213,6 @@ public class RexFuzzer extends RexProgramBuilderBase {
     throw new AssertionError("should not reach here");
   }
 
->>>>>>> bb9e11c37 (Implement fuzzy generator for CASE expressions)
   public RexNode fuzzCase(Random r, int depth, Function<Random, RexNode> resultFactory) {
     boolean caseArgWhen = r.nextBoolean();
     int caseBranches = 1 + (depth <= 0 ? 0 : r.nextInt(3));
@@ -249,8 +248,4 @@ public class RexFuzzer extends RexProgramBuilderBase {
     return case_(args);
   }
 
-<<<<<<< HEAD
-}
-=======
-=======
 }

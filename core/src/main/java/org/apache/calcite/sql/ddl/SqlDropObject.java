@@ -91,7 +91,6 @@ abstract class SqlDropObject extends SqlDrop
             RESOURCE.typeNotFound(name.getSimple()));
       }
       break;
-=======
     case DROP_FUNCTION:
       existed = schema.removeFunction(name.getSimple());
       if (!existed && !ifExists) {

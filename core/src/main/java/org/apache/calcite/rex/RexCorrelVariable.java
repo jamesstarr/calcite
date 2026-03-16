@@ -20,7 +20,6 @@ import org.apache.calcite.rel.core.CorrelationId;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlKind;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import java.util.Objects;
 
 /**
@@ -55,8 +54,6 @@ public class RexCorrelVariable extends RexVariable {
   @Override public SqlKind getKind() {
     return SqlKind.CORREL_VARIABLE;
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean equals(Object obj) {
     return this == obj
@@ -70,19 +67,3 @@ public class RexCorrelVariable extends RexVariable {
     return Objects.hash(digest, type, id);
   }
 }
-<<<<<<< HEAD
-
-  @Override public boolean equals(Object obj) {
-    return this == obj
-        || obj instanceof RexCorrelVariable
-        && digest.equals(((RexCorrelVariable) obj).digest)
-        && type.equals(((RexCorrelVariable) obj).type)
-        && id.equals(((RexCorrelVariable) obj).id);
-  }
-
-  @Override public int hashCode() {
-    return Objects.hash(digest, type, id);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

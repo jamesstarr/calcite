@@ -23,7 +23,6 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelWriter;
 
-=======
 import java.util.Objects;
 
 /**

@@ -174,19 +174,8 @@ public abstract class TableScan
   @Override public RelNode accept(RelShuttle shuttle) {
     return shuttle.visit(this);
   }
-<<<<<<< HEAD
-=======
 
   @Override public ImmutableList<RelHint> getHints() {
     return hints;
   }
 }
-<<<<<<< HEAD
->>>>>>> abb01f235 ([CALCITE-482] Implement sql and planner hints)
-
-  @Override public ImmutableList<RelHint> getHints() {
-    return hints;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

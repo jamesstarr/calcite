@@ -63,8 +63,6 @@ public class CalcSplitRule extends RelRule<CalcSplitRule.Config>
     relBuilder.project(projectFilter.left, calc.getRowType().getFieldNames());
     call.transformTo(relBuilder.build());
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -77,19 +75,3 @@ public class CalcSplitRule extends RelRule<CalcSplitRule.Config>
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-        .withOperandSupplier(b -> b.operand(Calc.class).anyInputs())
-        .as(Config.class);
-
-    @Override default CalcSplitRule toRule() {
-      return new CalcSplitRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

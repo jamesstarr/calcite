@@ -21,7 +21,6 @@ import org.apache.calcite.avatica.DriverVersion;
 /**
  * Provides information on the current Calcite version.
  */
->>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 class CalciteDriverVersion {
   static final DriverVersion INSTANCE =
       new DriverVersion(
@@ -37,26 +36,6 @@ class CalciteDriverVersion {
 
   private CalciteDriverVersion() {
   }
-<<<<<<< HEAD
-=======
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    PrimitiveTest.class,
-    Linq4jTest.class,
-    ExpressionTest.class,
-    OptimizerTest.class,
-    InlinerTest.class,
-    LookupImplTest.class,
-    DeterministicTest.class,
-    BlockBuilderTest.class,
-    FunctionTest.class,
-    TypeTest.class,
-    CorrelateJoinTest.class,
-    JoinPreserveOrderTest.class
-    })
-public class Linq4jSuite {
-=======
->>>>>>> 2619f909b ([CALCITE-2905] Use code generation to create DriverVersion)
 }
 
 // End CalciteDriverVersion.java

@@ -68,7 +68,3 @@ public class SqlJsonRemoveFunction extends SqlFunction {
         SqlTypeFamily.CHARACTER, SqlTypeFamily.CHARACTER);
   }
 }
-
-// End SqlJsonRemoveFunction.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

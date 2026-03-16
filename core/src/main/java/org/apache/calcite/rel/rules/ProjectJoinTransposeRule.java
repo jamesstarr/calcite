@@ -78,9 +78,6 @@ public class ProjectJoinTransposeRule
     Project origProj = call.rel(0);
     final Join join = call.rel(1);
 
-    if (join.isSemiJoin()) {
-      return; // TODO: support SemiJoin
-=======
     if (!join.getJoinType().projectsRight()) {
       return; // TODO: support SemiJoin / AntiJoin
     }
@@ -191,8 +188,6 @@ public class ProjectJoinTransposeRule
 
     call.transformTo(topProject);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -221,34 +216,3 @@ public class ProjectJoinTransposeRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(LogicalProject.class, LogicalJoin.class)
-            .withPreserveExprCondition(PushProjector.ExprCondition.TRUE);
-
-    @Override default ProjectJoinTransposeRule toRule() {
-      return new ProjectJoinTransposeRule(this);
-    }
-
-    /** Defines when an expression should not be pushed. */
-    @ImmutableBeans.Property
-    PushProjector.ExprCondition preserveExprCondition();
-
-    /** Sets {@link #preserveExprCondition()}. */
-    Config withPreserveExprCondition(PushProjector.ExprCondition condition);
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Project> projectClass,
-                                  Class<? extends Join> joinClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(projectClass).oneInput(b1 ->
-                      b1.operand(joinClass).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

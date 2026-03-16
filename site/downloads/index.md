@@ -50,16 +50,10 @@ Release          | Date       | Commit   | Download
 {% endcomment %}{% capture d1 %}{{ post.date | date: "%F"}}{% endcapture %}{% comment %}
 {% endcomment %}{% capture d2 %}2017-08-31{% endcapture %}{% comment %}
 {% endcomment %}{% capture d3 %}2018-06-01{% endcapture %}{% comment %}
->>>>>>> 80385b9e0 (Add 1.22.0 release announcement (#255))
 {% endcomment %}{% capture d4 %}2020-03-01{% endcapture %}{% comment %}
 {% endcomment %}{% if d1 > d4 %}{% comment %}
 {% endcomment %}{% assign digest = "sha512" %}{% comment %}
 {% endcomment %}{% else if d1 > d2 %}{% comment %}
-<<<<<<< HEAD
-=======
-{% endcomment %}{% if d1 > d2 %}{% comment %}
-=======
->>>>>>> 80385b9e0 (Add 1.22.0 release announcement (#255))
 {% endcomment %}{% assign digest = "sha256" %}{% comment %}
 {% endcomment %}{% else %}{% comment %}
 {% endcomment %}{% assign digest = "md5" %}{% comment %}
@@ -79,7 +73,6 @@ Release          | Date       | Commit   | Download
 {% endcomment %}
 {% endfor %}
 
->>>>>>> 3a1b69782 (Site: News item for release 1.18)
 To download a source distribution for a particular release, click on
 the *tar* link (for older releases, *zip* format is also available).
 
@@ -90,22 +83,6 @@ For fast downloads, current source distributions are hosted on mirror servers;
 older source distributions are in the
 [archive](https://archive.apache.org/dist/calcite/)
 or [incubator archive](https://archive.apache.org/dist/incubator/calcite/).
-=======
-Choose a source distribution in either *tar* or *zip* format.
-
-For fast downloads, current source distributions are hosted on mirror servers;
-older source distributions are in the
-<<<<<<< HEAD
-<<<<<<< HEAD
-[archive](http://archive.apache.org/dist/calcite/) 
-or [incubator archive](http://archive.apache.org/dist/incubator/calcite/).
-=======
-[archive](https://archive.apache.org/dist/calcite/) 
-=======
-[archive](https://archive.apache.org/dist/calcite/)
->>>>>>> 319c0bed2 (Cosmetic)
-or [incubator archive](https://archive.apache.org/dist/incubator/calcite/).
->>>>>>> d35cac654 ([CALCITE-2577] Update links on download page to HTTPS)
 If a download from a mirror fails, retry, and the second download will likely
 succeed.
 
@@ -114,25 +91,15 @@ For security, hash and signature files are always hosted at
 
 # Verify the integrity of the files
 
->>>>>>> 3a1b69782 (Site: News item for release 1.18)
 You must verify the integrity of the downloaded file using the PGP
 signature (.asc file) or a hash (.sha256; .md5 for older releases).
 For more information why this must be done, please read
 [Verifying Apache Software Foundation Releases](https://www.apache.org/info/verification.html).
-<<<<<<< HEAD
-=======
-You must verify the integrity of the downloaded file using the PGP signature (.asc file) or a hash (.sha256, .md5 for older
-releases). For more information why this must be done, please read [Verifying Apache Software Foundation Releases](https://www.apache.org/info/verification.html).
-=======
->>>>>>> 3a1b69782 (Site: News item for release 1.18)
 
 To verify the signature using GPG or PGP, please do the following:
 
 1. Download the release artifact and the corresponding PGP signature from the table above.
-2. Download the [Apache Calcite KEYS](http://www.apache.org/dist/calcite/KEYS) file.
-=======
 2. Download the [Apache Calcite KEYS](https://www.apache.org/dist/calcite/KEYS) file.
->>>>>>> d35cac654 ([CALCITE-2577] Update links on download page to HTTPS)
 3. Import the KEYS file and verify the downloaded artifact using one of the following methods:
 {% highlight shell %}
 % gpg --import KEYS

@@ -19,7 +19,3 @@
  * Provides a pretty-printer for SQL statements.
  */
 package org.apache.calcite.sql.pretty;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -20,8 +20,6 @@ import org.apache.calcite.plan.RelHintsPropagator;
 import org.apache.calcite.plan.RelOptListener;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelOptRuleOperand;
->>>>>>> a509374ba ([CALCITE-2899] Deprecate RelTraitPropagationVisitor and remove its usages)
-=======
 import org.apache.calcite.plan.RelOptRuleOperandChildPolicy;
 import org.apache.calcite.plan.SubstitutionRule;
 import org.apache.calcite.rel.RelNode;
@@ -123,7 +121,6 @@ public class VolcanoRuleCall extends RelOptRuleCall {
                 this,
                 true);
         volcanoPlanner.getListener().ruleProductionSucceeded(event);
->>>>>>> f996861c4 ([CALCITE-3915] Add rule listener to report rule attempts and time at … (#340))
       }
 
       if (this.getRule() instanceof SubstitutionRule) {
@@ -292,7 +289,6 @@ public class VolcanoRuleCall extends RelOptRuleCall {
       final Collection<? extends RelNode> successors;
       if (ascending) {
         assert previousOperand.getParent() == operand;
-=======
         assert operand.getMatchedClass() != RelSubset.class;
         if (previousOperand.getMatchedClass() != RelSubset.class
             && previous instanceof RelSubset) {

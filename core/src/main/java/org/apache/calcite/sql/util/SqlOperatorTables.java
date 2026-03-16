@@ -40,6 +40,3 @@ public class SqlOperatorTables extends ReflectiveSqlOperatorTable {
     return chain(ImmutableList.copyOf(tables));
   }
 }
-// End SqlOperatorTables.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

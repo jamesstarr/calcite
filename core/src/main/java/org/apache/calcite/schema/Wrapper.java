@@ -25,8 +25,6 @@ public interface Wrapper {
   /** Finds an instance of an interface implemented by this object,
    * or returns null if this object does not support that interface. */
   <C> C unwrap(Class<C> aClass);
-<<<<<<< HEAD
-=======
 
   /** Finds an instance of an interface implemented by this object,
    * or returns {@link Optional#empty()} if this object does not support
@@ -35,15 +33,3 @@ public interface Wrapper {
     return Optional.ofNullable(unwrap(aClass));
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Finds an instance of an interface implemented by this object,
-   * or returns {@link Optional#empty()} if this object does not support
-   * that interface. */
-  default <C extends Object> Optional<C> maybeUnwrap(Class<C> aClass) {
-    return Optional.ofNullable(unwrap(aClass));
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -20,9 +20,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 import java.util.Objects;
-
-=======
->>>>>>> c1d7f8f6f ([CALCITE-2559] Update Checkstyle to 7.8.2)
 import javax.annotation.Nullable;
 
 import static org.apache.calcite.adapter.druid.DruidQuery.writeField;

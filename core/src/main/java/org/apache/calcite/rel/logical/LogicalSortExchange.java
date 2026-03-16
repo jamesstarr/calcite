@@ -72,6 +72,3 @@ public class LogicalSortExchange extends SortExchange {
         newDistribution, newCollation);
   }
 }
-
-// End LogicalSortExchange.java
-=======

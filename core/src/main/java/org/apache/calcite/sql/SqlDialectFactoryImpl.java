@@ -162,7 +162,6 @@ public class SqlDialectFactoryImpl implements SqlDialectFactory {
       return new H2SqlDialect(c);
     } else if (upperProductName.contains("VERTICA")) {
       return new VerticaSqlDialect(c);
-=======
     } else if (upperProductName.contains("SNOWFLAKE")) {
       return new SnowflakeSqlDialect(c);
     } else if (upperProductName.contains("SPARK")) {

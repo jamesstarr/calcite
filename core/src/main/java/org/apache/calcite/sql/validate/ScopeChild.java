@@ -43,21 +43,9 @@ public class ScopeChild {
     this.namespace = namespace;
     this.nullable = nullable;
   }
-<<<<<<< HEAD
-=======
 
   @Override public String toString() {
     return ordinal + ": " + name + ": " + namespace
         + (nullable ? " (nullable)" : "");
   }
 }
-<<<<<<< HEAD
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
-
-  @Override public String toString() {
-    return ordinal + ": " + name + ": " + namespace
-        + (nullable ? " (nullable)" : "");
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

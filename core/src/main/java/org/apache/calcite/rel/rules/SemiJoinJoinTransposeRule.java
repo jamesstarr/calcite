@@ -153,7 +153,6 @@ public class SemiJoinJoinTransposeRule
                   semiJoin.getCluster().getRexBuilder(),
                   fields,
                   adjustments));
-=======
 
     }
 
@@ -227,8 +226,6 @@ public class SemiJoinJoinTransposeRule
       adjustments[i] = adjustZ;
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -249,27 +246,3 @@ public class SemiJoinJoinTransposeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(LogicalJoin.class, Join.class);
-
-    @Override default SemiJoinJoinTransposeRule toRule() {
-      return new SemiJoinJoinTransposeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass,
-        Class<? extends Join> join2Class) {
-      return withOperandSupplier(b0 ->
-          b0.operand(joinClass).predicate(Join::isSemiJoin).inputs(b1 ->
-              b1.operand(join2Class).anyInputs()))
-          .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -36,21 +36,8 @@
   <!-- See http://checkstyle.sf.net/config_header.html -->
     <!-- Verify that EVERY source file has the appropriate license -->
   <module name="Header">
-    <property name="headerFile" value="src/main/config/checkstyle/header.java.txt"/>
-=======
     <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.java.txt"/>
-    <property name="fileExtensions" value="cql,java,jj,json,kt"/>
-=======
->>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
-  </module>
-  <module name="Header">
-    <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.properties.txt"/>
-    <property name="fileExtensions" value="properties"/>
-  </module>
-  <module name="Header">
-    <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.xml.txt"/>
-    <property name="fileExtensions" value="xml"/>
->>>>>>> be19299a5 ([CALCITE-2642] Checkstyle complains that maven-wrapper.properties is missing a header)
+    <property name="fileExtensions" value="cql,jj,json"/>
   </module>
   <module name="Header">
     <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.properties.txt"/>
@@ -60,8 +47,6 @@
     <property name="headerFile" value="${base_dir}/src/main/config/checkstyle/header.xml.txt"/>
     <property name="fileExtensions" value="xml"/>
   </module>
-
-
 
 
 
@@ -146,18 +131,7 @@
       <property name="processJavadoc" value="true"/>
     </module>
     <module name="IllegalImport" />
-    <module name="ImportOrder">
-      <property name="groups" value="org.apache.calcite.,org.apache.,au.com.,com.,io.,mondrian.,net.,org.,scala.,/^javax?\./"/>
-      <property name="ordered" value="true"/>
-      <property name="separated" value="true"/>
-      <property name="option" value="bottom"/>
-      <property name="sortStaticImportsAlphabetically" value="false"/>
-    </module>
-=======
->>>>>>> a1b3408f5 ([CALCITE-2905] Drop pom.xml files)
-=======
     <module name="AvoidStarImport" />
->>>>>>> 4d342f230 (Add AvoidStarImport Checkstyle rule (#321))
 
     <!-- Checks for Javadoc comments (tree walker).       -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
@@ -308,21 +282,11 @@
     <property name="influenceFormat" value="$1"/>
   </module>
 
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
 
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-=======
-  <module name="net.hydromatic.toolbox.checkstyle.HydromaticFileSetCheck"/>
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
-
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 
   <module name="SuppressionFilter">
     <property name="file" value="${base_dir}/src/main/config/checkstyle/suppressions.xml"/>

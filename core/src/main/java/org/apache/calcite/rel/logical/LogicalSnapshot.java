@@ -70,7 +70,3 @@ public class LogicalSnapshot extends Snapshot {
     return new LogicalSnapshot(cluster, traitSet, input, period);
   }
 }
-
-// End LogicalSnapshot.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

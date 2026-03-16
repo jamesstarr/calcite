@@ -46,8 +46,6 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.tools.RelRunner;
 import org.apache.calcite.util.ImmutableIntList;
 
->>>>>>> 1750bd07a ([] Use shaded avatica)
-=======
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;

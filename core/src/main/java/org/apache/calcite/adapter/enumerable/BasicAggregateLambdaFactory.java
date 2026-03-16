@@ -84,7 +84,3 @@ public class BasicAggregateLambdaFactory<TSource, TAccumulate, TResult, TKey>
     }
   }
 }
-
-// End BasicAggregateLambdaFactory.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

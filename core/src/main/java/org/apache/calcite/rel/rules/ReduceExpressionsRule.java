@@ -30,7 +30,6 @@ import org.apache.calcite.rel.core.Calc;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.Join;
 import org.apache.calcite.rel.core.Project;
-=======
 import org.apache.calcite.rel.core.Window;
 import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.calcite.rel.logical.LogicalFilter;
@@ -1320,83 +1319,3 @@ public abstract class ReduceExpressionsRule<C extends ReduceExpressionsRule.Conf
     }
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * An immutable object capturing the set of options to be used for reducing
-   * expressions.
-   */
-
-  /**
-   * <p> Update the options to control nullability matching.
-   *
-   * <p>The {@code matchNullability} flag comes into play when reducing a
-   * expression whose type is nullable. Suppose we are reducing an expression
-   * {@code CASE WHEN 'a' = 'a' THEN 1 ELSE NULL END}. Before reduction the
-   * type is {@code INTEGER} (nullable), but after reduction the literal 1 has
-   * type {@code INTEGER NOT NULL}.
-   *
-   * <p>In some situations it is more important to preserve types; in this
-   * case you should use {@code matchNullability = true} (which used to be
-   * the default behavior of this method), and it will cast the literal to
-   * {@code INTEGER} (nullable).
-   *
-   * <p>In other situations, you would rather propagate the new stronger type,
-   * because it may allow further optimizations later; pass
-   * {@code matchNullability = false} and no cast will be added, but you may
-   * need to adjust types elsewhere in the expression tree.
-   *
-   * @param matchNullability Whether Calcite should add a CAST to a literal
-   *                         resulting from simplification and expression if the
-   *                         expression had nullable type and the literal is
-   *                         NOT NULL
-   * @return A new set of ReductionOptions
-   */
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    @Override ReduceExpressionsRule<?> toRule();
-
-    /** Whether to add a CAST when a nullable expression
-     * reduces to a NOT NULL literal. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(true)
-    boolean matchNullability();
-
-    /** Sets {@link #matchNullability()}. */
-    Config withMatchNullability(boolean matchNullability);
-
-    /** Whether to treat
-     * {@link SqlOperator#isDynamicFunction() dynamic functions} as constants.
-     *
-     * <p>When false (the default), calls to dynamic functions (e.g.
-     * {@code USER}) are not reduced. When true, calls to dynamic functions
-     * are treated as a constant, and reduced. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean treatDynamicCallsAsConstant();
-
-    /** Sets {@link #treatDynamicCallsAsConstant()}. */
-    Config withTreatDynamicCallsAsConstant(boolean treatDynamicCallsAsConstant);
-
-    /**
-     * Whether UNKNOWN will be treated as false. Typically used in the context of a filter
-     * reduction
-     *
-     * @return If Unknown (null) values are treated as false.
-     */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean isUnknownAsFalse();
-
-    /** Sets {@link #isUnknownAsFalse()}. */
-    Config withUnknownAsFalse(boolean unknownAsFalse);
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends RelNode> relClass) {
-      return withOperandSupplier(b -> b.operand(relClass).anyInputs())
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

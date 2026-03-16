@@ -36,8 +36,6 @@ import org.apache.calcite.util.Pair;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
->>>>>>> 01a1681b6 ([CALCITE-2454] Avoid treating Project(x=1) and Project(x=1) equal in case the type of 1 is int in the first rel and long in the second one)
-=======
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 

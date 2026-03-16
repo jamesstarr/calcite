@@ -647,8 +647,6 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
   @Override public SqlTester getTester() {
-    return new SqlTesterImpl(ADVISOR_TEST_FACTORY);
-=======
     return new SqlValidatorTester(ADVISOR_TEST_FACTORY);
   }
 
@@ -1396,7 +1394,6 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
         "COLUMN(EMPNO)\n"
             + "COLUMN(ENAME)\n"
             + "KEYWORD(ELEMENT)\n"
-=======
             + "KEYWORD(EVERY)\n"
             + "KEYWORD(EXISTS)\n"
             + "KEYWORD(EXP)\n"
@@ -1687,8 +1684,3 @@ class SqlAdvisorTest extends SqlValidatorTestCase {
   }
 
 }
-<<<<<<< HEAD
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

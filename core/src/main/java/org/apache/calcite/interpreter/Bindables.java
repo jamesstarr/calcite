@@ -597,7 +597,6 @@ public class Bindables {
 
     public Node implement(InterpreterImplementor implementor) {
       return new SetOpNode(implementor.compiler, this);
->>>>>>> aa6a1fa65 ([CALCITE-3407] Implement MINUS and INTERSECT in interpreter (Wang Yanlin))
     }
   }
 
@@ -854,8 +853,6 @@ public class Bindables {
           winAgg.getConstants(), winAgg.getRowType(), winAgg.groups);
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Implementation of {@link org.apache.calcite.rel.core.Match}
    * in bindable convention. */
@@ -927,76 +924,3 @@ public class Bindables {
   }
 
 }
-<<<<<<< HEAD
-
-  /** Implementation of {@link org.apache.calcite.rel.core.Match}
-   * in bindable convention. */
-  public static class BindableMatch extends Match implements BindableRel {
-    /** Creates a BindableMatch. */
-    BindableMatch(RelOptCluster cluster, RelTraitSet traitSet, RelNode input,
-        RelDataType rowType, RexNode pattern, boolean strictStart,
-        boolean strictEnd, Map<String, RexNode> patternDefinitions,
-        Map<String, RexNode> measures, RexNode after,
-        Map<String, ? extends SortedSet<String>> subsets, boolean allRows,
-        ImmutableBitSet partitionKeys, RelCollation orderKeys,
-        RexNode interval) {
-      super(cluster, traitSet, input, rowType, pattern, strictStart, strictEnd,
-          patternDefinitions, measures, after, subsets, allRows, partitionKeys,
-          orderKeys, interval);
-    }
-
-    @Override public RelNode copy(RelTraitSet traitSet, List<RelNode> inputs) {
-      return new BindableMatch(getCluster(), traitSet, inputs.get(0), rowType,
-          pattern, strictStart, strictEnd, patternDefinitions, measures, after,
-          subsets, allRows, partitionKeys, orderKeys, interval);
-    }
-
-    public Class<Object[]> getElementType() {
-      return Object[].class;
-    }
-
-    public Enumerable<Object[]> bind(DataContext dataContext) {
-      return help(dataContext, this);
-    }
-
-    public Node implement(InterpreterImplementor implementor) {
-      return new MatchNode(implementor.compiler, this);
-    }
-  }
-
-  /**
-   * Rule to convert a {@link org.apache.calcite.rel.logical.LogicalMatch}
-   * to a {@link BindableMatch}.
-   */
-  public static class BindableMatchRule extends ConverterRule {
-
-    /**
-     * Creates a BindableMatchRule.
-     *
-     * @param relBuilderFactory Builder for relational expressions
-     */
-    public BindableMatchRule(RelBuilderFactory relBuilderFactory) {
-      super(LogicalMatch.class, (Predicate<RelNode>) r -> true,
-          Convention.NONE, BindableConvention.INSTANCE, relBuilderFactory,
-          "BindableMatchRule");
-    }
-
-    public RelNode convert(RelNode rel) {
-      final LogicalMatch match = (LogicalMatch) rel;
-      final RelTraitSet traitSet =
-          match.getTraitSet().replace(BindableConvention.INSTANCE);
-      final RelNode input = match.getInput();
-      final RelNode convertedInput =
-          convert(input,
-              input.getTraitSet().replace(BindableConvention.INSTANCE));
-      return new BindableMatch(rel.getCluster(), traitSet, convertedInput,
-          match.getRowType(), match.getPattern(), match.isStrictStart(),
-          match.isStrictEnd(), match.getPatternDefinitions(),
-          match.getMeasures(), match.getAfter(), match.getSubsets(),
-          match.isAllRows(), match.getPartitionKeys(), match.getOrderKeys(),
-          match.getInterval());
-    }
-  }
-
-}
-=======

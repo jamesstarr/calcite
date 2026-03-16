@@ -143,7 +143,3 @@ public class JdbcCatalogSchema extends AbstractSchema {
     }
   }
 }
-
-// End JdbcCatalogSchema.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

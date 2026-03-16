@@ -97,7 +97,100 @@ public class MultiJoinOptimizeBushyRule
           ? Util.printWriter(System.out)
           : null;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
+  private static final List<SqlKind> EQUALITY = ImmutableList.of(
+          SqlKind.EQUALS, SqlKind.IS_NOT_DISTINCT_FROM
+  );
+
+  private static final List<SqlKind> EQUI_JOIN = ImmutableList.of(
+          SqlKind.EQUALS, SqlKind.IS_NOT_DISTINCT_FROM, SqlKind.AND
+  );
+
+  /** Creates a MultiJoinOptimizeBushyRule. */
+  protected MultiJoinOptimizeBushyRule(Config config) {
+    super(config);
+  }
+
+  @Deprecated // to be removed before 2.0
+  public MultiJoinOptimizeBushyRule(RelBuilderFactory relBuilderFactory) {
+    this(Config.DEFAULT.withRelBuilderFactory(relBuilderFactory)
+            .as(Config.class));
+  }
+
+  @Deprecated // to be removed before 2.0
+  public MultiJoinOptimizeBushyRule(RelFactories.JoinFactory joinFactory,
+      RelFactories.ProjectFactory projectFactory) {
+    this(RelBuilder.proto(joinFactory, projectFactory));
+  }
+
+  @Override public void onMatch(RelOptRuleCall call) {
+    final MultiJoin multiJoinRel = call.rel(0);
+    final RexBuilder rexBuilder = multiJoinRel.getCluster().getRexBuilder();
+    final RelBuilder relBuilder = call.builder();
+    final RelMetadataQuery mq = call.getMetadataQuery();
+
+    final LoptMultiJoin multiJoin = new LoptMultiJoin(multiJoinRel);
+
+    final List<Vertex> vertexes = new ArrayList<>();
+    int x = 0;
+    for (int i = 0; i < multiJoin.getNumJoinFactors(); i++) {
+      final RelNode rel = multiJoin.getJoinFactor(i);
+      double cost = mq.getRowCount(rel);
+      Double rowReduction = mq.getPercentageOriginalRows(rel);
+      if (rowReduction == null) {
+        rowReduction = 1.0;
+      }
+
+      vertexes.add(new LeafVertex(i, rel, cost, x, rowReduction));
+      x += rel.getRowType().getFieldCount();
+    }
+    assert x == multiJoin.getNumTotalFields();
+
+    final List<Edge> unusedEdges = new ArrayList<>();
+    List<RexNode> remainingConditions = new ArrayList<>();
+    for (RexNode node : multiJoin.getJoinFilters()) {
+      Edge e = multiJoin.createEdge(node);
+      if (e.factors.cardinality() != 2) {
+        remainingConditions.add(node);
+      } else {
+        unusedEdges.add(multiJoin.createEdge(node));
+      }
+    }
+
+    Iterator<Edge> iter = unusedEdges.iterator();
+    Map<ImmutableBitSet, Edge> edgeMap = new HashMap<>();
+    while (iter.hasNext()) {
+      Edge edge = iter.next();
+      if (!edge.condition.isA(SqlKind.EQUALS)) {
+        continue;
+      }
+      iter.remove();
+      Edge other = edgeMap.get(edge.factors);
+      if (other == null) {
+        edgeMap.put(edge.factors, edge);
+        continue;
+      }
+      List<RexNode> conjunctions = new ArrayList<>();
+      conjunctions.addAll(RelOptUtil.conjunctions(other.condition));
+      conjunctions.add(edge.condition);
+      ImmutableBitSet combinedColumns =
+              edge.columns.rebuild().addAll(other.columns).build();
+      Edge combined = new Edge(
+              RexUtil.composeConjunction(
+                      rexBuilder,
+                      conjunctions,
+                      false
+              ),
+              edge.factors,
+              combinedColumns);
+      edgeMap.put(combined.factors, combined);
+    }
+
+    Comparator<Edge> edgeComparator = createComparator(multiJoin,
+            vertexes, mq);
+
+    unusedEdges.addAll(edgeMap.values());
+
+
     final List<Edge> usedEdges = new ArrayList<>();
     for (;;) {
       final int edgeOrdinal = chooseBestEdge(unusedEdges, edgeComparator);
@@ -714,8 +807,6 @@ public class MultiJoinOptimizeBushyRule
       super(id, factors, cost, rowReduction);
       this.leftFactor = leftFactor;
       this.rightFactor = rightFactor;
-      this.conditions = Preconditions.checkNotNull(conditions);
-=======
       this.conditions = Objects.requireNonNull(conditions);
       this.coreFactor = coreFactor;
     }
@@ -734,8 +825,6 @@ public class MultiJoinOptimizeBushyRule
           + ")";
     }
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -748,18 +837,3 @@ public class MultiJoinOptimizeBushyRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b -> b.operand(MultiJoin.class).anyInputs())
-            .as(Config.class);
-
-    @Override default MultiJoinOptimizeBushyRule toRule() {
-      return new MultiJoinOptimizeBushyRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

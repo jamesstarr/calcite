@@ -17,8 +17,6 @@
 package org.apache.calcite.test;
 
 import org.apache.calcite.config.CalciteSystemProperty;
->>>>>>> a84b64381 ([CALCITE-2859] Centralize Calcite system properties)
-=======
 import org.apache.calcite.util.TestUtil;
 
 import com.google.common.collect.ImmutableSet;

@@ -221,10 +221,7 @@ public class SqlDdlNodes {
                 .addAll(columnList)
                 .build());
     return new SqlSelect(p, null, selectList, from, null, null, null, null,
-        null, null, null, null);
-=======
         null, null, null, null, null);
->>>>>>> 5a56f040b (DX-56145 Qualify Support in Calcite)
   }
 
   /** Populates the table called {@code name} by executing {@code query}. */
@@ -259,8 +256,6 @@ public class SqlDdlNodes {
       throw new RuntimeException(e);
     }
   }
-<<<<<<< HEAD
-=======
 
   /** File type for CREATE FUNCTION. */
   public enum FileType {
@@ -269,15 +264,3 @@ public class SqlDdlNodes {
     ARCHIVE
   }
 }
-<<<<<<< HEAD
->>>>>>> 7f14a7c1a ([CALCITE-2663] Add CREATE and DROP FUNCTION (ambition119))
-
-  /** File type for CREATE FUNCTION. */
-  public enum FileType {
-    FILE,
-    JAR,
-    ARCHIVE
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

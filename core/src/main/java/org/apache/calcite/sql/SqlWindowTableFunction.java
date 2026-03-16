@@ -67,26 +67,6 @@ public class SqlWindowTableFunction extends SqlFunction {
             RESOURCE.unknownIdentifier(colName));
       }
     }
-    final RelDataType type2 = validator.getValidatedNodeType(callBinding.operand(2));
-    if (!SqlTypeUtil.isInterval(type2)) {
-      return throwValidationSignatureErrorOrReturnFalse(callBinding, throwOnFailure);
-    }
-    return true;
-  }
-
-  private boolean throwValidationSignatureErrorOrReturnFalse(SqlCallBinding callBinding,
-      boolean throwOnFailure) {
-    if (throwOnFailure) {
-      throw callBinding.newValidationSignatureError();
-    } else {
-      return false;
-    }
-  }
-
-  @Override public String getAllowedSignatures(String opNameToUse) {
-    return getName() + "(TABLE table_name, DESCRIPTOR(col1, col2 ...), datetime interval)";
-=======
->>>>>>> 54c668e21 ([CALCITE-3737] HOP Table Function (Rui Wang) (#369))
   }
 
   /**

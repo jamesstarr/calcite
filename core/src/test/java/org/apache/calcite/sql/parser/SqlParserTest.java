@@ -575,7 +575,6 @@ public class SqlParserTest {
 
   private static final ThreadLocal<boolean[]> LINUXIFY =
       ThreadLocal.withInitial(() -> new boolean[] {true});
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 
   private static final SqlWriterConfig SQL_WRITER_CONFIG =
       SqlPrettyWriter.config()
@@ -638,7 +637,6 @@ public class SqlParserTest {
     final SqlParser.Config config =
         transform.apply(configBuilder).build();
     return SqlParser.create(source, config);
->>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
   }
 
   @Deprecated // to be removed before 1.23
@@ -1213,7 +1211,6 @@ public class SqlParserTest {
         .ok("(ROW(DATE '1969-01-05', INTERVAL '2-3' YEAR TO MONTH))");
   }
 
->>>>>>> 4538e3908 ([CALCITE-3892] Make junit test classes and methods non-public where p… (#308))
   @Test void testOverlaps() {
     final String[] ops = {
         "overlaps", "equals", "precedes", "succeeds",
@@ -3148,25 +3145,6 @@ public class SqlParserTest {
             + "FROM `T`");
   }
 
-<<<<<<< HEAD
-  @Test void testSqlInlineComment() {
-    sql("select 1 from t --this is a comment\n")
-        .ok("SELECT 1\n"
-            + "FROM `T`");
-    sql("select 1 from t--\n")
-        .ok("SELECT 1\n"
-            + "FROM `T`");
-    sql("select 1 from t--this is a comment\n"
-        + "where a>b-- this is comment\n")
-        .ok("SELECT 1\n"
-            + "FROM `T`\n"
-            + "WHERE (`A` > `B`)");
-    sql("select 1 from t\n--select")
-        .ok("SELECT 1\n"
-            + "FROM `T`");
-  }
-
-=======
   @Test void testMultilineComment() {
     // on single line
     sql("select 1 /* , 2 */, 3 from t")
@@ -9160,8 +9138,6 @@ public class SqlParserTest {
    */
   protected interface Tester {
     void checkList(String sql, List<String> expected);
-<<<<<<< HEAD
-=======
 
     void check(String sql, SqlDialect dialect, String expected,
         Consumer<SqlParser> parserChecker);
@@ -9183,15 +9159,10 @@ public class SqlParserTest {
    */
   protected class TesterImpl implements Tester {
     private void check(
-          SqlNode sqlNode,
-          String expected) {
-=======
         SqlNode sqlNode,
         SqlDialect dialect,
         String expected) {
       // no dialect, always parenthesize
-      final String actual = sqlNode.toSqlString(null, true).getSql();
-=======
       final String actual = sqlNode.toSqlString(dialect, true).getSql();
       TestUtil.assertEqualsVerbose(expected, linux(actual));
     }
@@ -9238,8 +9209,6 @@ public class SqlParserTest {
         sqlNodeList = getSqlParser(sql).parseStmtList();
       } catch (SqlParseException e) {
         throw new RuntimeException("Error while parsing SQL: " + sql, e);
-<<<<<<< HEAD
-=======
       }
       return sqlNodeList;
     }
@@ -9453,43 +9422,6 @@ public class SqlParserTest {
       // Now unparse again in the given dialect.
       // If the unparser is not including sufficient parens to override
       // precedence, the problem will show up here.
-<<<<<<< HEAD
-      checkList(sqlNodeList2, expected);
-
-      final Random random = new Random();
-      final String sql3 = toSqlString(sqlNodeList, randomize(random));
-      assertThat(sql3, notNullValue());
-    }
-
-    @Override public void check(String sql, SqlDialect dialect, String expected,
-        Consumer<SqlParser> parserChecker) {
-      SqlNode sqlNode = parseStmtAndHandleEx(sql,
-          dialect == null ? UnaryOperator.identity() : dialect::configureParser,
-          parserChecker);
-      // Unparse with the given dialect, always parenthesize.
-      final String actual = sqlNode.toSqlString(dialect, true).getSql();
-      assertEquals(expected, linux(actual));
-      // Unparse again in Calcite dialect (which we can parse), and
-      // minimal parentheses.
-      final String sql1 =
-              sqlNode.toSqlString(CalciteSqlDialect.DEFAULT, false).getSql();
-      // Parse and unparse again.
-      SqlNode sqlNode2;
-      final Quoting q = quoting;
-      try {
-        quoting = Quoting.DOUBLE_QUOTE;
-        sqlNode2 = parseStmtAndHandleEx(sql1, b -> b, parser -> { });
-      } finally {
-        quoting = q;
-      }
-      final String sql2 =
-              sqlNode2.toSqlString(CalciteSqlDialect.DEFAULT, false).getSql();
-      // Should be the same as we started with.
-      assertEquals(sql1, sql2);
-      // Now unparse again in the given dialect.
-      // If the unparser is not including sufficient parens to override
-      // precedence, the problem will show up here.
-=======
       final String actual2 = sqlNode2.toSqlString(dialect, true).getSql();
       assertEquals(expected, linux(actual2));
     }

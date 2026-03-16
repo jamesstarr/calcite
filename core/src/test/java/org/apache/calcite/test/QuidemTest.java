@@ -61,8 +61,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Test that runs every Quidem file as a test.
  */
 public abstract class QuidemTest {
->>>>>>> 3ab086683 ([CALCITE-2457] Migrate core parameterized to JUnit5, and make core junit5-only)
-=======
 
   private static final Pattern PATTERN = Pattern.compile("\\.iq$");
 
@@ -132,16 +130,6 @@ public abstract class QuidemTest {
       outFile = new File(inFile.getAbsoluteFile().getParent(), u2n("surefire/") + path);
     }
     Util.discard(outFile.getParentFile().mkdirs());
-<<<<<<< HEAD
-<<<<<<< HEAD
-    try (Reader reader = Util.reader(inFile);
-         Writer writer = Util.printWriter(outFile);
-         Closer closer = new Closer()) {
-=======
-    try (final Reader reader = Util.reader(inFile);
-         final Writer writer = Util.printWriter(outFile);
-         final Closer closer = new Closer()) {
-=======
     try (Reader reader = Util.reader(inFile);
          Writer writer = Util.printWriter(outFile);
          Closer closer = new Closer()) {
@@ -255,8 +243,6 @@ public abstract class QuidemTest {
         return CalciteAssert.that()
             .with(CalciteAssert.Config.REGULAR)
             .with(CalciteAssert.SchemaSpec.POST)
-            .withDefaultSchema("POST")
-=======
             .connect();
       case "oraclefunc":
         return CalciteAssert.that()

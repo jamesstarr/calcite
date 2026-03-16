@@ -228,12 +228,6 @@ public abstract class AbstractRelNode implements RelNode {
     return this;
   }
 
-  @SuppressWarnings("deprecation")
-  public final RelOptCost computeSelfCost(RelOptPlanner planner) {
-    return computeSelfCost(planner, getCluster().getMetadataQuery());
-  }
-
-=======
   public RelOptCost computeSelfCost(RelOptPlanner planner,
       RelMetadataQuery mq) {
     // by default, assume cost is proportional to number of rows

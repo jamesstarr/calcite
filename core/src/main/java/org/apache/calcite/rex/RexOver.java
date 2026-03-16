@@ -192,8 +192,6 @@ public class RexOver extends RexCall {
       throw OverFound.INSTANCE;
     }
   }
-<<<<<<< HEAD
-=======
 
   @Override public boolean equals(Object obj) {
     if (this == obj) {
@@ -212,24 +210,3 @@ public class RexOver extends RexCall {
   }
 
 }
-<<<<<<< HEAD
-
-  @Override public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    RexCall rexCall = (RexCall) obj;
-    return toString().equals(((RexCall) obj).toString())
-            && type.equals(rexCall.getType());
-  }
-
-  @Override public int hashCode() {
-    return toString().hashCode();
-  }
-
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

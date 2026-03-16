@@ -175,9 +175,6 @@ public class HintStrategyTable {
     }
   }
 
-  //~ Inner Class ------------------------------------------------------------
-
-=======
   /**
    * Builder for {@code HintStrategyTable}.
    */

@@ -89,8 +89,6 @@ public class OracleSqlDialect extends SqlDialect {
     String castSpec;
     switch (type.getSqlTypeName()) {
     case SMALLINT:
-      castSpec = "_NUMBER(5)";
-=======
       castSpec = "NUMBER(5)";
       break;
     case INTEGER:

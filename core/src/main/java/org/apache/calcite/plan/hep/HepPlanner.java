@@ -164,8 +164,6 @@ public class HepPlanner extends AbstractRelOptPlanner {
       removeRule(rule);
     }
     this.materializations.clear();
-<<<<<<< HEAD
-=======
   }
 
   // implement RelOptPlanner
@@ -1041,7 +1039,6 @@ public class HepPlanner extends AbstractRelOptPlanner {
     // vertices and all ancestors on each transformation.
     return nTransformations;
   }
->>>>>>> e891d5bff ([CALCITE-1870] Lattice suggester)
 
   @Override public ImmutableList<RelOptMaterialization> getMaterializations() {
     return ImmutableList.copyOf(materializations);
@@ -1051,15 +1048,3 @@ public class HepPlanner extends AbstractRelOptPlanner {
     materializations.add(materialization);
   }
 }
-<<<<<<< HEAD
-
-  @Override public ImmutableList<RelOptMaterialization> getMaterializations() {
-    return ImmutableList.copyOf(materializations);
-  }
-
-  @Override public void addMaterialization(RelOptMaterialization materialization) {
-    materializations.add(materialization);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

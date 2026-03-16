@@ -62,8 +62,6 @@ public class TableScanRule extends RelRule<RelRule.Config>
             ViewExpanders.simpleContext(oldRel.getCluster()));
     call.transformTo(newRel);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -76,19 +74,3 @@ public class TableScanRule extends RelRule<RelRule.Config>
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b -> b.operand(LogicalTableScan.class).noInputs())
-            .as(Config.class);
-
-    @Override default TableScanRule toRule() {
-      return new TableScanRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

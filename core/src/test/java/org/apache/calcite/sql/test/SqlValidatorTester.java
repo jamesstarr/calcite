@@ -26,29 +26,12 @@ import java.util.function.UnaryOperator;
 public class SqlValidatorTester extends AbstractSqlTester {
 
   public SqlValidatorTester(SqlTestFactory factory) {
->>>>>>> 0b1e41df1 ([CALCITE-3327] Simplify SqlValidatorTest and SqlParserTest by making test methods fluent)
     this(factory, UnaryOperator.identity());
   }
 
   SqlValidatorTester(SqlTestFactory factory,
       UnaryOperator<SqlValidator> validatorTransform) {
     super(factory, validatorTransform);
-<<<<<<< HEAD
-  }
-
-  @Override protected SqlTester with(SqlTestFactory factory) {
-    return new SqlValidatorTester(factory, validatorTransform);
-  }
-
-  public SqlTester withValidatorTransform(
-      UnaryOperator<UnaryOperator<SqlValidator>> transform) {
-    return new SqlValidatorTester(factory,
-        transform.apply(validatorTransform));
-  }
-}
-=======
-    super(factory);
-=======
   }
 
   @Override protected SqlTester with(SqlTestFactory factory) {

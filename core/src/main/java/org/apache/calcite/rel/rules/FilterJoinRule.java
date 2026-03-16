@@ -400,8 +400,6 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
   public interface Predicate {
     boolean apply(Join join, JoinRelType joinType, RexNode exp);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -423,28 +421,3 @@ public abstract class FilterJoinRule<C extends FilterJoinRule.Config>
     Config withPredicate(Predicate predicate);
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    /** Whether to try to strengthen join-type, default false. */
-    @ImmutableBeans.Property
-    @ImmutableBeans.BooleanDefault(false)
-    boolean isSmart();
-
-    /** Sets {@link #isSmart()}. */
-    Config withSmart(boolean smart);
-
-    /** Predicate that returns whether a filter is valid in the ON clause of a
-     * join for this particular kind of join. If not, Calcite will push it back to
-     * above the join. */
-    @ImmutableBeans.Property
-    Predicate getPredicate();
-
-    /** Sets {@link #getPredicate()} ()}. */
-    Config withPredicate(Predicate predicate);
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

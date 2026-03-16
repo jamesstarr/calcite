@@ -164,17 +164,6 @@ public class AggregateProjectPullUpConstantsRule extends RelOptRule {
       if (i >= groupCount) {
         // Aggregate expressions' names and positions are unchanged.
         expr = relBuilder.field(i - map.size());
-      } else if (map.containsKey(i)) {
-        // Re-generate the constant expression in the project.
-        RelDataType originalType =
-            aggregate.getRowType().getFieldList().get(projects.size()).getType();
-        if (!originalType.equals(map.get(i).getType())) {
-          expr = rexBuilder.makeCast(originalType, map.get(i), true);
-        } else {
-          expr = map.get(i);
-        }
-=======
->>>>>>> b0f0cb108 ([CALCITE-2232] Assertion error on AggregatePullUpConstantsRule while adjusting Aggregate indices)
       } else {
         int pos = aggregate.getGroupSet().nth(i);
         if (map.containsKey(pos)) {

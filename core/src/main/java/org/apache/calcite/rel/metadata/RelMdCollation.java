@@ -446,8 +446,6 @@ public class RelMdCollation
     }
     return builder.build();
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Returns the collation of {@link EnumerableHashJoin} based on its inputs and the join type.
@@ -511,69 +509,3 @@ public class RelMdCollation
     return ImmutableList.of();
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Returns the collation of {@link EnumerableHashJoin} based on its inputs and the join type.
-   */
-  public static List<RelCollation> enumerableHashJoin(RelMetadataQuery mq,
-      RelNode left, RelNode right, JoinRelType joinType) {
-    return enumerableJoin0(mq, left, right, joinType);
-  }
-
-  /**
-   * Returns the collation of {@link EnumerableNestedLoopJoin} based on its inputs
-   * and the join type.
-   */
-  public static List<RelCollation> enumerableNestedLoopJoin(RelMetadataQuery mq,
-      RelNode left, RelNode right, JoinRelType joinType) {
-    return enumerableJoin0(mq, left, right, joinType);
-  }
-
-  public static List<RelCollation> enumerableCorrelate(RelMetadataQuery mq,
-      RelNode left, RelNode right, JoinRelType joinType) {
-    // The current implementation always preserve the sort order of the left input
-    return mq.collations(left);
-  }
-
-  public static List<RelCollation> enumerableSemiJoin(RelMetadataQuery mq,
-      RelNode left, RelNode right) {
-    // The current implementation always preserve the sort order of the left input
-    return mq.collations(left);
-  }
-
-  public static List<RelCollation> enumerableBatchNestedLoopJoin(RelMetadataQuery mq,
-      RelNode left, RelNode right, JoinRelType joinType) {
-    // The current implementation always preserve the sort order of the left input
-    return mq.collations(left);
-  }
-
-  private static List<RelCollation> enumerableJoin0(RelMetadataQuery mq,
-      RelNode left, RelNode right, JoinRelType joinType) {
-    // The current implementation can preserve the sort order of the left input if one of the
-    // following conditions hold:
-    // (i) join type is INNER or LEFT;
-    // (ii) RelCollation always orders nulls last.
-    final ImmutableList<RelCollation> leftCollations = mq.collations(left);
-    switch (joinType) {
-    case SEMI:
-    case ANTI:
-    case INNER:
-    case LEFT:
-      return leftCollations;
-    case RIGHT:
-    case FULL:
-      for (RelCollation collation : leftCollations) {
-        for (RelFieldCollation field : collation.getFieldCollations()) {
-          if (!(RelFieldCollation.NullDirection.LAST == field.nullDirection)) {
-            return ImmutableList.of();
-          }
-        }
-      }
-      return leftCollations;
-    }
-    return ImmutableList.of();
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

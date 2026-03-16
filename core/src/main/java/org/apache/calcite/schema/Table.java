@@ -63,11 +63,21 @@ public interface Table {
   /** Type of table. */
   Schema.TableType getJdbcTableType();
 
->>>>>>> 9d2c4bca7 (Revert "Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)"")
   /**
    * Determines whether the given {@code column} has been rolled up.
    * */
   boolean isRolledUp(String column);
->>>>>>> 0b7d6d6d5 (Revert "[CALCITE-1787] Add ThetaSketch and HyperUnique support to Calcite via rolled up columns (Zain Humayun)")
+
+  /**
+   * Determines whether the given rolled up column can be used inside the given aggregate function.
+   * You can assume that {@code isRolledUp(column)} is {@code true}.
+   *
+   * @param column The column name for which {@code isRolledUp} is true
+   * @param call The aggregate call
+   * @param parent Parent node of {@code call} in the {@link SqlNode} tree
+   * @param config Config settings. May be null
+   * @return true iff the given aggregate call is valid
+   */
+  boolean rolledUpColumnValidInsideAgg(String column, SqlCall call,
+      SqlNode parent, CalciteConnectionConfig config);
 }
-=======

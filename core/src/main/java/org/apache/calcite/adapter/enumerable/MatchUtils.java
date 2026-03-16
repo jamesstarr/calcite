@@ -47,7 +47,3 @@ public class MatchUtils {
     System.out.println(s);
   }
 }
-
-// End MatchUtils.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

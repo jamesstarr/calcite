@@ -472,8 +472,6 @@ public class RelMdColumnUniqueness
     }
     return Pair.of(leftBuilder.build(), rightBuilder.build());
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Deduce constant columns from predicates of rel and return the union
@@ -497,29 +495,3 @@ public class RelMdColumnUniqueness
     return checkingColumns;
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Deduce constant columns from predicates of rel and return the union
-   * bitsets of checkingColumns and the constant columns.
-   */
-  private static ImmutableBitSet decorateWithConstantColumnsFromPredicates(
-      ImmutableBitSet checkingColumns, RelNode rel, RelMetadataQuery mq) {
-    final RelOptPredicateList predicates = mq.getPulledUpPredicates(rel);
-    if (predicates != null) {
-      final Set<Integer> constantIndexes = new HashSet();
-      predicates.constantMap.keySet().forEach(rex -> {
-        if (rex instanceof RexInputRef) {
-          constantIndexes.add(((RexInputRef) rex).getIndex());
-        }
-      });
-      if (!constantIndexes.isEmpty()) {
-        return checkingColumns.union(ImmutableBitSet.of(constantIndexes));
-      }
-    }
-    // If no constant columns deduced, return the original "checkingColumns".
-    return checkingColumns;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

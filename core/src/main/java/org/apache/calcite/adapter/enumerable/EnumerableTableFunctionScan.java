@@ -68,8 +68,6 @@ public class EnumerableTableFunctionScan extends TableFunctionScan
   public Result implement(EnumerableRelImplementor implementor, Prefer pref) {
     if (isImplementorDefined((RexCall) getCall())) {
       return tvfImplementorBasedImplement(implementor, pref);
-<<<<<<< HEAD
-=======
     } else {
       return defaultTableFunctionImplement(implementor, pref);
     }
@@ -101,65 +99,6 @@ public class EnumerableTableFunctionScan extends TableFunctionScan
     final Method method = tableFunction.method;
     return QueryableTable.class.isAssignableFrom(method.getReturnType());
   }
-
-  private Result defaultTableFunctionImplement(
-      EnumerableRelImplementor implementor, Prefer pref) {
-    BlockBuilder bb = new BlockBuilder();
-    // Non-array user-specified types are not supported yet
-    final JavaRowFormat format;
-    if (getElementType() == null) {
-      format = JavaRowFormat.ARRAY;
-    } else if (rowType.getFieldCount() == 1 && isQueryable()) {
-      format = JavaRowFormat.SCALAR;
-    } else if (getElementType() instanceof Class
-        && Object[].class.isAssignableFrom((Class) getElementType())) {
-      format = JavaRowFormat.ARRAY;
->>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
-    } else {
-      return defaultTableFunctionImplement(implementor, pref);
-    }
-    final PhysType physType =
-        PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), format,
-            false);
-    RexToLixTranslator t = RexToLixTranslator.forAggregation(
-        (JavaTypeFactory) getCluster().getTypeFactory(), bb, null,
-        implementor.getConformance());
-    t = t.setCorrelates(implementor.allCorrelateVariables);
-    bb.add(Expressions.return_(null, t.translate(getCall())));
-    return implementor.result(physType, bb.toBlock());
-  }
-
-  private Result tvfImplementorBasedImplement(
-      EnumerableRelImplementor implementor, Prefer pref) {
-    final JavaTypeFactory typeFactory = implementor.getTypeFactory();
-    final BlockBuilder builder = new BlockBuilder();
-    final EnumerableRel child = (EnumerableRel) getInputs().get(0);
-    final Result result =
-        implementor.visitChild(this, 0, child, pref);
-    final PhysType physType = PhysTypeImpl.of(
-        typeFactory, getRowType(), pref.prefer(result.format));
-    final Expression inputEnumerable = builder.append(
-        "_input", result.block, false);
-    final SqlConformance conformance =
-        (SqlConformance) implementor.map.getOrDefault("_conformance",
-            SqlConformanceEnum.DEFAULT);
-
-    builder.add(
-        RexToLixTranslator.translateTableFunction(
-            typeFactory,
-            conformance,
-            builder,
-            DataContext.ROOT,
-            (RexCall) getCall(),
-            inputEnumerable,
-            result.physType,
-            physType
-        )
-    );
-
-    return implementor.result(physType, builder.toBlock());
-  }
-<<<<<<< HEAD
 
   private Result defaultTableFunctionImplement(
       EnumerableRelImplementor implementor, Prefer pref) {
@@ -217,6 +156,4 @@ public class EnumerableTableFunctionScan extends TableFunctionScan
 
     return implementor.result(physType, builder.toBlock());
   }
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)
 }

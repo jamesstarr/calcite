@@ -19,7 +19,3 @@
  * SQL unparsers for JDBC dialects.
  */
 package org.apache.calcite.sql.dialect;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

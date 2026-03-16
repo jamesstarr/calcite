@@ -37,7 +37,3 @@ public enum Optionality {
    * it is an error if the instance has the property. */
   FORBIDDEN
 }
-
-// End Optionality.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

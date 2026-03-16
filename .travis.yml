@@ -21,36 +21,12 @@ language: java
 matrix:
   fast_finish: true
   include:
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
     - jdk: openjdk8
     - jdk: openjdk11
     - jdk: openjdk11
       env:
         - SLOW_TESTS=Y
-<<<<<<< HEAD
-<<<<<<< HEAD
     - jdk: openjdk14
-=======
-    - env: IMAGE=maven:3-jdk-11 JDOC=Y
-=======
-=======
-=======
-    - env: IMAGE=maven:3-jdk-13
-    - env: IMAGE=maven:3-jdk-12
->>>>>>> c7330ca52 ([CALCITE-2655] Enable Travis to test against JDK 12)
-    - env: IMAGE=maven:3-jdk-11 JDOC=Y RAT=Y
-    - env: IMAGE=maven:3-jdk-10 SLOW_TESTS=Y
-    - env: IMAGE=maven:3-jdk-9
-    - env: IMAGE=maven:3-jdk-8 JDOC=Y
-  allow_failures:
-    - env: IMAGE=maven:3-jdk-12
-=======
->>>>>>> 158022b28 ([CALCITE-2660] OsAdapterTest should check if required commands are available)
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-=======
-    - jdk: openjdk14
->>>>>>> bb2091ca0 (Update Gradle: 6.1.1 -> 6.3 (#294))
 branches:
   only:
     - master
@@ -61,26 +37,8 @@ branches:
 install: true
 script:
   # Print surefire output to the console instead of files
-  - unset _JAVA_OPTIONS
-<<<<<<< HEAD
-<<<<<<< HEAD
-  - $DOCKERRUN $IMAGE mvn -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test
-=======
-  - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test
->>>>>>> ade0edbab (Skip second Checkstyle execution during Travis CI build)
-=======
-  - if [ $JDOC = "Y" ]; then export JDOC=javadoc:javadoc; fi
-  - if [ $RAT = "Y" ]; then export RAT="apache-rat:check -Drat.consoleOutput"; fi
-<<<<<<< HEAD
-  - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test $JDOC $RAT
-=======
-  - if [ $SLOW_TESTS = "Y" ]; then export TESTS="-Dgroups=org.apache.calcite.test.SlowTests --projects :calcite-core"; else export TESTS=-DskipSlowTests; fi
-  - $DOCKERRUN $IMAGE mvn -Dcheckstyle.skip -Dsurefire.useFile=false -Dsurefire.threadCount=1 -Dsurefire.perCoreThreadCount=false -Djavax.net.ssl.trustStorePassword=changeit test $TESTS $JDOC $RAT
->>>>>>> b7479898c (Add JUnit category for extremely slow tests, launch them in a separate Travis job)
-=======
   - if [ $SLOW_TESTS = "Y" ]; then export TEST_TAGS=-PincludeTestTags=org.apache.calcite.test.SlowTests; fi
   - ./gradlew --no-daemon build $TEST_TAGS
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 git:
   depth: 100
 cache:

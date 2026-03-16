@@ -44,23 +44,6 @@ public class NameMultimap<V> {
   /** Creates a NameMultimap, initially empty. */
   public NameMultimap() {
     this(new NameMap<>());
-<<<<<<< HEAD
-  }
-
-  @Override public String toString() {
-    return map.toString();
-  }
-
-  @Override public int hashCode() {
-    return map.hashCode();
-  }
-
-  @Override public boolean equals(Object obj) {
-    return this == obj
-        || obj instanceof NameMultimap
-        && map.equals(((NameMultimap) obj).map);
-=======
->>>>>>> 84a6add37 ([CALCITE-2491] Refactor NameSet, NameMap, and NameMultimap)
   }
 
   @Override public String toString() {

@@ -74,7 +74,6 @@ class OsAdapterTest {
   /** Returns whether there is a ".git" directory in this directory or in a
    * directory between this directory and root. */
   private static boolean hasGit() {
-=======
     assumeToolExists("git");
     final String path = Sources.of(OsAdapterTest.class.getResource("/"))
         .file().getAbsolutePath();
@@ -241,95 +240,6 @@ class OsAdapterTest {
 
   @Test void testStdin() throws SQLException {
     try (Hook.Closeable ignore = Hook.STANDARD_STREAMS.addThread(
-<<<<<<< HEAD
-        new Function<Holder<Object[]>, Void>() {
-          public Void apply(Holder<Object[]> o) {
-            final Object[] values = o.get();
-            final InputStream in = (InputStream) values[0];
-            final String s = "First line\n"
-                + "Second line";
-            final ByteArrayInputStream in2 =
-                new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
-            final OutputStream out = (OutputStream) values[1];
-            final OutputStream err = (OutputStream) values[2];
-            o.set(new Object[] {in2, out, err});
-            return null;
-          }
-        });
-  }
-
-  @Test void testPsDistinct() {
-    assumeFalse(isWindows(), "Skip: the 'ps' table does not work on Windows");
-    assumeToolExists("ps");
-    sql("select distinct `user` from ps")
-        .returns(r -> {
-          try {
-            assertThat(r.next(), is(true));
-            assertThat(r.getString(1), notNullValue());
-            assertThat(r.wasNull(), is(false));
-          } catch (SQLException e) {
-            throw rethrow(e);
-          }
-        });
-  }
-
-  @Test void testGitCommits() {
-    assumeTrue(hasGit(), "no git");
-    sql("select count(*) from git_commits")
-        .returns(r -> {
-          try {
-            assertThat(r.next(), is(true));
-            assertThat(r.getString(1), notNullValue());
-            assertThat(r.wasNull(), is(false));
-          } catch (SQLException e) {
-            throw TestUtil.rethrow(e);
-          }
-        });
-  }
-
-  @Test void testGitCommitsTop() {
-    assumeTrue(hasGit(), "no git");
-    final String q = "select author from git_commits\n"
-        + "group by 1 order by count(*) desc limit 2";
-    sql(q).returnsUnordered("author=Julian Hyde <julianhyde@gmail.com>",
-        "author=Julian Hyde <jhyde@apache.org>");
-  }
-
-  @Test void testJps() {
-    final String q = "select pid, info from jps";
-    sql(q).returns(r -> {
-      try {
-        assertThat(r.next(), is(true));
-        assertThat(r.getString(1), notNullValue());
-        assertThat(r.getString(2), notNullValue());
-        assertThat(r.wasNull(), is(false));
-      } catch (SQLException e) {
-        throw TestUtil.rethrow(e);
-      }
-    });
-  }
-
-  @Test void testVmstat() {
-    assumeFalse(isWindows(), "Skip: the 'files' table does not work on Windows");
-    assumeToolExists("vmstat");
-    sql("select * from vmstat")
-        .returns(r -> {
-          try {
-            assertThat(r.next(), is(true));
-            final int c = r.getMetaData().getColumnCount();
-            for (int i = 0; i < c; i++) {
-              assertThat(r.getLong(i + 1), notNullValue());
-              assertThat(r.wasNull(), is(false));
-            }
-          } catch (SQLException e) {
-            throw rethrow(e);
-          }
-        });
-  }
-
-  @Test void testStdin() throws SQLException {
-    try (Hook.Closeable ignore = Hook.STANDARD_STREAMS.addThread(
-=======
         (Consumer<Holder<Object[]>>) o -> {
           final Object[] values = o.get();
           final InputStream in = (InputStream) values[0];

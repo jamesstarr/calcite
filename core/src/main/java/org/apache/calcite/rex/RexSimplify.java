@@ -346,86 +346,6 @@ public class RexSimplify {
     } finally {
       currentDepth--;
     }
-
-    if (e.getType().getSqlTypeName() == SqlTypeName.VARIANT) {
-      // Upstream has many fixes that makes this code path "work".
-      // For now we can just return the expression, since there is no RexLiteral for a Variant.
-      // When we cherry-pick [CALCITE-4918] Add a VARIANT data type we can remove this
-      return e;
-    }
-
-    try {
-      if (strong.isNull(e)) {
-        // Only boolean NULL (aka UNKNOWN) can be converted to FALSE. Even in
-        // unknownAs=FALSE mode, we must not convert a NULL integer (say) to FALSE
-        if (e.getType().getSqlTypeName() == SqlTypeName.BOOLEAN) {
-          switch (unknownAs) {
-          case FALSE:
-          case TRUE:
-            return rexBuilder.makeLiteral(unknownAs.toBoolean());
-          }
-        }
-        return rexBuilder.makeNullLiteral(e.getType());
-      }
-      switch (e.getKind()) {
-      case AND:
-        return simplifyAnd((RexCall) e, unknownAs);
-      case OR:
-        return simplifyOr((RexCall) e, unknownAs);
-      case NOT:
-        return simplifyNot((RexCall) e, unknownAs);
-      case CASE:
-        return simplifyCase((RexCall) e, unknownAs);
-      case COALESCE:
-        return simplifyCoalesce((RexCall) e);
-      case CAST:
-        return simplifyCast((RexCall) e);
-      case CEIL:
-      case FLOOR:
-        return simplifyCeilFloor((RexCall) e);
-      case IS_NULL:
-      case IS_NOT_NULL:
-      case IS_TRUE:
-      case IS_NOT_TRUE:
-      case IS_FALSE:
-      case IS_NOT_FALSE:
-        assert e instanceof RexCall;
-        return simplifyIs((RexCall) e, unknownAs);
-      case EQUALS:
-      case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL:
-      case LESS_THAN:
-      case LESS_THAN_OR_EQUAL:
-      case NOT_EQUALS:
-        return simplifyComparison((RexCall) e, unknownAs);
-      case MINUS_PREFIX:
-        return simplifyUnaryMinus((RexCall) e, unknownAs);
-      case PLUS_PREFIX:
-        return simplifyUnaryPlus((RexCall) e, unknownAs);
-      default:
-        if (e.getClass() == RexCall.class) {
-          return simplifyGenericNode((RexCall) e);
-        } else {
-          return e;
-        }
-      }
-    } catch (ClassCastException ex) {
-      return e;
-    } finally {
-      currentDepth--;
-    }
-  }
-
-  /**
-   * Runs simplification inside a non-specialized node.
-   */
-  private RexNode simplifyGenericNode(RexCall e) {
-    final List<RexNode> operands = new ArrayList<>(e.operands);
-    simplifyList(operands, UNKNOWN);
-    if (e.operands.equals(operands)) {
-      return e;
-    }
-    return rexBuilder.makeCall(e.getType(), e.getOperator(), operands);
   }
 
   /**
@@ -871,7 +791,6 @@ public class RexSimplify {
   }
 
   private RexNode simplifyIsNotNull(RexNode a) {
->>>>>>> a7d8296e6 ([CALCITE-3049] When simplifying "IS NULL" and "IS NOT NULL", simplify the operand first)
     // Simplify the argument first,
     // call ourselves recursively to see whether we can make more progress.
     // For example, given
@@ -2109,12 +2028,6 @@ public class RexSimplify {
         return e;
       } else {
         return rexBuilder.makeCast(e.getType(), operand);
-<<<<<<< HEAD
-      }
-=======
-      if (operand.getType().equals(e.getType())) {
-        return simplify(operand, UNKNOWN);
-=======
       }
     }
   }
@@ -2237,8 +2150,6 @@ public class RexSimplify {
           // Range is empty, not satisfiable
           return rexBuilder.makeLiteral(false);
         }
-        rangeTerms.put(comparison.ref.toString(),
-=======
         rangeTerms.put(comparison.ref,
             Range.singleton(v0), ImmutableList.of(term));
         // remove
@@ -2629,8 +2540,6 @@ public class RexSimplify {
       return false;
     }
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Replaces the last occurrence of one specified value in a list with
@@ -2677,51 +2586,3 @@ public class RexSimplify {
   }
 
 }
-<<<<<<< HEAD
-
-  /**
-   * Replaces the last occurrence of one specified value in a list with
-   * another.
-   *
-   * <p>Does not change the size of the list.
-   *
-   * <p>Returns whether the value was found.
-   */
-  private static <E> boolean replaceLast(List<E> list, E oldVal, E newVal) {
-    final int index = list.lastIndexOf(oldVal);
-    if (index < 0) {
-      return false;
-    }
-    list.set(index, newVal);
-    return true;
-  }
-
-  /**
-   * Combines predicates AND, optimizes, and returns null if the result is
-   * always false.
-   *
-   * <p>The expression is simplified on the assumption that an UNKNOWN value
-   * is always treated as FALSE. Therefore the simplified expression may
-   * sometimes evaluate to FALSE where the original expression would evaluate to
-   * UNKNOWN.
-   *
-   * @param predicates Filter condition predicates
-   * @return simplified conjunction of predicates for the filter, null if always false
-   */
-  public RexNode simplifyFilterPredicates(Iterable<? extends RexNode> predicates) {
-    final RexNode simplifiedAnds =
-        withPredicateElimination(Bug.CALCITE_2401_FIXED)
-            .simplifyUnknownAsFalse(
-                RexUtil.composeConjunction(rexBuilder, predicates));
-    if (simplifiedAnds.isAlwaysFalse()) {
-      return null;
-    }
-
-    // Remove cast of BOOLEAN NOT NULL to BOOLEAN or vice versa. Filter accepts
-    // nullable and not-nullable conditions, but a CAST might get in the way of
-    // other rewrites.
-    return removeNullabilityCast(simplifiedAnds);
-  }
-
-}
-=======

@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.adapter.elasticsearch;
 
-<<<<<<< HEAD
-=======
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.ViewTable;
@@ -25,7 +23,6 @@ import org.apache.calcite.schema.impl.ViewTableMacro;
 import org.apache.calcite.test.CalciteAssert;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
->>>>>>> 26b8eb9c0 (Revert "[] Use shaded avatica")
 import com.google.common.collect.ImmutableMap;
 
 import org.junit.jupiter.api.BeforeAll;

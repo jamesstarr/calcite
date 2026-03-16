@@ -62,6 +62,3 @@ public class VariantNull extends VariantValue {
     return "null";
   }
 }
-// End VariantNull.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

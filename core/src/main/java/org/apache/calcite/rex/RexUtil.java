@@ -2525,7 +2525,6 @@ public class RexUtil {
   /** Transforms a list of expressions to the list of digests. */
   public static List<String> strings(List<RexNode> list) {
     return Lists.transform(list, Object::toString);
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
   }
 
   /** Detects if the given RexNode has an interval data type. */
@@ -2663,6 +2662,22 @@ public class RexUtil {
     private RexNode or(Iterable<? extends RexNode> nodes) {
       return composeDisjunction(rexBuilder, nodes);
     }
+
+    private void incrementAndCheck() {
+      if (maxNodeCount >= 0 && ++currentCount > maxNodeCount) {
+        throw DnfHelper.OverflowError.INSTANCE;
+      }
+    }
+
+    /** Exception to catch when we pass the limit. */
+    @SuppressWarnings("serial")
+    private static class OverflowError extends ControlFlowException {
+      @SuppressWarnings("ThrowableInstanceNeverThrown")
+      protected static final DnfHelper.OverflowError INSTANCE = new DnfHelper.OverflowError();
+      private OverflowError() {}
+    }
+  }
+
   /** Shuttle that adds {@code offset} to each {@link RexInputRef} in an
    * expression. */
   private static class RexShiftShuttle extends RexShuttle {
@@ -2855,9 +2870,6 @@ public class RexUtil {
       return simplify.rexBuilder.makeCast(call.getType(), simplifiedNode, matchNullability);
     }
   }
-<<<<<<< HEAD
-// End RexUtil.java
-=======
 
   /**
    * Visitor class which transforms datetime_plus operators to timestamp_add operators.

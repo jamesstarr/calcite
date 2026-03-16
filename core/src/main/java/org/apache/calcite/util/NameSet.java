@@ -44,23 +44,6 @@ public class NameSet {
   /** Creates a NameSet that is an immutable copy of a given collection. */
   public static NameSet immutableCopyOf(Set<String> names) {
     return new NameSet(NameMap.immutableCopyOf(Maps.asMap(names, (k) -> DUMMY)));
-<<<<<<< HEAD
-  }
-
-  @Override public String toString() {
-    return names.map().keySet().toString();
-  }
-
-  @Override public int hashCode() {
-    return names.hashCode();
-  }
-
-  @Override public boolean equals(Object obj) {
-    return this == obj
-        || obj instanceof NameSet
-        && names.equals(((NameSet) obj).names);
-=======
->>>>>>> 84a6add37 ([CALCITE-2491] Refactor NameSet, NameMap, and NameMultimap)
   }
 
   @Override public String toString() {

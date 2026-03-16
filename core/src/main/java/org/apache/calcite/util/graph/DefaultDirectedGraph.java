@@ -155,7 +155,6 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
   }
 
   public void removeAllVertices(Collection<V> collection) {
->>>>>>> 44d4fddf7 ([CALCITE-3827] Reduce the time complexity of finding in-edges of a ve… (#346))
     // The point at which collection is large enough to make the 'majority'
     // algorithm more efficient.
     final float threshold = 0.35f;
@@ -195,20 +194,6 @@ public class DefaultDirectedGraph<V, E extends DefaultEdge>
         targetInfo.inEdges.removeIf(e -> e.source.equals(v));
       }
     }
-<<<<<<< HEAD
-    vertexMap.keySet().removeAll(collection);
-  }
-
-  /** Implementation of {@link #removeAllVertices(Collection)} that is efficient
-   * if {@code vertexSet} is a large fraction of the set of vertices in the
-   * graph. */
-  private void removeMajorityVertices(Set<V> vertexSet) {
-    vertexMap.keySet().removeAll(vertexSet);
-    for (VertexInfo<V, E> info : vertexMap.values()) {
-      info.outEdges.removeIf(e -> vertexSet.contains((V) e.target));
-      info.inEdges.removeIf(e -> vertexSet.contains((V) e.source));
-=======
-=======
     vertexMap.keySet().removeAll(collection);
   }
 

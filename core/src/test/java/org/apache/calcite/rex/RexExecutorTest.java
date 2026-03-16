@@ -39,8 +39,6 @@ import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Util;
 
-
-=======
 import com.google.common.collect.ImmutableList;
 
 import org.hamcrest.Matcher;
@@ -239,7 +237,6 @@ public class RexExecutorTest {
     });
   }
 
-=======
   @Test void testSubstring() throws Exception {
     check((rexBuilder, executor) -> {
 

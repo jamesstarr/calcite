@@ -19,7 +19,3 @@
  * Provides utility classes.
  */
 package org.apache.calcite.util;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

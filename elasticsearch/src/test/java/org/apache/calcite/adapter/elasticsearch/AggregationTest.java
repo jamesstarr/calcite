@@ -110,8 +110,6 @@ class AggregationTest {
     };
   }
 
-  @Test public void countStar() {
-=======
   @Test void countStar() {
     CalciteAssert.that()
         .with(newConnectionFactory())

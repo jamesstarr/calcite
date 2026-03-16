@@ -30,13 +30,6 @@ import org.apache.calcite.tools.RelBuilderFactory;
  * {@link org.apache.calcite.rel.logical.LogicalFilter}s.
  */
 public class FilterMergeRule extends RelRule<FilterMergeRule.Config>
-        implements SubstitutionRule {
-
-  /** Creates a FilterMergeRule. */
-  protected FilterMergeRule(Config config) {
-    super(config);
-  }
-=======
     implements SubstitutionRule {
 
   /** Creates a FilterMergeRule. */
@@ -69,27 +62,6 @@ public class FilterMergeRule extends RelRule<FilterMergeRule.Config>
     call.transformTo(relBuilder.build());
   }
 
-<<<<<<< HEAD
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(Filter.class);
-
-    @Override default FilterMergeRule toRule() {
-      return new FilterMergeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Filter> filterClass) {
-      return withOperandSupplier(b0 ->
-          b0.operand(filterClass).oneInput(b1 ->
-              b1.operand(filterClass).anyInputs()))
-          .as(Config.class);
-    }
-  }
-
-=======
->>>>>>> 28d388ebb ([CALCITE-3982] Simplify FilterMergeRule to rely on RelBuilder instead… (#374))
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
     Config DEFAULT = EMPTY.as(Config.class)

@@ -536,8 +536,6 @@ public class EnumerableAggregate extends Aggregate implements EnumerableRel {
       builder.add(
           Expressions.declare(0, lambdaFactory,
               Expressions.new_(
-                  BuiltInMethod.ORDERED_AGGREGATE_LAMBDA_FACTORY.constructor,
-=======
                   BuiltInMethod.LAZY_AGGREGATE_LAMBDA_FACTORY.constructor,
                   accumulatorInitializer, pe)));
     } else {

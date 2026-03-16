@@ -260,7 +260,6 @@ public class GeodeFilter extends Filter implements GeodeRel {
       List<String> leftFieldNameList = new ArrayList<>();
       List<String> inSetLeftFieldNameList = new ArrayList<>();
 
->>>>>>> 79a298dea ([CALCITE-2671] GeodeFilter convert multiple ORs (on same attribute) into single IN SET. (Sandeep Chada))
       for (RexNode node : disjunctions) {
         final String leftNodeFieldName = getLeftNodeFieldNameForNode(node);
         // If any one left node is processed with IN SET predicate
@@ -315,8 +314,6 @@ public class GeodeFilter extends Filter implements GeodeRel {
         return translateBinary2("=", node, rexBuilder.makeLiteral(true));
       case NOT:
         child = ((RexCall) node).getOperands().get(0);
-        if (child.getKind() == SqlKind.CAST) {
-=======
         while (child.getKind() == SqlKind.CAST) {
           child = ((RexCall) child).getOperands().get(0);
         }

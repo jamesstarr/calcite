@@ -76,8 +76,6 @@ public class FilterToCalcRule
     final LogicalCalc calc = LogicalCalc.create(rel, program);
     call.transformTo(calc);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -91,20 +89,3 @@ public class FilterToCalcRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b ->
-                    b.operand(LogicalFilter.class).anyInputs())
-            .as(Config.class);
-
-    @Override default FilterToCalcRule toRule() {
-      return new FilterToCalcRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

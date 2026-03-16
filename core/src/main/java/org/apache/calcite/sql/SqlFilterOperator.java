@@ -118,8 +118,6 @@ public class SqlFilterOperator extends SqlBinaryOperator {
     }
     return ret;
   }
-<<<<<<< HEAD
-=======
 
   private static SqlCall getAggCall(SqlCall call) {
     assert call.getOperator().getKind() == SqlKind.FILTER;
@@ -145,32 +143,3 @@ public class SqlFilterOperator extends SqlBinaryOperator {
     return call.getOperator().getKind() == SqlKind.WITHIN_GROUP;
   }
 }
-<<<<<<< HEAD
->>>>>>> 997d25ef0 ([CALCITE-2224] Support WITHIN GROUP clause for aggregate functions (Hongze Zhang))
-
-  private static SqlCall getAggCall(SqlCall call) {
-    assert call.getOperator().getKind() == SqlKind.FILTER;
-    call = call.operand(0);
-    if (call.getOperator().getKind() == SqlKind.WITHIN_GROUP) {
-      call = call.operand(0);
-    }
-    return call;
-  }
-
-  private static SqlCall getWithinGroupCall(SqlCall call) {
-    assert call.getOperator().getKind() == SqlKind.FILTER;
-    call = call.operand(0);
-    if (call.getOperator().getKind() == SqlKind.WITHIN_GROUP) {
-      return call;
-    }
-    throw new AssertionError();
-  }
-
-  private static boolean hasWithinGroupCall(SqlCall call) {
-    assert call.getOperator().getKind() == SqlKind.FILTER;
-    call = call.operand(0);
-    return call.getOperator().getKind() == SqlKind.WITHIN_GROUP;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

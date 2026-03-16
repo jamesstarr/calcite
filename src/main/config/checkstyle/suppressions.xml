@@ -39,29 +39,14 @@ limitations under the License.
   <suppress checks="Header" files="LICENSE"/>
   <suppress checks="Header" files="NOTICE"/>
   <suppress checks=".*" files="Foo.java"/>
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
   <suppress checks=".*" files="[/\\]target[/\\]maven-archiver[/\\]pom.properties"/>
   <suppress checks=".*" files="[/\\]target[/\\]generated-sources[/\\]"/>
   <suppress checks=".*" files="[/\\]target[/\\]generated-test-sources[/\\]"/>
   <suppress checks=".*" files="[/\\]target[/\\]embeddedCassandra[/\\]log4j-embedded-cassandra.properties"/>
   <suppress checks=".*" files="org[/\\]apache[/\\]calcite[/\\]runtime[/\\]Resources.java"/>
 
-<<<<<<< HEAD
   <suppress checks=".*" files="git.properties"/>
   <suppress checks=".*" files="release.properties"/>
-<<<<<<< HEAD
-=======
-  <suppress checks=".*" files="log4j.*.properties"/>
-=======
-  <suppress checks=".*" files=".*[/\\]target[/\\]maven-archiver[/\\]pom.properties"/>
-  <suppress checks=".*" files=".*[/\\]target[/\\]generated-sources[/\\].*"/>
-  <suppress checks=".*" files=".*[/\\]target[/\\]generated-test-sources[/\\].*"/>
-  <suppress checks=".*" files=".*[/\\]target[/\\]embeddedCassandra[/\\]log4j-embedded-cassandra.properties"/>
-=======
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
-  <suppress checks=".*" files="git.properties"/>
-  <suppress checks=".*" files="release.properties"/>
->>>>>>> be19299a5 ([CALCITE-2642] Checkstyle complains that maven-wrapper.properties is missing a header)
   <suppress checks=".*" files="auth-users.properties"/>
 
   <!-- This file triggers https://github.com/checkstyle/checkstyle/issues/92,
@@ -88,8 +73,6 @@ limitations under the License.
   <suppress checks="ImportOrder" files="PairList.java" lines="35"/>
   <suppress checks="ImportOrder" files="ImmutablePairList.java" lines="28"/>
   <suppress checks="ImportOrder" files="SqlValidatorUtil.java" lines="80"/>
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
-=======
 
   <suppress checks="MethodLength" files="RexToLixTranslator.java"/>
 </suppressions>

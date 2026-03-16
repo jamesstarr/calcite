@@ -69,7 +69,6 @@ public class EnumerableRepeatUnion extends RepeatUnion implements EnumerableRel 
     Expression seedExp = builder.append("seed", seedResult.block);
     Expression iterativeExp = builder.append("iteration", iterationResult.block);
 
-=======
     PhysType physType = PhysTypeImpl.of(
         implementor.getTypeFactory(),
         getRowType(),

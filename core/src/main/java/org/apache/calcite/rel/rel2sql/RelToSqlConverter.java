@@ -367,7 +367,6 @@ public class RelToSqlConverter extends SqlImplementor
             sqlNodeNull, dialect.getCastSpec(field.getType()));
   }
 
->>>>>>> e4d1f252d ([CALCITE-3210] JDBC adapter should generate 'CAST(NULL AS type)' rather than 'NULL' conditionally)
   /** @see #dispatch */
   public Result visit(Window e) {
     Result x = visitChild(0, e.getInput());
@@ -1010,28 +1009,6 @@ public class RelToSqlConverter extends SqlImplementor
     final List<SqlNode> result = new ArrayList<>();
     result.add(leftOperand);
     result.add(new SqlIdentifier(alias, POS));
-<<<<<<< HEAD
-<<<<<<< HEAD
-    Ord.forEach(rowType.getFieldNames(), (fieldName, i) -> {
-      if (fieldName.toLowerCase(Locale.ROOT).startsWith("expr$")) {
-        fieldName = "col_" + i;
-      }
-      result.add(new SqlIdentifier(fieldName, POS));
-    });
-    return result;
-  }
-
-=======
-=======
-    for (int i = 0; i < rowType.getFieldCount(); i++) {
-      final String lowerName = rowType.getFieldNames().get(i).toLowerCase(Locale.ROOT);
-      SqlIdentifier sqlColumn;
-      if (lowerName.startsWith("expr$")) {
-        sqlColumn = new SqlIdentifier("col_" + i, POS);
-        ordinalMap.put(lowerName, sqlColumn);
-      } else {
-        sqlColumn = new SqlIdentifier(rowType.getFieldNames().get(i), POS);
-=======
     Ord.forEach(rowType.getFieldNames(), (fieldName, i) -> {
       if (fieldName.toLowerCase(Locale.ROOT).startsWith("expr$")) {
         fieldName = "col_" + i;

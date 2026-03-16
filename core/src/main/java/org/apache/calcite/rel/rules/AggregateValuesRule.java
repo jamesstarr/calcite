@@ -106,8 +106,6 @@ public class AggregateValuesRule
     // New plan is absolutely better than old plan.
     call.getPlanner().setImportance(aggregate, 0.0);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -132,30 +130,3 @@ public class AggregateValuesRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(Aggregate.class, Values.class);
-
-    @Override default AggregateValuesRule toRule() {
-      return new AggregateValuesRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Aggregate> aggregateClass,
-                                  Class<? extends Values> valuesClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(aggregateClass)
-                      .predicate(aggregate -> aggregate.getGroupCount() == 0)
-                      .oneInput(b1 ->
-                              b1.operand(valuesClass)
-                                      .predicate(values -> values.getTuples().isEmpty())
-                                      .noInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

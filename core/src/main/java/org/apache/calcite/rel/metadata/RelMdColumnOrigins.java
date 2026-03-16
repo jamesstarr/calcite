@@ -266,7 +266,6 @@ public class RelMdColumnOrigins
     }
     return set;
   }
->>>>>>> 8ecba2ffb ([CALCITE-3971] Support Calc in RelMdColumnOrigins (Xu ZhaoHui) (#361))
 
   private Set<RelColumnOrigin> getMultipleColumns(RexNode rexNode, RelNode input,
       final RelMetadataQuery mq) {
@@ -285,7 +284,4 @@ public class RelMdColumnOrigins
     rexNode.accept(visitor);
     return set;
   }
-<<<<<<< HEAD
-=======
-=======
 }

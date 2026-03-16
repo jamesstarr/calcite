@@ -8047,18 +8047,11 @@ public class JdbcTest {
    * and expected results of those functions. */
   enum TestLocale {
     ROOT(Locale.ROOT.toString(), shorten("Wednesday"), shorten("Sunday"),
->>>>>>> c11398901 ([CALCITE-3412] FLOOR(timestamp TO WEEK) gives wrong result)
         shorten("January"), shorten("February"), 0),
     EN("en", "Wednesday", "Sunday", "January", "February", 0),
     FR("fr", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
     FR_FR("fr_FR", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
     FR_CA("fr_CA", "mercredi", "dimanche", "janvier", "f\u00e9vrier", 6),
-        shorten("January"), shorten("February")),
-    EN("en", "Wednesday", "Sunday", "January", "February"),
-    FR("fr", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
-    FR_FR("fr_FR", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
-    FR_CA("fr_CA", "mercredi", "dimanche", "janvier", "f\u00e9vrier"),
-=======
     ZH_CN("zh_CN", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
         "\u4e8c\u6708", 6),
     ZH("zh", "\u661f\u671f\u4e09", "\u661f\u671f\u65e5", "\u4e00\u6708",
@@ -8089,31 +8082,3 @@ public class JdbcTest {
     }
   }
 }
-<<<<<<< HEAD
-
-    private static String shorten(String name) {
-      // In root locale, for Java versions 9 and higher, day and month names
-      // are shortened to 3 letters. This means root locale behaves differently
-      // to English.
-      return TestUtil.getJavaMajorVersion() > 8 ? name.substring(0, 3) : name;
-    }
-
-    public final String localeName;
-    public final String wednesday;
-    public final String sunday;
-    public final String january;
-    public final String february;
-    public final int sundayDayOfWeek;
-
-    TestLocale(String localeName, String wednesday, String sunday,
-        String january, String february, int sundayDayOfWeek) {
-      this.localeName = localeName;
-      this.wednesday = wednesday;
-      this.sunday = sunday;
-      this.january = january;
-      this.february = february;
-      this.sundayDayOfWeek = sundayDayOfWeek;
-    }
-  }
-}
-=======

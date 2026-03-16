@@ -348,9 +348,6 @@ public class RelSet {
     }
 
     // Make sure the cost changes as a result of merging are propagated.
-    final RelMetadataQuery mq = rel.getCluster().getMetadataQuery();
-=======
->>>>>>> 1782bf62d ([CALCITE-2018] Queries failed with AssertionError: rel has lower cost than best cost of subset)
     for (RelNode parentRel : getParentRels()) {
       final RelSubset parentSubset = planner.getSubset(parentRel);
       parentSubset.propagateCostImprovements(
@@ -365,13 +362,6 @@ public class RelSet {
     for (RelNode rel : rels) {
       assert planner.getSet(rel) == this;
       planner.fireRules(rel);
-<<<<<<< HEAD
-    }
-    // Fire rule match on subsets as well
-    for (RelSubset subset : subsets) {
-      planner.fireRules(subset);
-=======
->>>>>>> 5f2a37e7d ([CALCITE-3753] Remove rule queue importance (#378))
     }
     // Fire rule match on subsets as well
     for (RelSubset subset : subsets) {

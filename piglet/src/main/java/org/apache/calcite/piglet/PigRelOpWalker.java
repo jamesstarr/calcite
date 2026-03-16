@@ -88,7 +88,3 @@ class PigRelOpWalker extends PlanWalker {
     return new PigRelOpWalker(operatorPlan);
   }
 }
-
-// End PigRelOpWalker.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

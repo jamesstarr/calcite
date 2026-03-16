@@ -21,11 +21,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-<<<<<<< HEAD
-
-import static java.util.Objects.requireNonNull;
-=======
->>>>>>> 2d7bf015a (Remove dead code: Compatible, CompatibleGuava11)
 
 import static java.util.Objects.requireNonNull;
 

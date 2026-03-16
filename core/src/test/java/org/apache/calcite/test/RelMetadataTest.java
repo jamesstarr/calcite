@@ -117,7 +117,6 @@ import com.google.common.collect.Sets;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
-import org.junit.Assume;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -2191,9 +2190,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final Set<RexNode> r1 = mq.getExpressionLineage(rel, ref1);
     assertThat(r1.size(), is(1));
     final RexTableInputRef result1 = (RexTableInputRef) r1.iterator().next();
-
-    assertThat(result1.getQualifiedName(), is(EMP_QNAME));
-=======
     assertEquals(result1.getQualifiedName(), EMP_QNAME);
     assertThat(result1.getIndex(), is(3));
 
@@ -2702,22 +2698,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     final RelOptPredicateList inputSet = mq.getAllPredicates(rel);
     assertThat(inputSet.pulledUpPredicates,
         sortsAs("[=([CATALOG, SALES, EMP].#2.$0, 5)]"));
-<<<<<<< HEAD
-  }
-
-  @Test void testTableReferencesUnionUnknownNode() {
-    final String sql = "select * from emp limit 10";
-    final RelNode node = convertSql(sql);
-    final RelNode nodeWithUnknown = new DummyRelNode(
-        node.getCluster(), node.getTraitSet(), node);
-    // Union
-    final LogicalUnion union =
-        LogicalUnion.create(ImmutableList.of(nodeWithUnknown, node),
-            true);
-    final RelMetadataQuery mq = node.getCluster().getMetadataQuery();
-    final Set<RelTableRef> tableReferences = mq.getTableReferences(union);
-    assertNull(tableReferences);
-=======
   }
 
   @Test void testTableReferencesUnionUnknownNode() {
@@ -2789,8 +2769,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
     checkNodeTypeCount(sql, expected);
   }
 
-  @Test public void testNodeTypeCountTableModify() {
-=======
   @Test void testNodeTypeCountTableModify() {
     final String sql = "insert into emp select * from emp";
     final Map<Class<? extends RelNode>, Integer> expected = new HashMap<>();
@@ -3206,8 +3184,6 @@ public class RelMetadataTest extends SqlToRelTestBase {
       }
     }
   }
-<<<<<<< HEAD
-=======
 
   /**
    * Dummy rel node used for testing.
@@ -3246,43 +3222,3 @@ public class RelMetadataTest extends SqlToRelTestBase {
     }
   }
 }
-<<<<<<< HEAD
-
-  /**
-   * Dummy rel node used for testing.
-   */
-  private class DummyRelNode extends SingleRel {
-
-    /**
-     * Creates a <code>DummyRelNode</code>.
-     */
-    DummyRelNode(RelOptCluster cluster, RelTraitSet traits, RelNode input) {
-      super(cluster, traits, input);
-    }
-  }
-
-  /**
-   * Mocked catalog reader for registering table with composite keys.
-   */
-  private class CompositeKeysCatalogReader extends MockCatalogReaderSimple {
-
-    CompositeKeysCatalogReader(RelDataTypeFactory typeFactory, boolean caseSensitive) {
-      super(typeFactory, caseSensitive);
-    }
-
-    @Override public MockCatalogReader init() {
-      super.init();
-      MockSchema tSchema = new MockSchema("s");
-      registerSchema(tSchema);
-      // Register "T1" table.
-      final MockTable t1 =
-          MockTable.create(this, tSchema, "composite_keys_table", false, 7.0, null);
-      t1.addColumn("key1", typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
-      t1.addColumn("key2", typeFactory.createSqlType(SqlTypeName.VARCHAR), true);
-      t1.addColumn("value1", typeFactory.createSqlType(SqlTypeName.INTEGER));
-      registerTable(t1);
-      return this;
-    }
-  }
-}
-=======

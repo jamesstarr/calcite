@@ -44,11 +44,6 @@ import java.util.stream.Collectors;
  *
  * <p>The option format can not be mixed in, they should either be all simple identifiers
  * or all literals or all key value pairs.
- * For every option, it can be a simple identifier or a key value pair whose key
- * is a simple identifier and value is a string literal. The identifier option and key
- * value pair can not be mixed in, they should be either all simple identifiers
- * or all key value pairs.
-=======
  *
  * <p>We support 2 kinds of hints in the parser:
  * <ul>

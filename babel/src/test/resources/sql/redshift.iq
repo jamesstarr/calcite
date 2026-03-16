@@ -1479,13 +1479,9 @@ PI
 
 # CBRT
 select cbrt(-8);
-SELECT "CBRT"(-8)
-!explain-validated-on calcite
-=======
 EXPR$0
 -2.0
 !ok
->>>>>>> bb4b68472 ([CALCITE-3684] Implement CBRT function (Qianjin Xu) (#171))
 
 # CEILING (or CEIL)
 select ceiling(10.5);
@@ -1626,17 +1622,12 @@ EXPR$0
 -0.8939966636005579
 !ok
 
->>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 # SINH
 select sinh(1);
 EXPR$0
 1.1752011936438014
 !ok
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> e9a230e80 ([CALCITE-3694] Implement SINH function)
 # SIGN
 select sign(23);
 EXPR$0

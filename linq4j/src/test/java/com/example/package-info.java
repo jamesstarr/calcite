@@ -19,7 +19,3 @@
  * Examples of using linq4j.
  */
 package com.example;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

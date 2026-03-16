@@ -158,8 +158,6 @@ public class UnionMergeRule
     }
     call.transformTo(relBuilder.build());
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -189,35 +187,3 @@ public class UnionMergeRule
     }
   }
 }
-<<<<<<< HEAD
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.withDescription("UnionMergeRule")
-            .as(Config.class)
-            .withOperandFor(LogicalUnion.class);
-
-    Config INTERSECT = EMPTY.withDescription("IntersectMergeRule")
-            .as(Config.class)
-            .withOperandFor(LogicalIntersect.class);
-
-    Config MINUS = EMPTY.withDescription("MinusMergeRule")
-            .as(Config.class)
-            .withOperandFor(LogicalMinus.class);
-
-    @Override default UnionMergeRule toRule() {
-      return new UnionMergeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends RelNode> setOpClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(setOpClass).inputs(
-                  b1 -> b1.operand(RelNode.class).anyInputs(),
-                  b2 -> b2.operand(RelNode.class).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

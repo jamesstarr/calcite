@@ -179,38 +179,6 @@ public class RelMdExpressionLineage
    */
   public Set<RexNode> getExpressionLineage(Join rel, RelMetadataQuery mq,
       RexNode outputExpression) {
-<<<<<<< HEAD
-        // Gather table references, right input references might need to be
-        // updated if there are table names clashes with left input
-        final Set<RelTableRef> tableRefs =
-            RexUtil.gatherTableReferences(Lists.newArrayList(originalExprs));
-        for (RelTableRef rightRef : tableRefs) {
-          int shift = 0;
-          Collection<RelTableRef> lRefs = qualifiedNamesToRefs.get(
-              rightRef.getQualifiedName());
-          if (lRefs != null) {
-            shift = lRefs.size();
-          }
-          currentTablesMapping.put(rightRef,
-              RelTableRef.of(rightRef.getTable(), shift + rightRef.getEntityNumber()));
-        }
-        final RelDataType fullRowType = SqlValidatorUtil.createJoinType(
-            rexBuilder.getTypeFactory(),
-            rel.getLeft().getRowType(),
-            rel.getRight().getRowType(),
-            null,
-            ImmutableList.of());
-        final Set<RexNode> updatedExprs = Sets.newHashSet(
-            Iterables.transform(
-                originalExprs,
-                new Function<RexNode, RexNode>() {
-                  @Override public RexNode apply(RexNode e) {
-                    return RexUtil.swapTableReferences(rexBuilder, e, currentTablesMapping);
-                  }
-                }
-          ));
-        mapping.put(RexInputRef.of(idx, fullRowType), updatedExprs);
-=======
     final RexBuilder rexBuilder = rel.getCluster().getRexBuilder();
     final RelNode leftInput = rel.getLeft();
     final RelNode rightInput = rel.getRight();

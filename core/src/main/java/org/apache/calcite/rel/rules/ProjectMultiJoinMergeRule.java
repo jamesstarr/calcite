@@ -85,8 +85,6 @@ public class ProjectMultiJoinMergeRule
 
     call.transformTo(relBuilder.build());
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -107,27 +105,3 @@ public class ProjectMultiJoinMergeRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-            .withOperandFor(LogicalProject.class, MultiJoin.class);
-
-    @Override default ProjectMultiJoinMergeRule toRule() {
-      return new ProjectMultiJoinMergeRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Project> projectClass,
-                                  Class<MultiJoin> multiJoinClass) {
-      return withOperandSupplier(b0 ->
-              b0.operand(projectClass).oneInput(b1 ->
-                      b1.operand(multiJoinClass).anyInputs()))
-              .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

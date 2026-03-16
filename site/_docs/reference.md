@@ -227,15 +227,9 @@ joinCondition:
 
 tableReference:
       tablePrimary
->>>>>>> 43aab224b ([CALCITE-1912] Temporal tables, "FOR SYSTEM_TIME AS OF" SQL clause, and add Snapshot relational operator (Jark Wu))
       [ FOR SYSTEM_TIME AS OF expression ]
       [ pivot ]
       [ unpivot ]
-<<<<<<< HEAD
-=======
-      [ pivot ]
-=======
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
       [ matchRecognize ]
       [ [ AS ] alias [ '(' columnAlias [, columnAlias ]* ')' ] ]
 
@@ -250,36 +244,18 @@ tablePrimary:
 columnDecl:
       column type [ NOT NULL ]
 
->>>>>>> aed92dce0 (DX-58483: [CALCITE-482] Implement sql and planner hints)
 hint:
       hintName
   |   hintName '(' hintOptions ')'
 
 hintOptions:
       hintKVOption [, hintKVOption]*
-<<<<<<< HEAD
-<<<<<<< HEAD
   |   optionName [, optionName]*
   |   optionValue [, optionValue]*
 
 hintKVOption:
       optionName '=' stringLiteral
   |   stringLiteral '=' stringLiteral
-
-optionValue:
-      stringLiteral
-  |   numericLiteral
-
-=======
-=======
-  |   optionName, [, optionName]*
-=======
-  |   optionName [, optionName]*
-  |   optionValue [, optionValue]*
->>>>>>> a0b18b06d (Add doc for type coercion and SQL hints change (#59))
-
-hintKVOption:
-      optionName '=' stringLiteral
 
 optionValue:
       stringLiteral
@@ -306,7 +282,6 @@ pivotExpr:
       }
       [ [ AS ] alias ]
 
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 unpivot:
       UNPIVOT [ INCLUDING NULLS | EXCLUDING NULLS ] '('
       unpivotMeasureList
@@ -324,10 +299,6 @@ unpivotValue:
       column [ AS literal ]
   |   '(' column [, column ]* ')' [ AS '(' literal [, literal ]* ')' ]
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> cd779c1b5 (DX-7801 [CALCITE-4433] Add UNPIVOT operator to SQL)
 values:
       VALUES expression [, expression ]*
 
@@ -662,10 +633,7 @@ IMMEDIATELY,
 IMPLEMENTATION,
 **IMPORT**,
 **IN**,
-INCLUDE,
-=======
 **INCLUDE**,
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 INCLUDING,
 INCREMENT,
 **INDICATOR**,
@@ -694,20 +662,10 @@ JAVA,
 JSON,
 **JSON_ARRAY**,
 **JSON_ARRAYAGG**,
->>>>>>> 31a1bb0fc ([CALCITE-2808] Add the JSON_LENGTH function (xuqianjin))
-=======
+JSON_DEPTH,
+**JSON_EXISTS**,
 JSON_KEYS,
 JSON_LENGTH,
-**JSON_OBJECT**,
-**JSON_OBJECTAGG**,
-JSON_PRETTY,
-**JSON_QUERY**,
-JSON_TYPE,
-=======
-=======
-JSON_DEPTH,
->>>>>>> e25822535 ([CALCITE-2864]Add the JSON_DEPTH function)
-**JSON_EXISTS**,
 **JSON_OBJECT**,
 **JSON_OBJECTAGG**,
 JSON_PRETTY,
@@ -844,10 +802,7 @@ PATH,
 **PERCENT_RANK**,
 **PERIOD**,
 **PERMUTE**,
-PIVOT,
-=======
 **PIVOT**,
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 PLACING,
 PLAN,
 PLI,
@@ -1076,10 +1031,7 @@ UNDER,
 **UNKNOWN**,
 UNNAMED,
 **UNNEST**,
-UNPIVOT,
-=======
 **UNPIVOT**,
->>>>>>> 925ef7ce3 ([CALCITE-3238] Support Time Zone suffix of DateTime types for SqlDataTypeSpec)
 **UPDATE**,
 **UPPER**,
 **UPSERT**,
@@ -1093,8 +1045,6 @@ USER_DEFINED_TYPE_SCHEMA,
 UTF16,
 UTF32,
 UTF8,
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
 **UUID**,
 **VALUE**,
 **VALUES**,
@@ -1206,15 +1156,12 @@ Note:
 | MULTISET | Unordered collection that may contain duplicates | Example: int multiset
 | ARRAY    | Ordered, contiguous collection that may contain duplicates | Example: varchar(10) array
 | CURSOR   | Cursor over the result of executing a query |
->>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
-=======
 | VARIANT | Dynamically-typed value that can have at runtime a value of any other type | VARIANT
 
 Note:
 
 * Every `ROW` column type can have an optional [ NULL | NOT NULL ] suffix
   to indicate if this column type is nullable, default is not nullable.
->>>>>>> 378c49b87 ([CALCITE-3233] Support Row type for SqlDataTypeSpec)
 
 ### The `VARIANT` type
 
@@ -1522,8 +1469,6 @@ Algorithms for implicit conversion are subject to change across Calcite releases
 |:--------------- | :----------
 | CAST(value AS type) | Converts a value to a given type.
 | TRANSLATE(value USING transcodingName)  | Alter *value* from one base character set to *transcodingName*
-<<<<<<< HEAD
-<<<<<<< HEAD
 | TYPEOF(variant)                        | Returns a string that describes the runtime type of *variant*, where variant has a `VARIANT` type
 | VARIANTNULL()                          | Returns an instance of the `VARIANT` null value (constructor)
 
@@ -1669,209 +1614,6 @@ these details follow the table.
 | CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i                   | i    |
 | BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i                   | i    |
 | UUID                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | x    | x         | x               | x                   | i    |
-<<<<<<< HEAD
-
-i: implicit cast / e: explicit cast / x: not allowed
-
-##### Conversion Contexts and Strategies
-
-* Set operation (`UNION`, `EXCEPT`, `INTERSECT`): compare every branch
-  row data type and find the common type of each fields pair;
-* Binary arithmetic expression (`+`, `-`, `&`, `^`, `/`, `%`): promote
-  string operand to data type of the other numeric operand;
-* Binary comparison (`=`, `<`, `<=`, `<>`, `>`, `>=`):
-  if operands are `STRING` and `TIMESTAMP`, promote to `TIMESTAMP`;
-  make `1 = true` and `0 = false` always evaluate to `TRUE`;
-  if there is numeric type operand, find common type for both operands.
-* `IN` sub-query: compare type of LHS and RHS, and find the common type;
-  if it is struct type, find wider type for every field;
-* `IN` expression list: compare every expression to find the common type;
-* `CASE WHEN` expression or `COALESCE`: find the common wider type of the `THEN`
-  and `ELSE` operands;
-* Character + `INTERVAL` or character - `INTERVAL`: promote character to
-  `TIMESTAMP`;
-* Built-in function: look up the type families registered in the checker,
-  find the family default type if checker rules allow it;
-* User-defined function (UDF): coerce based on the declared argument types
-  of the `eval()` method;
-* `INSERT` and `UPDATE`: coerce a source field to counterpart target table
-  field's type if the two fields differ with type name or precision(scale).
-
-Note:
-
-Implicit type coercion of following cases are ignored:
-
-* One of the type is `ANY`;
-* Type coercion within `CHARACTER` types are always ignored,
-  i.e. from `CHAR(20)` to `VARCHAR(30)`;
-* Type coercion from a numeric to another with higher precedence is ignored,
-  i.e. from `INT` to `LONG`.
-
-##### Strategies for Finding Common Type
-
-* If the operator has expected data types, just take them as the
-  desired one. (e.g. the UDF would have `eval()` method which has
-  reflection argument types);
-* If there is no expected data type but the data type families are
-  registered, try to coerce the arguments to the family's default data
-  type, i.e. the String family will have a `VARCHAR` type;
-* If neither expected data type nor families are specified, try to
-  find the tightest common type of the node types, i.e. `INTEGER` and
-  `DOUBLE` will return `DOUBLE`, the numeric precision does not lose
-  for this case;
-* If no tightest common type is found, try to find a wider type,
-  i.e. `VARCHAR` and `INTEGER` will return `INTEGER`,
-  we allow some precision loss when widening decimal to fractional,
-  or promote to `VARCHAR` type.
-=======
-=======
-| TYPEOF(variant)                        | Returns a string that describes the runtime type of *variant*, where variant has a `VARIANT` type
-| VARIANTNULL()                          | Returns an instance of the `VARIANT` null value (constructor)
->>>>>>> 6e904e804 (DX-106110: Variant "Logical Port" (#145))
-
-Supported data types syntax:
-
-{% highlight sql %}
-type:
-      typeName
-      [ collectionsTypeName ]*
-
-typeName:
-      sqlTypeName
-  |   rowTypeName
-  |   compoundIdentifier
-
-sqlTypeName:
-      char [ precision ] [ charSet ]
-  |   varchar [ precision ] [ charSet ]
-  |   DATE
-  |   time
-  |   timestamp
-  |   GEOMETRY
-  |   decimal [ precision [, scale] ]
-  |   BOOLEAN
-  |   integer
-  |   BINARY [ precision ]
-  |   varbinary [ precision ]
-  |   TINYINT
-  |   SMALLINT
-  |   BIGINT
-  |   REAL
-  |   double
-  |   FLOAT
-  |   ANY [ precision [, scale] ]
-
-collectionsTypeName:
-      ARRAY | MULTISET
-
-rowTypeName:
-      ROW '('
-      fieldName1 fieldType1 [ NULL | NOT NULL ]
-      [ , fieldName2 fieldType2 [ NULL | NOT NULL ] ]*
-      ')'
-
-char:
-      CHARACTER | CHAR
-
-varchar:
-      char VARYING | VARCHAR
-
-decimal:
-      DECIMAL | DEC | NUMERIC
-
-integer:
-      INTEGER | INT
-
-varbinary:
-      BINARY VARYING | VARBINARY
-
-double:
-      DOUBLE [ PRECISION ]
-
-time:
-      TIME [ precision ] [ timeZone ]
-
-timestamp:
-      TIMESTAMP [ precision ] [ timeZone ]
-
-charSet:
-      CHARACTER SET charSetName
-
-timeZone:
-      WITHOUT TIME ZONE
-  |   WITH LOCAL TIME ZONE
-{% endhighlight %}
-
-#### Implicit Type Conversion
-Calcite automatically converts a value from one datatype to another when such a conversion makes sense. The table below is a matrix of Calcite type conversions. The table shows all possible conversions, without regard to the context in which it is made. The rules governing these details follow the table.
-
-| FROM-TO     | NULL | BOOLEAN | TINYINT | SMALLINT | INT | BIGINT | DECIMAL | FLOAT/REAL | DOUBLE | INTERVAL | DATE | TIME | TIMESTAMP | (VAR)CHAR | (VAR)BINARY
-|:----------- |:---- |:------- |:------- |:-------- |:--- |:------ |:------- |:---------- |:------ |:-------- |:---- |:---- |:--------- |:--------- |:-----------
-| NULL        | i    | i       | i       | i        | i   | i      | i       | i          | i      | i        | i    | i    | i         | i         | i
-| BOOLEAN     | x    | i       | e       | e        | e   | e      | e       | e          | e      | x        | x    | x    | x         | i         | x
-| TINYINT     | x    | e       | i       | i        | i   | i      | i       | i          | i      | e        | x    | x    | e         | i         | x
-| SMALLINT    | x    | e       | i       | i        | i   | i      | i       | i          | i      | e        | x    | x    | e         | i         | x
-| INT         | x    | e       | i       | i        | i   | i      | i       | i          | i      | e        | x    | x    | e         | i         | x
-| BIGINT      | x    | e       | i       | i        | i   | i      | i       | i          | i      | e        | x    | x    | e         | i         | x
-| DECIMAL     | x    | e       | i       | i        | i   | i      | i       | i          | i      | e        | x    | x    | e         | i         | x
-| FLOAT/REAL  | x    | e       | i       | i        | i   | i      | i       | i          | i      | x        | x    | x    | e         | i         | x
-| DOUBLE      | x    | e       | i       | i        | i   | i      | i       | i          | i      | x        | x    | x    | e         | i         | x
-| INTERVAL    | x    | x       | e       | e        | e   | e      | e       | x          | x      | i        | x    | x    | x         | e         | x
-| DATE        | x    | x       | x       | x        | x   | x      | x       | x          | x      | x        | i    | x    | i         | i         | x
-| TIME        | x    | x       | x       | x        | x   | x      | x       | x          | x      | x        | x    | i    | e         | i         | x
-| TIMESTAMP   | x    | x       | e       | e        | e   | e      | e       | e          | e      | x        | i    | e    | i         | i         | x
-| (VAR)CHAR   | x    | e       | i       | i        | i   | i      | i       | i          | i      | i        | i    | i    | i         | i         | i
-| (VAR)BINARY | x    | x       | x       | x        | x   | x      | x       | x          | x      | x        | e    | e    | e         | i         | i
-
-i: implicit cast / e: explicit cast / x: not allowed
-
-##### Conversion Contexts and Strategies
-* Set Operation(UNION/EXCEPT/INTERSECT): Compare every branch row data type and find the common type of each fields pair;
-* Arithmetic Expression: For binary arithmetic(`+`, `-`, `&`, `^`, `/`, `%`), promote string operand to data type of the other numeric operand;
-For binary comparison(`=`, `<`, `<=`, `<>`, `>`, `>=`),
-  - If operands are STRING and TIMESTAMP, promotes to TIMESTAMP
-  - Make `1=true` and `0=false` always evaluates true
-  - Find common type for both operands if there is NUMERIC type operand
-* IN Expression: If with subquery, compare type of LHS and RHS, find the common type, if it is struct type, find wider type for every field;
-If without subquery and RHS is a node list, compare every node to find the common type;
-* CASE WHEN Expression(or COALESCE): Find then and else operands common wider type;
-* Datetime String +/- INTERVAL: Promote string to timestamp;
-* Builtin Function: Look up the families registered in the checker, find the family default type if checker rules allow it;
-* User Defined Function: Try to coerce based on the declared argument types of the `eval()` method.
-
-##### Strategies for Finding Common Type
-- If the operator has expected data types, just take them as the desired one. (e.g. the UDF would have `eval()` method which has reflection argument types);
-- If there is no expected data type but the data type families are registered, try to coerce the arguments to the family's default data type, i.e. the String family will have a VARCHAR type;
-- If neither expected data type nor families are specified, try to find the tightest common type of the node types, i.e. INT and DOUBLE will return DOUBLE, the numeric precision does not lose for this case;
-- If no tightest common type is found, try to find a wider type, i.e. STRING and INT will return INT, we allow some precision loss when widening decimal to fractional, or promote to STRING type.
-
-#### Implicit Type Conversion
-
-Calcite automatically converts a value from one datatype to another
-when such a conversion makes sense. The table below is a matrix of
-Calcite type conversions. The table shows all possible conversions,
-without regard to the context in which it is made. The rules governing
-these details follow the table.
-
-| FROM - TO           | NULL | BOOLEAN | TINYINT | SMALLINT | INT | BIGINT | DECIMAL | FLOAT or REAL | DOUBLE | INTERVAL | DATE | TIME | TIMESTAMP | CHAR or VARCHAR | BINARY or VARBINARY
-|:------------------- |:---- |:------- |:------- |:-------- |:--- |:------ |:------- |:------------- |:------ |:-------- |:---- |:---- |:--------- |:--------------- |:-----------
-| NULL                | i    | i       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
-| BOOLEAN             | x    | i       | e       | e        | e   | e      | e       | e             | e      | x        | x    | x    | x         | i               | x
-| TINYINT             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| SMALLINT            | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| INT                 | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| BIGINT              | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| DECIMAL             | x    | e       | i       | i        | i   | i      | i       | i             | i      | e        | x    | x    | e         | i               | x
-| FLOAT/REAL          | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x
-| DOUBLE              | x    | e       | i       | i        | i   | i      | i       | i             | i      | x        | x    | x    | e         | i               | x
-| INTERVAL            | x    | x       | e       | e        | e   | e      | e       | x             | x      | i        | x    | x    | x         | e               | x
-| DATE                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | i    | x    | i         | i               | x
-| TIME                | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | x    | i    | e         | i               | x
-| TIMESTAMP           | x    | x       | e       | e        | e   | e      | e       | e             | e      | x        | i    | e    | i         | i               | x
-| CHAR or VARCHAR     | x    | e       | i       | i        | i   | i      | i       | i             | i      | i        | i    | i    | i         | i               | i
-| BINARY or VARBINARY | x    | x       | x       | x        | x   | x      | x       | x             | x      | x        | e    | e    | e         | i               | i
-=======
->>>>>>> 765ef60c0 (Introduce UUID type from upstream (#134))
 
 i: implicit cast / e: explicit cast / x: not allowed
 
@@ -2099,32 +1841,13 @@ period:
 | {fn RTRIM(string)} | Returns *string* with trailing space characters removed
 | {fn SUBSTRING(string, offset, length)} | Returns a character string that consists of *length* characters from *string* starting at the *offset* position
 | {fn UCASE(string)} | Returns a string in which all alphabetic characters in *string* have been converted to upper case
->>>>>>> 9d5cc2f5f ([CALCITE-6791] Search pattern during matching in REPLACE function should be case insensitive in MSSQL)
 | {fn REPLACE(string, search, replacement)} | Returns a string in which all the occurrences of *search* in *string* are replaced with *replacement*; returns unchanged *string* if *search* is an empty string(''); if *replacement* is the empty string, the occurrences of *search* are removed. Matching between *search* and *string* is case-insensitive under SQL Server semantics
 | {fn ASCII(string)} | Returns the ASCII code of the first character of *string*; if the first character is a non-ASCII character, returns its Unicode code point; returns 0 if *string* is empty
 | {fn REVERSE(string)} | Returns *string* with the order of the characters reversed
-=======
-| {fn REPLACE(string, search, replacement)} | Returns a string in which all the occurrences of *search* in *string* are replaced with *replacement*; if *replacement* is the empty string, the occurrences of *search* are removed
-<<<<<<< HEAD
-| {fn ASCII(string)} | Returns the corresponding ASCII code of the first character of *string*; Returns 0 if *string* is empty; Returns NULL if *string* is NULL; Returns the Unicode code point for non-ASCII character
-<<<<<<< HEAD
-=======
-| {fn REVERSE(string)} | Returns the *string* with the order of the characters reversed.
->>>>>>> 2781e2f82 ([CALCITE-2601] Add REVERSE function (pingle wang))
-=======
-| {fn ASCII(string)} | Returns the ASCII code of the first character of *string*; if the first character is a non-ASCII character, returns its Unicode code point; returns 0 if *string* is empty
-| {fn REVERSE(string)} | Returns *string* with the order of the characters reversed
->>>>>>> 4c207a5fb (Cosmetic changes)
 
 Not implemented:
 
 * {fn CHAR(string)}
-* {fn DIFFERENCE(string, string)}
-* {fn REPEAT(string, integer)}
-* {fn SOUNDEX(string)}
-* {fn SPACE(integer)}
-=======
->>>>>>> b8a27ac14 ([CALCITE-2965] Implement string functions: REPEAT, SPACE, SOUNDEX, DIFFERENCE)
 
 #### Date/time
 
@@ -2195,37 +1918,19 @@ and `LISTAGG`).
 | LISTAGG( [ ALL &#124; DISTINCT ] value [, separator]) | Returns values concatenated into a string, delimited by separator (default ',')
 | COUNT( [ ALL &#124; DISTINCT ] value [, value ]*) | Returns the number of input rows for which *value* is not null (wholly not null if *value* is composite)
 | COUNT(*)                           | Returns the number of input rows
-| FUSION( multiset )                 | Returns the multiset union of *multiset* across all input values
-=======
->>>>>>> 53857d63a (Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)")
-=======
-| FUSION( multiset )                 | Returns the multiset union of *multiset* across all input values
->>>>>>> 999c7aa89 (Revert "Revert "[CALCITE-2355] Implement multiset operations (Sergey Nuyanzin)"")
-=======
 | FUSION(multiset)                   | Returns the multiset union of *multiset* across all input values
->>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
-=======
->>>>>>> 0c0484733 ([CALCITE-3815] Add missing SQL standard aggregate functions: EVERY, SOME, INTERSECTION (#160))
+| INTERSECTION(multiset)             | Returns the multiset intersection of *multiset* across all input values
 | APPROX_COUNT_DISTINCT(value [, value ]*)      | Returns the approximate number of distinct values of *value*; the database is allowed to use an approximation but is not required to
 | AVG( [ ALL &#124; DISTINCT ] numeric)         | Returns the average (arithmetic mean) of *numeric* across all input values
 | SUM( [ ALL &#124; DISTINCT ] numeric)         | Returns the sum of *numeric* across all input values
 | MAX( [ ALL &#124; DISTINCT ] value)           | Returns the maximum value of *value* across all input values
 | MIN( [ ALL &#124; DISTINCT ] value)           | Returns the minimum value of *value* across all input values
 | ANY_VALUE( [ ALL &#124; DISTINCT ] value)     | Returns one of the values of *value* across all input values; this is NOT specified in the SQL standard
->>>>>>> 0c0484733 ([CALCITE-3815] Add missing SQL standard aggregate functions: EVERY, SOME, INTERSECTION (#160))
 | SOME(condition)                               | Returns true if any condition is true.
 | EVERY(condition)                              | Returns true if all conditions are true.
 | BIT_AND( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise AND of all non-null input values, or null if none
 | BIT_OR( [ ALL &#124; DISTINCT ] value)        | Returns the bitwise OR of all non-null input values, or null if none
 | BIT_XOR( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise XOR of all non-null input values, or null if none
-<<<<<<< HEAD
-=======
-=======
-| BIT_AND( [ ALL &#124; DISTINCT ] value)       | Returns the bitwise AND of all non-null input values, or null if none
-| BIT_OR( [ ALL &#124; DISTINCT ] value)        | Returns the bitwise OR of all non-null input values, or null if none
->>>>>>> bae3e8406 ([CALCITE-2770] Add support for BIT_AND and BIT_OR aggregate functions)
-=======
->>>>>>> 3d63e022b ([CALCITE-3591] Add bit_xor aggregate operator (wangxlong))
 | STDDEV_POP( [ ALL &#124; DISTINCT ] numeric)  | Returns the population standard deviation of *numeric* across all input values
 | STDDEV_SAMP( [ ALL &#124; DISTINCT ] numeric) | Returns the sample standard deviation of *numeric* across all input values
 | STDDEV( [ ALL &#124; DISTINCT ] numeric)      | Synonym for `STDDEV_SAMP`
@@ -2314,15 +2019,6 @@ Not implemented:
 * APPROX_COUNT_DISTINCT(value [, value ]*) OVER window
 * PERCENT_RANK(value) OVER window
 * CUME_DIST(value) OVER window
-* NTH_VALUE(value, nth) OVER window
-=======
-* NTH_VALUE(value, nth) [ FROM { FIRST | LAST } ] IGNORE NULLS OVER window
->>>>>>> 3564ebb7c (Revert "Revert "[CALCITE-2383] NTH_VALUE window function (Sergey Nuyanzin)"")
-=======
-* NTH_VALUE(value, nth) [ FROM { FIRST &#124; LAST } ] IGNORE NULLS OVER window
->>>>>>> fcc1c2e7a ([CALCITE-2436] Steps for building site under Windows, misprint fix in SQL Language page)
-=======
->>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
 
 ### Grouping functions
 
@@ -2337,12 +2033,8 @@ Not implemented:
 |:-------------------- |:-----------
 | DESCRIPTOR(name [, name ]*) | DESCRIPTOR appears as an argument in a function to indicate a list of names. The interpretation of names is left to the function.
 
-### Table-valued functions.
-Table-valued functions occur in the `FROM` clause.
-=======
 ### Table functions.
 Table functions occur in the `FROM` clause.
->>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
 
 #### TUMBLE
 In streaming queries, TUMBLE assigns a window for each row of a relation based on a timestamp column. An assigned window
@@ -2351,24 +2043,16 @@ is named as "fixed windowing".
 
 | Operator syntax      | Description
 |:-------------------- |:-----------
-| TUMBLE(table, DESCRIPTOR(column_name), interval [, time ]) | Indicates a tumbling window of *interval* for *datetime*, optionally aligned at *time*. Tumbling is applied on table in which there is a watermarked column specified by descriptor.
-=======
 | TUMBLE(table, DESCRIPTOR(datetime), interval) | Indicates a tumbling window of *interval* for *datetime*.
->>>>>>> c4fd13d2c ([CALCITE-3780] SESSION Table function (Rui Wang) (#380))
 
 Here is an example:
 `SELECT * FROM TABLE(TUMBLE(TABLE orders, DESCRIPTOR(rowtime), INTERVAL '1' MINUTE))`,
 will apply tumbling with 1 minute window size on rows from table orders. rowtime is the
 watermarked column of table orders that tells data completeness.
 
->>>>>>> a50248148 ([CALCITE-3382] Support TUMBLE as Table Value Function (Rui Wang) (#82))
-=======
 #### HOP
 In streaming queries, HOP assigns windows that cover rows within the interval of *size* and shifting every *slide* based
 on a timestamp column. Windows assigned could have overlapping so hopping sometime is named as "sliding windowing".
-sometime is named as "sliding windowing".
-=======
-
 
 | Operator syntax      | Description
 |:-------------------- |:-----------
@@ -2740,30 +2424,15 @@ Not implemented:
 
 ### JSON Functions
 
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 In the following:
 
 * *jsonValue* is a character string containing a JSON value;
 * *path* is a character string containing a JSON path expression; mode flag `strict` or `lax` should be specified in the beginning of *path*.
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 #### Query Functions
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
-| JSON_EXISTS(value, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Test whether a JSON **value** satisfies a search criterion described using JSON path expression **path**
-| JSON_VALUE(value, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a JSON **value** using JSON path expression **path**
-| JSON_QUERY(value, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract an JSON object or an JSON array from a JSON **value** using JSON path expression **path**
-
-Note:
-
-* The common structure `value, path` is JSON API common syntax. **value** is a character string type json input, and **path** is a JSON path expression (in character string type too), mode flag **strict** or **lax** should be specified in the beginning of **path**.  
-* **ON ERROR** clause, and **ON EMPTY** clause define the fallback behavior of the function when an error is thrown or a null value is about to be returned.   
-* **ARRAY WRAPPER** clause defines how to represent JSON array result in JSON_QUERY function. Following is a comparision to demonstrate the difference among different wrapper behaviors.
-=======
 | JSON_EXISTS(jsonValue, path [ { TRUE &#124; FALSE &#124; UNKNOWN &#124; ERROR ) ON ERROR } ) | Whether a *jsonValue* satisfies a search criterion described using JSON path expression *path*
 | JSON_VALUE(jsonValue, path [ RETURNING type ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON EMPTY ] [ { ERROR &#124; NULL &#124; DEFAULT expr } ON ERROR ] ) | Extract an SQL scalar from a *jsonValue* using JSON path expression *path*
 | JSON_QUERY(jsonValue, path [ { WITHOUT [ ARRAY ] &#124; WITH [ CONDITIONAL &#124; UNCONDITIONAL ] [ ARRAY ] } WRAPPER ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON EMPTY ] [ { ERROR &#124; NULL &#124; EMPTY ARRAY &#124; EMPTY OBJECT } ON ERROR ] ) | Extract a JSON object or JSON array from *jsonValue* using the *path* JSON path expression
@@ -2776,28 +2445,18 @@ Note:
 * The `ARRAY WRAPPER` clause defines how to represent a JSON array result
   in `JSON_QUERY` function. The following examples compare the wrapper
   behaviors.
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 
 Example Data:
 
 ```JSON
-{ "a": "[1,2]", "b": [1,2], "c": "hi"}
-=======
 {"a": "[1,2]", "b": [1,2], "c": "hi"}
 ```
 
-Comparision:
-
-|Operator                                    |$.a          |$.b          |$.c
-|:-------------------------------------------|:------------|:------------|:------------
-|JSON_VALUE                                  | [1, 2]      | error       | hi             
->>>>>>> 4ae6fc9d7 ([CALCITE-2266] Implement SQL:2016 JSON functions: JSON_EXISTS, JSON_VALUE, JSON_QUERY, JSON_OBJECT, JSON_OBJECTAGG, JSON_ARRAY, JSON_ARRAYAGG, IS JSON predicate (Hongze Zhang))
-=======
+Comparison:
 
 |Operator                                    |$.a          |$.b          |$.c
 |:-------------------------------------------|:------------|:------------|:------------
 |JSON_VALUE                                  | [1, 2]      | error       | hi
->>>>>>> f833be0b2 (Following [CALCITE-2266], remove an unwanted dependency)
 |JSON QUERY WITHOUT ARRAY WRAPPER            | error       | [1, 2]      | error
 |JSON QUERY WITH UNCONDITIONAL ARRAY WRAPPER | [ "[1,2]" ] | [ [1,2] ]   | [ "hi" ]
 |JSON QUERY WITH CONDITIONAL ARRAY WRAPPER   | [ "[1,2]" ] | [1,2]       | [ "hi" ]
@@ -2810,12 +2469,10 @@ Not implemented:
 
 | Operator syntax        | Description
 |:---------------------- |:-----------
->>>>>>> f273a17c7 (Site: Improve documentation for MySQL-specific JSON operators)
 | JSON_OBJECT( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct JSON object using a series of key (*name*) value (*value*) pairs
 | JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct a JSON object using a key (*name*) value (*value*) pair
 | JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct a JSON array using a series of values (*value*)
 | JSON_ARRAYAGG( value [ FORMAT JSON ] [ ORDER BY orderItem [, orderItem ]* ] [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct a JSON array using a value (*value*)
-<<<<<<< HEAD
 
 Note:
 
@@ -2842,8 +2499,6 @@ Note:
 | jsonValue IS JSON ARRAY           | Whether *jsonValue* is a JSON array
 | jsonValue IS NOT JSON ARRAY       | Whether *jsonValue* is not a JSON array
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 ### Dialect-specific Operators
 
 The following operators are not in the SQL standard, and are not enabled in
@@ -2856,301 +2511,6 @@ connect string parameter.
 
 The 'C' (compatibility) column contains value
 'b' for BigQuery ('fun=bigquery' in the connect string),
-<<<<<<< HEAD
-'m' for MySQL ('fun=mysql' in the connect string),
-'o' for Oracle ('fun=oracle' in the connect string),
-'p' for PostgreSQL ('fun=postgresql' in the connect string).
-
-One operator name may correspond to multiple SQL dialects, but with different
-semantics.
-
-| C | Operator syntax                                | Description
-|:- |:-----------------------------------------------|:-----------
-| p | expr :: type                                   | Casts *expr* to *type*
-| o | CHR(integer) | Returns the character having the binary equivalent to *integer* as a CHAR value
-| o | COSH(numeric)                                  | Returns the hyperbolic cosine of *numeric*
-| o | CONCAT(string, string)                         | Concatenates two strings
-| m p | CONCAT(string [, string ]*)                  | Concatenates two or more strings
-| m | COMPRESS(string)                               | Compresses a string using zlib compression and returns the result as a binary string.
-| p | CONVERT_TIMEZONE(tz1, tz2, datetime)           | Converts the timezone of *datetime* from *tz1* to *tz2*
-| m | DAYNAME(datetime)                              | Returns the name, in the connection's locale, of the weekday in *datetime*; for example, it returns '星期日' for both DATE '2020-02-10' and TIMESTAMP '2020-02-10 10:10:10'
-| b | DATE(string)                                   | Equivalent to `CAST(string AS DATE)`
-| b | DATE_FROM_UNIX_DATE(integer)                   | Returns the DATE that is *integer* days after 1970-01-01
-| o | DECODE(value, value1, result1 [, valueN, resultN ]* [, default ]) | Compares *value* to each *valueN* value one by one; if *value* is equal to a *valueN*, returns the corresponding *resultN*, else returns *default*, or NULL if *default* is not specified
-| p | DIFFERENCE(string, string)                     | Returns a measure of the similarity of two strings, namely the number of character positions that their `SOUNDEX` values have in common: 4 if the `SOUNDEX` values are same and 0 if the `SOUNDEX` values are totally different
-| o | EXTRACT(xml, xpath, [, namespaces ])           | Returns the xml fragment of the element or elements matched by the XPath expression. The optional namespace value that specifies a default mapping or namespace mapping for prefixes, which is used when evaluating the XPath expression
-| o | EXISTSNODE(xml, xpath, [, namespaces ])        | Determines whether traversal of a XML document using a specified xpath results in any nodes. Returns 0 if no nodes remain after applying the XPath traversal on the document fragment of the element or elements matched by the XPath expression. Returns 1 if any nodes remain. The optional namespace value that specifies a default mapping or namespace mapping for prefixes, which is used when evaluating the XPath expression.
-| m | EXTRACTVALUE(xml, xpathExpr))                  | Returns the text of the first text node which is a child of the element or elements matched by the XPath expression.
-| o | GREATEST(expr [, expr ]*)                      | Returns the greatest of the expressions
-| m | JSON_TYPE(jsonValue)                           | Returns a string value indicating the type of a *jsonValue*
-| m | JSON_DEPTH(jsonValue)                          | Returns an integer value indicating the depth of a *jsonValue*
-| m | JSON_PRETTY(jsonValue)                         | Returns a pretty-printing of *jsonValue*
-| m | JSON_LENGTH(jsonValue [, path ])               | Returns a integer indicating the length of *jsonValue*
-| m | JSON_KEYS(jsonValue [, path ])                 | Returns a string indicating the keys of a JSON *jsonValue*
-| m | JSON_REMOVE(jsonValue, path[, path])           | Removes data from *jsonValue* using a series of *path* expressions and returns the result
-| m | JSON_STORAGE_SIZE(jsonValue)                   | Returns the number of bytes used to store the binary representation of a *jsonValue*
-| m p | LEFT(string, length)                         | Returns the leftmost *length* characters from the *string*
-| m | TO_BASE64(string)                              | Converts the *string* to base-64 encoded form and returns a encoded string
-| m | FROM_BASE64(string)                            | Returns the decoded result of a base-64 *string* as a string
-| m p | MD5(string)                                  | Calculates an MD5 128-bit checksum of *string* and returns it as a hex string
-| m | MONTHNAME(date)                                | Returns the name, in the connection's locale, of the month in *datetime*; for example, it returns '二月' for both DATE '2020-02-10' and TIMESTAMP '2020-02-10 10:10:10'
-| m o | REGEXP_REPLACE(string, regexp, rep, [, pos [, occurrence [, matchType]]]) | Replaces all substrings of *string* that match *regexp* with *rep* at the starting *pos* in expr (if omitted, the default is 1), *occurrence* means which occurrence of a match to search for (if omitted, the default is 1), *matchType* specifies how to perform matching
-| m | REVERSE(string)                                | Returns *string* with the order of the characters reversed
-| o | DECODE(value, value1, result1 [, valueN, resultN ]* [, default ]) | Compares *value* to each *valueN* value one by one; if *value* is equal to a *valueN*, returns the corresponding *resultN*, else returns *default*, or NULL if *default* is not specified
-| o | NVL(value1, value2)                            | Returns *value1* if *value1* is not null, otherwise *value2*
-| o | LTRIM(string)                                  | Returns *string* with all blanks removed from the start
-| o | RTRIM(string)                                  | Returns *string* with all blanks removed from the end
-| m p | SHA1(string)                                 | Calculates a SHA-1 hash value of *string* and returns it as a hex string
-| o | SINH(numeric)                                  | Returns the hyperbolic sine of *numeric*
-| o | SUBSTR(string, position [, substringLength ]) | Returns a portion of *string*, beginning at character *position*, *substringLength* characters long. SUBSTR calculates lengths using characters as defined by the input character set
-| m | STRCMP(string, string)                         | Returns 0 if both of the strings are same and returns -1 when the first argument is smaller than the second and 1 when the second one is smaller than the first one
-| o | TANH(numeric)                                  | Returns the hyperbolic tangent of *numeric*
-| o | GREATEST(expr [, expr ]*)                      | Returns the greatest of the expressions
-| o | LEAST(expr [, expr ]* )                        | Returns the least of the expressions
-| b | TIMESTAMP_MICROS(integer)                      | Returns the TIMESTAMP that is *integer* microseconds after 1970-01-01 00:00:00
-| b | TIMESTAMP_MILLIS(integer)                      | Returns the TIMESTAMP that is *integer* milliseconds after 1970-01-01 00:00:00
-| b | TIMESTAMP_SECONDS(integer)                     | Returns the TIMESTAMP that is *integer* seconds after 1970-01-01 00:00:00
-| o p | TO_DATE(string, format)                      | Converts *string* to a date using the format *format*
-| o p | TO_TIMESTAMP(string, format)                 | Converts *string* to a timestamp using the format *format*
-| o p | TRANSLATE(expr, fromString, toString)        | Returns *expr* with all occurrences of each character in *fromString* replaced by its corresponding character in *toString*. Characters in *expr* that are not in *fromString* are not replaced
-| m o p | SOUNDEX(string)                            | Returns the phonetic representation of *string*; throws if *string* is encoded with multi-byte encoding such as UTF-8
-| p | DIFFERENCE(string, string)                     | Returns a measure of the similarity of two strings, namely the number of character positions that their `SOUNDEX` values have in common: 4 if the `SOUNDEX` values are same and 0 if the `SOUNDEX` values are totally different
-| m p | REPEAT(string, integer)                      | Returns a string consisting of *string* repeated of *integer* times; returns an empty string if *integer* is less than 1
-| m | SPACE(integer)                                 | Returns a string of *integer* spaces; returns an empty string if *integer* is less than 1
-| b | UNIX_MICROS(timestamp)                         | Returns the number of microseconds since 1970-01-01 00:00:00
-| b | UNIX_MILLIS(timestamp)                         | Returns the number of milliseconds since 1970-01-01 00:00:00
-| b | UNIX_SECONDS(timestamp)                        | Returns the number of seconds since 1970-01-01 00:00:00
-| b | UNIX_DATE(date)                                | Returns the number of days since 1970-01-01
-| o | XMLTRANSFORM(xml, xslt)                        | Returns a string after applying xslt to supplied XML
-
-Note:
-
-* `JSON_TYPE` / `JSON_DEPTH` / `JSON_PRETTY` / `JSON_STORAGE_SIZE` return null if the argument is null
-* `JSON_TYPE` / `JSON_DEPTH` / `JSON_PRETTY` throw error if the argument is not a valid JSON value
-* `JSON_LENGTH` / `JSON_KEYS` / `JSON_REMOVE` return null if the first argument is null
-* `JSON_TYPE` generally returns an upper-case string flag indicating the type of the JSON input. Currently supported supported type flags are:
-  * INTEGER
-  * STRING
-  * FLOAT
-  * DOUBLE
-  * LONG
-  * BOOLEAN
-  * DATE
-  * OBJECT
-  * ARRAY
-  * NULL
-* `JSON_DEPTH` defines a JSON value's depth as follows:
-  * An empty array, empty object, or scalar value has depth 1;
-  * A non-empty array containing only elements of depth 1 or non-empty object containing only member values of depth 1 has depth 2;
-  * Otherwise, a JSON document has depth greater than 2.
-* `JSON_LENGTH` defines a JSON value's length as follows:
-  * A scalar value has length 1;
-  * The length of array or object is the number of elements is contains.
-
-Usage Examples:
-
-##### JSON_TYPE example
-
-SQL
-
-```SQL
-SELECT JSON_TYPE(v) AS c1,
-  JSON_TYPE(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2,
-  JSON_TYPE(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3,
-  JSON_TYPE(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4
-FROM (VALUES ('{"a": [10, true],"b": "[10, true]"}')) AS t(v)
-LIMIT 10;
-```
-
-Result
-
-| c1     | c2    | c3      | c4      |
-| ------ | ----- | ------- | ------- |
-| OBJECT | ARRAY | INTEGER | BOOLEAN |
-
-##### JSON_DEPTH example
-
-SQL
-
-```SQL
-SELECT JSON_DEPTH(v) AS c1,
-  JSON_DEPTH(JSON_VALUE(v, 'lax $.b' ERROR ON ERROR)) AS c2,
-  JSON_DEPTH(JSON_VALUE(v, 'strict $.a[0]' ERROR ON ERROR)) AS c3,
-  JSON_DEPTH(JSON_VALUE(v, 'strict $.a[1]' ERROR ON ERROR)) AS c4
-FROM (VALUES ('{"a": [10, true],"b": "[10, true]"}')) AS t(v)
-LIMIT 10;
-```
-
-Result
-
-| c1     | c2    | c3      | c4      |
-| ------ | ----- | ------- | ------- |
-| 3      | 2     | 1       | 1       |
-
-* JSON_LENGTH
-
-Example SQL:
-
-```SQL
-SELECT JSON_LENGTH(v) AS c1,
-  JSON_LENGTH(v, 'lax $.a') AS c2,
-  JSON_LENGTH(v, 'strict $.a[0]') AS c3,
-  JSON_LENGTH(v, 'strict $.a[1]') AS c4
-FROM (VALUES ('{"a": [10, true]}')) AS t(v)
-LIMIT 10;
-```
-
-Result:
-
-| c1     | c2    | c3      | c4      |
-| ------ | ----- | ------- | ------- |
-| 1      | 2     | 1       | 1       |
-##### JSON_KEYS example
-
-SQL
-
- ```SQL
-SELECT JSON_KEYS(v) AS c1,
-  JSON_KEYS(v, 'lax $.a') AS c2,
-  JSON_KEYS(v, 'lax $.b') AS c2,
-  JSON_KEYS(v, 'strict $.a[0]') AS c3,
-  JSON_KEYS(v, 'strict $.a[1]') AS c4
-FROM (VALUES ('{"a": [10, true],"b": {"c": 30}}')) AS t(v)
-LIMIT 10;
-```
-
- Result
-
-| c1         | c2   | c3    | c4   | c5   |
-| ---------- | ---- | ----- | ---- | ---- |
-| ["a", "b"] | NULL | ["c"] | NULL | NULL |
-
-##### JSON_REMOVE example
-
-SQL
-
- ```SQL
-SELECT JSON_REMOVE(v, '$[1]') AS c1
-FROM (VALUES ('["a", ["b", "c"], "d"]')) AS t(v)
-LIMIT 10;
-```
-
- Result
-
-| c1         |
-| ---------- |
-| ["a", "d"] |
-
-
-##### JSON_STORAGE_SIZE example
-
-SQL
-
- ```SQL
-SELECT
-JSON_STORAGE_SIZE('[100, \"sakila\", [1, 3, 5], 425.05]') AS c1,
-JSON_STORAGE_SIZE('{\"a\": 10, \"b\": \"a\", \"c\": \"[1, 3, 5, 7]\"}') AS c2,
-JSON_STORAGE_SIZE('{\"a\": 10, \"b\": \"xyz\", \"c\": \"[1, 3, 5, 7]\"}') AS c3,
-JSON_STORAGE_SIZE('[100, \"json\", [[10, 20, 30], 3, 5], 425.05]') AS c4
-limit 10;
-```
-
- Result
-
-| c1 | c2 | c3 | c4 |
-| -- | ---| ---| -- |
-| 29 | 35 | 37 | 36 |
-
-
-#### DECODE example
-
-SQL
-
-```SQL
-SELECT DECODE(f1, 1, 'aa', 2, 'bb', 3, 'cc', 4, 'dd', 'ee') as c1,
-  DECODE(f2, 1, 'aa', 2, 'bb', 3, 'cc', 4, 'dd', 'ee') as c2,
-  DECODE(f3, 1, 'aa', 2, 'bb', 3, 'cc', 4, 'dd', 'ee') as c3,
-  DECODE(f4, 1, 'aa', 2, 'bb', 3, 'cc', 4, 'dd', 'ee') as c4,
-  DECODE(f5, 1, 'aa', 2, 'bb', 3, 'cc', 4, 'dd', 'ee') as c5
-FROM (VALUES (1, 2, 3, 4, 5)) AS t(f1, f2, f3, f4, f5);
-
-```
- Result
-
-| c1          | c2          | c3          | c4          | c5          |
-| ----------- | ----------- | ----------- | ----------- | ----------- |
-| aa          | bb          | cc          | dd          | ee          |
-
-#### TRANSLATE example
-
-SQL
-
-```SQL
-SELECT TRANSLATE('Aa*Bb*Cc''D*d', ' */''%', '_') as c1,
-  TRANSLATE('Aa/Bb/Cc''D/d', ' */''%', '_') as c2,
-  TRANSLATE('Aa Bb Cc''D d', ' */''%', '_') as c3,
-  TRANSLATE('Aa%Bb%Cc''D%d', ' */''%', '_') as c4
-FROM (VALUES (true)) AS t(f0);
-```
-
-Result
-
-| c1          | c2          | c3          | c4          |
-| ----------- | ----------- | ----------- | ----------- |
-| Aa_Bb_CcD_d | Aa_Bb_CcD_d | Aa_Bb_CcD_d | Aa_Bb_CcD_d |
-
-=======
-| JSON_OBJECT( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct json object using a series of key (**name**) value (**value**) pairs
-| JSON_OBJECTAGG( { [ KEY ] name VALUE value [ FORMAT JSON ] &#124; name : value [ FORMAT JSON ] } [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json object using a key (**name**) value (**value**) pair
-| JSON_ARRAY( { value [ FORMAT JSON ] } * [ { NULL &#124; ABSENT } ON NULL ] ) | Construct json array using a series of values (**value**)
-| JSON_ARRAYAGG( value [ FORMAT JSON ] [ { NULL &#124; ABSENT } ON NULL ] ) | Aggregate function to construct json array using a value (**value**)
-=======
-
-Note:
-
-* The flag `FORMAT JSON` indicates the value is formatted as JSON
-  character string. When `FORMAT JSON` is used, the value should be
-  de-parse from JSON character string to a SQL structured value.
-* `ON NULL` clause defines how the JSON output represents null
-  values. The default null behavior of `JSON_OBJECT` and
-  `JSON_OBJECTAGG` is `NULL ON NULL`, and for `JSON_ARRAY` and
-  `JSON_ARRAYAGG` it is `ABSENT ON NULL`.
-* If `ORDER BY` clause is provided, `JSON_ARRAYAGG` sorts the
-  input rows into the specified order before performing aggregation.
-
-#### Comparison Operators
-
-| Operator syntax                   | Description
-|:--------------------------------- |:-----------
-| jsonValue IS JSON [ VALUE ]       | Whether *jsonValue* is a JSON value
-| jsonValue IS NOT JSON [ VALUE ]   | Whether *jsonValue* is not a JSON value
-| jsonValue IS JSON SCALAR          | Whether *jsonValue* is a JSON scalar value
-| jsonValue IS NOT JSON SCALAR      | Whether *jsonValue* is not a JSON scalar value
-| jsonValue IS JSON OBJECT          | Whether *jsonValue* is a JSON object
-| jsonValue IS NOT JSON OBJECT      | Whether *jsonValue* is not a JSON object
-| jsonValue IS JSON ARRAY           | Whether *jsonValue* is a JSON array
-| jsonValue IS NOT JSON ARRAY       | Whether *jsonValue* is not a JSON array
-
-#### MySQL Specific Operators
-=======
-### SQL Dialect Operators
-Sql dialect operators are only supported by specific sql dialects. One operator name may corresponds to multiple sql dialects, but with different semantics.
->>>>>>> e4e1eda67 ([CALCITE-2846] Document Oracle-specific functions, such as NVL and LTRIM, in the SQL reference)
-=======
-### Dialect-specific Operators
->>>>>>> e9f91b4bc ([CALCITE-3053] Add a test to ensure that all functions are documented in the SQL reference)
-
-The following operators are not in the SQL standard, and are not enabled in
-Calcite's default operator table. They are only available for use in queries
-if your session has enabled an extra operator table.
-
-To enable an operator table, set the
-[fun]({{ site.baseurl }}/docs/adapter.html#jdbc-connect-string-parameters)
-connect string parameter.
-
-The 'C' (compatibility) column contains value
-=======
->>>>>>> db7a39c3e ([CALCITE-4089] In Babel, allow 'CAST(integer AS DATE)' even though it is illegal in Calcite SQL (#140))
 'm' for MySQL ('fun=mysql' in the connect string),
 'o' for Oracle ('fun=oracle' in the connect string),
 'p' for PostgreSQL ('fun=postgresql' in the connect string).
@@ -3660,8 +3020,6 @@ ddlStatement:
   |   createViewStatement
   |   createMaterializedViewStatement
   |   createTypeStatement
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
-=======
   |   createFunctionStatement
   |   dropSchemaStatement
   |   dropForeignSchemaStatement
@@ -3669,8 +3027,6 @@ ddlStatement:
   |   dropViewStatement
   |   dropMaterializedViewStatement
   |   dropTypeStatement
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
-=======
   |   dropFunctionStatement
 
 createSchemaStatement:
@@ -3762,8 +3118,6 @@ dropMaterializedViewStatement:
 
 dropTypeStatement:
       DROP TYPE [ IF EXISTS ] name
->>>>>>> 2cf57fa09 ([CALCITE-2045] CREATE TYPE (Shuyi Chen))
-=======
 
 dropFunctionStatement:
       DROP FUNCTION [ IF EXISTS ] name
@@ -3778,7 +3132,6 @@ generated column, `VIRTUAL` is the default.
 
 In *createFunctionStatement* and *usingFile*, *classNameLiteral*
 and *filePathLiteral* are character literals.
->>>>>>> e31c8f7a5 ([CALCITE-3726] Documentation for Declaring Objects For Types Defined In Schema (ritesh-kapoor))
 
 
 #### Declaring Objects For Types Defined In Schema
@@ -3815,7 +3168,3 @@ employee_typ(315, 'Francis', 'Logan', 'FLOGAN',
         '555.777.2222', '01-MAY-04', 'SA_MAN', 11000, .15, 101, 110,
          address_typ('376 Mission', 'San Francisco', 'CA', '94222'))
 ```
-<<<<<<< HEAD
-=======
-=======
->>>>>>> e31c8f7a5 ([CALCITE-3726] Documentation for Declaring Objects For Types Defined In Schema (ritesh-kapoor))

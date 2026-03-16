@@ -215,25 +215,6 @@ public abstract class RelOptMaterializations {
     root = hepPlanner.findBestExp();
 
     return new SubstitutionVisitor(target, root).go(materialization.tableRel);
-<<<<<<< HEAD
-  }
-
-  /**
-   * Trim unused fields in relational expressions.
-   */
-  private static RelNode trimUnusedfields(RelNode relNode) {
-    final List<RelOptTable> relOptTables = RelOptUtil.findAllTables(relNode);
-    RelOptSchema relOptSchema = null;
-    if (relOptTables.size() != 0) {
-      relOptSchema = relOptTables.get(0).getRelOptSchema();
-    }
-    final RelBuilder relBuilder = RelFactories.LOGICAL_BUILDER.create(
-        relNode.getCluster(), relOptSchema);
-    final RelFieldTrimmer relFieldTrimmer = new RelFieldTrimmer(null, relBuilder);
-    final RelNode rel = relFieldTrimmer.trim(relNode);
-    return rel;
-=======
->>>>>>> 2e6c42a57 ([CALCITE-3334]: Refinement for Substitution-Based MV Matching (#12))
   }
 
   /**

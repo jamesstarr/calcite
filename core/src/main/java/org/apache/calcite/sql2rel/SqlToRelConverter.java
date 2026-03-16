@@ -2114,7 +2114,6 @@ public class SqlToRelConverter {
 
       }
       convertFrom(bb, firstOperand, fieldNameList);
->>>>>>> 6147b92cd ([CALCITE-3789] Supports Presto style unnest with items alias (Will Yu))
       return;
 
     case MATCH_RECOGNIZE:
@@ -3860,8 +3859,6 @@ public class SqlToRelConverter {
 
           table.getRowType().getFieldNames());
 
-      };
-=======
       final List<RexNode> list = new ArrayList<>();
       for (RelDataTypeField f : table.getRowType().getFieldList()) {
         final ColumnStrategy strategy =
@@ -4136,8 +4133,695 @@ public class SqlToRelConverter {
 
     replaceSubQueries(bb, call, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
 
-    boolean isRemoveSortInSubQuery();
-=======
+    RelOptTable targetTable = getTargetTable(call);
+
+    // convert update column list from SqlIdentifier to String
+    final List<String> targetColumnNameList = new ArrayList<>();
+    final RelDataType targetRowType = targetTable.getRowType();
+    for (SqlNode node : call.getTargetColumnList()) {
+      SqlIdentifier id = (SqlIdentifier) node;
+      RelDataTypeField field =
+          SqlValidatorUtil.getTargetField(
+              targetRowType, typeFactory, id, catalogReader, targetTable);
+      assert field != null : "column " + id.toString() + " not found";
+      targetColumnNameList.add(field.getName());
+    }
+
+    RelNode sourceRel = convertSelect(call.getSourceSelect(), false);
+
+    bb.setRoot(sourceRel, false);
+    Builder<RexNode> rexNodeSourceExpressionListBuilder = ImmutableList.builder();
+    for (SqlNode n : call.getSourceExpressionList()) {
+      RexNode rn = bb.convertExpression(n);
+      rexNodeSourceExpressionListBuilder.add(rn);
+    }
+
+    return LogicalTableModify.create(targetTable, catalogReader, sourceRel,
+        LogicalTableModify.Operation.UPDATE, targetColumnNameList,
+        rexNodeSourceExpressionListBuilder.build(), false);
+  }
+
+  private RelNode convertMerge(SqlMerge call) {
+    RelOptTable targetTable = getTargetTable(call);
+
+    // convert update column list from SqlIdentifier to String
+    final List<String> targetColumnNameList = new ArrayList<>();
+    final RelDataType targetRowType = targetTable.getRowType();
+    SqlUpdate updateCall = call.getUpdateCall();
+    if (updateCall != null) {
+      for (SqlNode targetColumn : updateCall.getTargetColumnList()) {
+        SqlIdentifier id = (SqlIdentifier) targetColumn;
+        RelDataTypeField field =
+            SqlValidatorUtil.getTargetField(
+                targetRowType, typeFactory, id, catalogReader, targetTable);
+        assert field != null : "column " + id.toString() + " not found";
+        targetColumnNameList.add(field.getName());
+      }
+    }
+
+    // replace the projection of the source select with a
+    // projection that contains the following:
+    // 1) the expressions corresponding to the new insert row (if there is
+    //    an insert)
+    // 2) all columns from the target table (if there is an update)
+    // 3) the set expressions in the update call (if there is an update)
+
+    // first, convert the merge's source select to construct the columns
+    // from the target table and the set expressions in the update call
+    RelNode mergeSourceRel = convertSelect(call.getSourceSelect(), false);
+
+    // then, convert the insert statement so we can get the insert
+    // values expressions
+    SqlInsert insertCall = call.getInsertCall();
+    int nLevel1Exprs = 0;
+    List<RexNode> level1InsertExprs = null;
+    List<RexNode> level2InsertExprs = null;
+    if (insertCall != null) {
+      RelNode insertRel = convertInsert(insertCall);
+
+      // if there are 2 level of projections in the insert source, combine
+      // them into a single project; level1 refers to the topmost project;
+      // the level1 projection contains references to the level2
+      // expressions, except in the case where no target expression was
+      // provided, in which case, the expression is the default value for
+      // the column; or if the expressions directly map to the source
+      // table
+      level1InsertExprs =
+          ((LogicalProject) insertRel.getInput(0)).getProjects();
+      if (insertRel.getInput(0).getInput(0) instanceof LogicalProject) {
+        level2InsertExprs =
+            ((LogicalProject) insertRel.getInput(0).getInput(0))
+                .getProjects();
+      }
+      nLevel1Exprs = level1InsertExprs.size();
+    }
+
+    LogicalJoin join = (LogicalJoin) mergeSourceRel.getInput(0);
+    int nSourceFields = join.getLeft().getRowType().getFieldCount();
+    final List<RexNode> projects = new ArrayList<>();
+    for (int level1Idx = 0; level1Idx < nLevel1Exprs; level1Idx++) {
+      if ((level2InsertExprs != null)
+          && (level1InsertExprs.get(level1Idx) instanceof RexInputRef)) {
+        int level2Idx =
+            ((RexInputRef) level1InsertExprs.get(level1Idx)).getIndex();
+        projects.add(level2InsertExprs.get(level2Idx));
+      } else {
+        projects.add(level1InsertExprs.get(level1Idx));
+      }
+    }
+    if (updateCall != null) {
+      final LogicalProject project = (LogicalProject) mergeSourceRel;
+      projects.addAll(
+          Util.skip(project.getProjects(), nSourceFields));
+    }
+
+    relBuilder.push(join)
+        .project(projects);
+
+    return LogicalTableModify.create(targetTable, catalogReader,
+        relBuilder.build(), LogicalTableModify.Operation.MERGE,
+        targetColumnNameList, null, false);
+  }
+
+  /**
+   * Converts an identifier into an expression in a given scope. For example,
+   * the "empno" in "select empno from emp join dept" becomes "emp.empno".
+   */
+  private RexNode convertIdentifier(
+      Blackboard bb,
+      SqlIdentifier identifier) {
+    // first check for reserved identifiers like CURRENT_USER
+    final SqlCall call = bb.getValidator().makeNullaryCall(identifier);
+    if (call != null) {
+      return bb.convertExpression(call);
+    }
+
+    String pv = null;
+    if (bb.isPatternVarRef && identifier.names.size() > 1) {
+      pv = identifier.names.get(0);
+    }
+
+    final SqlQualified qualified;
+    if (bb.scope != null) {
+      qualified = bb.scope.fullyQualify(identifier);
+    } else {
+      qualified = SqlQualified.create(null, 1, null, identifier);
+    }
+    final Pair<RexNode, BiFunction<RexNode, String, RexNode>> e0 =
+        bb.lookupExp(qualified);
+    RexNode e = e0.left;
+    for (String name : qualified.suffix()) {
+      if (e == e0.left && e0.right != null) {
+        e = e0.right.apply(e, name);
+      } else {
+        final boolean caseSensitive = true; // name already fully-qualified
+        if (identifier.isStar() && bb.scope instanceof MatchRecognizeScope) {
+          e = rexBuilder.makeFieldAccess(e, 0);
+        } else {
+          e = rexBuilder.makeFieldAccess(e, name, caseSensitive);
+        }
+      }
+    }
+    if (e instanceof RexInputRef) {
+      // adjust the type to account for nulls introduced by outer joins
+      e = adjustInputRef(bb, (RexInputRef) e);
+      if (pv != null) {
+        e = RexPatternFieldRef.of(pv, (RexInputRef) e);
+      }
+    }
+
+    //if (config.isExpand() && e0.left instanceof RexCorrelVariable) {
+    if (e0.left instanceof RexCorrelVariable) {
+      assert e instanceof RexFieldAccess;
+      CorrelationId correlationId = ((RexCorrelVariable) e0.left).id;
+      bb.mapCorrelateToRex.computeIfAbsent(correlationId, cid -> new ArrayList<>())
+          .add((RexFieldAccess) e);
+    }
+    return e;
+  }
+
+  /**
+   * Adjusts the type of a reference to an input field to account for nulls
+   * introduced by outer joins; and adjusts the offset to match the physical
+   * implementation.
+   *
+   * @param bb       Blackboard
+   * @param inputRef Input ref
+   * @return Adjusted input ref
+   */
+  protected RexNode adjustInputRef(
+      Blackboard bb,
+      RexInputRef inputRef) {
+    RelDataTypeField field = bb.getRootField(inputRef);
+    if (field != null) {
+      return rexBuilder.makeInputRef(
+          field.getType(),
+          inputRef.getIndex());
+    }
+    return inputRef;
+  }
+
+  /**
+   * Converts a row constructor into a relational expression.
+   *
+   * @param bb             Blackboard
+   * @param rowConstructor Row constructor expression
+   * @return Relational expression which returns a single row.
+   */
+  private RelNode convertRowConstructor(
+      Blackboard bb,
+      SqlCall rowConstructor) {
+    Preconditions.checkArgument(isRowConstructor(rowConstructor));
+    final List<SqlNode> operands = rowConstructor.getOperandList();
+    return convertMultisets(operands, bb);
+  }
+
+  private RelNode convertCursor(Blackboard bb, SubQuery subQuery) {
+    final SqlCall cursorCall = (SqlCall) subQuery.node;
+    assert cursorCall.operandCount() == 1;
+    SqlNode query = cursorCall.operand(0);
+    RelNode converted = convertQuery(query, false, false).rel;
+    int iCursor = bb.cursors.size();
+    bb.cursors.add(converted);
+    subQuery.expr =
+        new RexInputRef(
+            iCursor,
+            converted.getRowType());
+    return converted;
+  }
+
+  private RelNode convertValueConstructorList(Blackboard bb, final SqlCall call) {
+    assert call.getKind() == SqlKind.MULTISET_VALUE_CONSTRUCTOR;
+
+    final SqlNodeList list =
+        new SqlNodeList(call.getOperandList(), call.getParserPosition());
+    CollectNamespace nss = getNamespaceOrNull(call);
+    Blackboard usedBb;
+    if (null != nss) {
+      usedBb = createBlackboard(nss.getScope(), null, false);
+    } else {
+      usedBb =
+          createBlackboard(new ListScope(bb.scope) {
+            @Override public SqlNode getNode() {
+              return call;
+            }
+          }, null, false);
+    }
+    RelDataType multisetType = validator().getValidatedNodeType(call);
+    validator().setValidatedNodeType(list,
+        requireNonNull(multisetType.getComponentType(),
+            () -> "componentType for multisetType " + multisetType));
+    return convertQueryOrInList(usedBb, list, null);
+  }
+
+  private RelNode convertMultisets(final List<SqlNode> operands,
+      Blackboard bb) {
+    // NOTE: Wael 2/04/05: this implementation is not the most efficient in
+    // terms of planning since it generates XOs that can be reduced.
+    final List<Object> joinList = new ArrayList<>();
+    List<SqlNode> lastList = new ArrayList<>();
+    for (int i = 0; i < operands.size(); i++) {
+      SqlNode operand = operands.get(i);
+      if (!(operand instanceof SqlCall)) {
+        lastList.add(operand);
+        continue;
+      }
+
+      final SqlCall call = (SqlCall) operand;
+      final RelNode input;
+      switch (call.getKind()) {
+      case MULTISET_VALUE_CONSTRUCTOR:
+      case ARRAY_VALUE_CONSTRUCTOR:
+        final SqlNodeList list =
+            new SqlNodeList(call.getOperandList(), call.getParserPosition());
+        CollectNamespace nss =
+            (CollectNamespace) validator.getNamespace(call);
+        Blackboard usedBb;
+        if (null != nss) {
+          usedBb = createBlackboard(nss.getScope(), null, false);
+        } else {
+          usedBb =
+              createBlackboard(new ListScope(bb.scope) {
+                public SqlNode getNode() {
+                  return call;
+                }
+              }, null, false);
+        }
+        RelDataType multisetType = validator.getValidatedNodeType(call);
+        ((SqlValidatorImpl) validator).setValidatedNodeType(list,
+            multisetType.getComponentType());
+        input = convertQueryOrInList(usedBb, list, null);
+        break;
+      case MULTISET_QUERY_CONSTRUCTOR:
+      case ARRAY_QUERY_CONSTRUCTOR:
+      case MAP_QUERY_CONSTRUCTOR:
+        final RelRoot root = convertQuery(call.operand(0), false, true);
+        input = root.rel;
+        break;
+      default:
+        lastList.add(operand);
+        continue;
+      }
+
+      if (lastList.size() > 0) {
+        joinList.add(lastList);
+      }
+      lastList = new ArrayList<>();
+      relBuilder.push(
+          Collect.create(requireNonNull(input, "input"),
+              call.getKind(), validator().deriveAlias(call, i)));
+      joinList.add(relBuilder.build());
+    }
+
+    if (joinList.size() == 0) {
+      joinList.add(lastList);
+    }
+
+    for (int i = 0; i < joinList.size(); i++) {
+      Object o = joinList.get(i);
+      if (o instanceof List) {
+        @SuppressWarnings("unchecked")
+        List<SqlNode> projectList = (List<SqlNode>) o;
+        final List<RexNode> selectList = new ArrayList<>();
+        final List<String> fieldNameList = new ArrayList<>();
+        for (int j = 0; j < projectList.size(); j++) {
+          SqlNode operand = projectList.get(j);
+          selectList.add(bb.convertExpression(operand));
+
+          // REVIEW angel 5-June-2005: Use deriveAliasFromOrdinal
+          // instead of deriveAlias to match field names from
+          // SqlRowOperator. Otherwise, get error   Type
+          // 'RecordType(INTEGER EMPNO)' has no field 'EXPR$0' when
+          // doing   select * from unnest(     select multiset[empno]
+          // from sales.emps);
+
+          fieldNameList.add(SqlUtil.deriveAliasFromOrdinal(j));
+        }
+
+        relBuilder.push(LogicalValues.createOneRow(cluster))
+            .projectNamed(selectList, fieldNameList, true);
+
+        joinList.set(i, relBuilder.build());
+      }
+    }
+
+    RelNode ret = (RelNode) joinList.get(0);
+    for (int i = 1; i < joinList.size(); i++) {
+      RelNode relNode = (RelNode) joinList.get(i);
+      ret =
+          RelFactories.DEFAULT_JOIN_FACTORY.createJoin(
+              ret,
+              relNode,
+              ImmutableList.of(),
+              rexBuilder.makeLiteral(true),
+              ImmutableSet.of(),
+              JoinRelType.INNER,
+              false);
+    }
+    return ret;
+  }
+
+  /**
+   * Tries to implement CSE by seeing if a rex node is already defined in
+   * the project Rel and returning a refIndex instead of the raw node
+   */
+  private static final class ProjectCSERexVisitor extends RexShuttle {
+    private final RexBuilder rexBuilder;
+    private final LogicalProject inputRelNode;
+
+    ProjectCSERexVisitor(RexBuilder rexBuilder, LogicalProject inputRelNode) {
+      this.rexBuilder = rexBuilder;
+      this.inputRelNode = inputRelNode;
+    }
+
+    @Override public RexNode visitCall(RexCall call) {
+      List<RexNode> projections = inputRelNode.getProjects();
+      for (int i = 0; i < projections.size(); i++) {
+        RexNode project = projections.get(i);
+        if (call.equals(project)) {
+          return rexBuilder.makeInputRef(inputRelNode, i);
+        }
+      }
+
+      return rexBuilder.makeCall(
+          call.getType(),
+          call.getOperator(),
+          call.operands
+              .stream()
+              .map(operand -> operand.accept(this))
+              .collect(Collectors.toList()));
+    }
+
+    @Override public RexNode visitOver(RexOver over) {
+      List<RexNode> projections = inputRelNode.getProjects();
+      for (int i = 0; i < projections.size(); i++) {
+        RexNode project = projections.get(i);
+        if (over.equals(project)) {
+          return rexBuilder.makeInputRef(inputRelNode, i);
+        }
+      }
+
+      return over;
+    }
+  }
+
+  private void convertSelectList(
+      Blackboard bb, SqlSelect select, List<SqlNode> orderList,
+      List<SqlNode> extraList, @Nullable SqlNode qualify) {
+    if (qualify != null) {
+      // Add the QUALIFY expression to the select-list,
+      // convert the extended list,
+      // filter by the last field,
+      // and remove the last field.
+      convertSelectList(bb, select, orderList,
+          ImmutableList.of(addAlias(qualify, "QualifyExpression")), null);
+      bb.setRoot(
+          relBuilder.push(bb.root())
+              .filter(last(relBuilder.fields()))// filter on last column
+              .project(skipLast(relBuilder.fields())) // remove last column
+              .build(), false);
+      return;
+    }
+
+    if (validator.isAggregate(select)) {
+      convertAgg(bb, select, orderList, extraList);
+    } else {
+      convertNonAggregateSelectList(bb, select, orderList, extraList);
+    }
+  }
+
+  private void convertNonAggregateSelectList(
+      Blackboard bb,
+      SqlSelect select,
+      List<SqlNode> orderList,
+      List<SqlNode> extraList) {
+    final SqlNodeList selectList =
+        validator().expandStar(select.getSelectList(), select, false);
+
+    Iterables.concat(selectList, orderList, extraList).forEach(e ->
+        replaceSubQueries(bb, e, RelOptUtil.Logic.TRUE_FALSE_UNKNOWN));
+
+    final List<String> fieldNames = new ArrayList<>();
+    final List<RexNode> exprs = new ArrayList<>();
+    final Collection<String> aliases = new TreeSet<>();
+
+    // Project any system fields. (Must be done before regular select items,
+    // because offsets may be affected.)
+    final List<SqlMonotonicity> columnMonotonicityList = new ArrayList<>();
+    extraSelectItems(
+        bb,
+        select,
+        exprs,
+        fieldNames,
+        aliases,
+        columnMonotonicityList);
+
+    // Project select clause.
+    int i = -1;
+    for (SqlNode expr : selectList) {
+      ++i;
+      exprs.add(bb.convertExpression(expr));
+      fieldNames.add(deriveAlias(expr, aliases, i));
+    }
+
+    // Project extra fields for ORDER BY.
+    for (SqlNode expr : orderList) {
+      ++i;
+      SqlNode expr2 = validator.expandOrderExpr(select, expr);
+      exprs.add(bb.convertExpression(expr2));
+      fieldNames.add(deriveAlias(expr, aliases, i));
+    }
+
+    // Project extra fields for QUALIFY.
+    for (SqlNode expr : extraList) {
+      ++i;
+      exprs.add(bb.convertExpression(expr));
+      fieldNames.add(deriveAlias(expr, aliases, i));
+    }
+
+    final List<String> uniqueFieldNames =
+        SqlValidatorUtil.uniquify(fieldNames,
+            catalogReader.nameMatcher().isCaseSensitive());
+
+    RelNode r = relBuilder.push(bb.root())
+        .projectNamed(exprs, uniqueFieldNames, true)
+        .build();
+
+    getCorrelationUse(bb, r);
+
+    bb.setRoot(r, false);
+
+    assert bb.columnMonotonicities.isEmpty();
+    bb.columnMonotonicities.addAll(columnMonotonicityList);
+    for (SqlNode selectItem : selectList) {
+      bb.columnMonotonicities.add(
+          selectItem.getMonotonicity(bb.scope));
+    }
+  }
+
+  /**
+   * Adds extra select items. The default implementation adds nothing; derived
+   * classes may add columns to exprList, nameList, aliasList and
+   * columnMonotonicityList.
+   *
+   * @param bb                     Blackboard
+   * @param select                 Select statement being translated
+   * @param exprList               List of expressions in select clause
+   * @param nameList               List of names, one per column
+   * @param aliasList              Collection of aliases that have been used
+   *                               already
+   * @param columnMonotonicityList List of monotonicity, one per column
+   */
+  protected void extraSelectItems(
+      Blackboard bb,
+      SqlSelect select,
+      List<RexNode> exprList,
+      List<String> nameList,
+      Collection<String> aliasList,
+      List<SqlMonotonicity> columnMonotonicityList) {
+  }
+
+  private String deriveAlias(
+      final SqlNode node,
+      Collection<String> aliases,
+      final int ordinal) {
+    String alias = validator.deriveAlias(node, ordinal);
+    if ((alias == null) || aliases.contains(alias)) {
+      String aliasBase = (alias == null) ? "EXPR$" : alias;
+      for (int j = 0;; j++) {
+        alias = aliasBase + j;
+        if (!aliases.contains(alias)) {
+          break;
+        }
+      }
+    }
+    aliases.add(alias);
+    return alias;
+  }
+
+  /**
+   * Converts a WITH sub-query into a relational expression.
+   */
+  public RelRoot convertWith(SqlWith with, boolean top) {
+    return convertQuery(with.body, false, top);
+  }
+
+  /**
+   * Converts a SELECT statement's parse tree into a relational expression.
+   */
+  public RelNode convertValues(
+      SqlCall values,
+      RelDataType targetRowType) {
+    final SqlValidatorScope scope = validator.getOverScope(values);
+    assert scope != null;
+    final Blackboard bb = createBlackboard(scope, null, false);
+    convertValuesImpl(bb, values, targetRowType);
+    return bb.root;
+  }
+
+  /**
+   * Converts a values clause (as in "INSERT INTO T(x,y) VALUES (1,2)") into a
+   * relational expression.
+   *
+   * @param bb            Blackboard
+   * @param values        Call to SQL VALUES operator
+   * @param targetRowType Target row type
+   */
+  private void convertValuesImpl(
+      Blackboard bb,
+      SqlCall values,
+      RelDataType targetRowType) {
+    // Attempt direct conversion to LogicalValues; if that fails, deal with
+    // fancy stuff like sub-queries below.
+    RelNode valuesRel =
+        convertRowValues(
+            bb,
+            values,
+            values.getOperandList(),
+            true,
+            targetRowType);
+    if (valuesRel != null) {
+      bb.setRoot(valuesRel, true);
+      return;
+    }
+
+    final List<RelNode> unionRels = new ArrayList<>();
+    for (SqlNode rowConstructor1 : values.getOperandList()) {
+      SqlCall rowConstructor = (SqlCall) rowConstructor1;
+      Blackboard tmpBb = createBlackboard(bb.scope, null, false);
+      replaceSubQueries(tmpBb, rowConstructor,
+          RelOptUtil.Logic.TRUE_FALSE_UNKNOWN);
+      final List<Pair<RexNode, String>> exps = new ArrayList<>();
+      for (Ord<SqlNode> operand : Ord.zip(rowConstructor.getOperandList())) {
+        exps.add(
+            Pair.of(
+                tmpBb.convertExpression(operand.e),
+                validator.deriveAlias(operand.e, operand.i)));
+      }
+      RelNode in =
+          (null == tmpBb.root)
+              ? LogicalValues.createOneRow(cluster)
+              : tmpBb.root;
+      unionRels.add(relBuilder.push(in)
+          .project(Pair.left(exps), Pair.right(exps))
+          .build());
+    }
+
+    if (unionRels.size() == 0) {
+      throw new AssertionError("empty values clause");
+    } else if (unionRels.size() == 1) {
+      bb.setRoot(
+          unionRels.get(0),
+          true);
+    } else {
+      bb.setRoot(
+          LogicalUnion.create(unionRels, true),
+          true);
+    }
+  }
+
+  //~ Inner Classes ----------------------------------------------------------
+
+  /**
+   * A Tuple to remember all calls to Blackboard.register
+   */
+  private static class RegisterArgs {
+    final RelNode rel;
+    final JoinRelType joinType;
+    final List<RexNode> leftKeys;
+
+    RegisterArgs(RelNode rel, JoinRelType joinType, List<RexNode> leftKeys) {
+      this.rel = rel;
+      this.joinType = joinType;
+      this.leftKeys = leftKeys;
+    }
+  }
+
+  /**
+   * Workspace for translating an individual SELECT statement (or sub-SELECT).
+   */
+  protected class Blackboard implements SqlRexContext, SqlVisitor<RexNode>,
+      InitializerContext {
+    /**
+     * Collection of {@link RelNode} objects which correspond to a SELECT
+     * statement.
+     */
+    public final @Nullable SqlValidatorScope scope;
+    private final @Nullable Map<String, RexNode> nameToNodeMap;
+    public @Nullable RelNode root;
+    private @Nullable List<RelNode> inputs;
+    private final Map<CorrelationId, List<RexFieldAccess>> mapCorrelateToRex = new HashMap<>();
+    private List<RegisterArgs> registered = new ArrayList<>();
+
+    private boolean isPatternVarRef = false;
+
+    final List<RelNode> cursors = new ArrayList<>();
+
+    /**
+     * List of <code>IN</code> and <code>EXISTS</code> nodes inside this
+     * <code>SELECT</code> statement (but not inside sub-queries).
+     */
+    private final List<SubQuery> subQueryList = new ArrayList<>();
+
+    /**
+     * Workspace for building aggregates.
+     */
+    AggConverter agg;
+
+    /**
+     * When converting window aggregate, we need to know if the window is
+     * guaranteed to be non-empty.
+     */
+    SqlWindow window;
+
+    /**
+     * Project the groupby expressions out of the root of this sub-select.
+     * Sub-queries can reference group by expressions projected from the
+     * "right" to the sub-query.
+     */
+    private final Map<RelNode, Map<Integer, Integer>> mapRootRelToFieldProjection =
+        new HashMap<>();
+
+    private final List<SqlMonotonicity> columnMonotonicities =
+        new ArrayList<>();
+
+    private final List<RelDataTypeField> systemFieldList = new ArrayList<>();
+    final boolean top;
+
+    private final InitializerExpressionFactory initializerExpressionFactory =
+        new NullInitializerExpressionFactory();
+
+    /**
+     * Creates a Blackboard.
+     *
+     * @param scope         Name-resolution scope for expressions validated
+     *                      within this query. Can be null if this Blackboard is
+     *                      for a leaf node, say
+     * @param nameToNodeMap Map which translates the expression to map a
+     *                      given parameter into, if translating expressions;
+     *                      null otherwise
+     * @param top           Whether this is the root of the query
+     */
     protected Blackboard(SqlValidatorScope scope,
         Map<String, RexNode> nameToNodeMap, boolean top) {
       this.scope = scope;
@@ -5870,6 +6554,15 @@ public class SqlToRelConverter {
      * the relational expressions. Default is
      * {@link HintStrategyTable#EMPTY}. */
     HintStrategyTable getHintStrategyTable();
+
+    /**
+     * Returns whether to remove sort operator for a sub-query
+     * if the sort has no offset and fetch limit attributes.
+     * Because the remove does not change the semantics, in many cases, this is a promotion.
+     *
+     * <p> Default is true.
+     */
+    boolean isRemoveSortInSubQuery();
   }
 
   /** Builder for a {@link Config}. */
@@ -5960,10 +6653,6 @@ public class SqlToRelConverter {
     /** Builds a {@link Config}. */
     public Config build() {
       return new ConfigImpl(decorrelationEnabled,
-<<<<<<< HEAD
-          trimUnusedFields, createValuesRel, explain, expand,
-          inSubQueryThreshold, relBuilderFactory, hintStrategyTable);
-=======
           trimUnusedFields, createValuesRel, explain, expand, removeSortInSubQuery,
           inSubQueryThreshold, relBuilderFactory,
           hintStrategyTable);

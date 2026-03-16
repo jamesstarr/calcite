@@ -430,7 +430,6 @@ class ImmutableBeanTest {
     BLUE,
     GREEN
   }
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
   /** Bean interface that has a default method and one property. */
   public interface BeanWithDefault {
@@ -446,8 +445,4 @@ class ImmutableBeanTest {
     char getChar();
     BeanWithDefault withChar(char c);
   }
-<<<<<<< HEAD
-}
-=======
-=======
 }

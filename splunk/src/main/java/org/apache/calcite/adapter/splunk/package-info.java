@@ -23,7 +23,3 @@
  * fields are held in a map field called "_others".</p>
  */
 package org.apache.calcite.adapter.splunk;
-
-// End package-info.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

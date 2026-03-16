@@ -608,23 +608,6 @@ public interface ExtendedEnumerable<TSource> {
    *                       inner argument is always null.
    */
   <TInner, TResult> Enumerable<TResult> correlateJoin(
-<<<<<<< HEAD
-      JoinType joinType, Function1<TSource, Enumerable<TInner>> inner,
-      Function2<TSource, TInner, TResult> resultSelector);
-
-  /**
-   * For each row of the current enumerable returns the correlated rows
-   * from the {@code inner} enumerable (nested loops join).
-   *
-   * @param joinType inner, left, semi or anti join type
-   * @param inner generator of inner enumerable
-   * @param resultSelector selector of the result. For semi/anti join
-   *                       inner argument is always null.
-   */
-  @SuppressWarnings("deprecation")
-  default <TInner, TResult> Enumerable<TResult> correlateJoin(
-=======
->>>>>>> b73e57d77 ([CALCITE-3125] Remove completely CorrelateJoinType)
       JoinType joinType, Function1<TSource, Enumerable<TInner>> inner,
       Function2<TSource, TInner, TResult> resultSelector);
 

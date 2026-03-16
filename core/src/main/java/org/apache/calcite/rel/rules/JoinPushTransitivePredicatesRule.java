@@ -102,8 +102,6 @@ public class JoinPushTransitivePredicatesRule
 
     call.transformTo(newRel);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -121,24 +119,3 @@ public class JoinPushTransitivePredicatesRule
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY.as(Config.class)
-        .withOperandFor(Join.class);
-
-    @Override default JoinPushTransitivePredicatesRule toRule() {
-      return new JoinPushTransitivePredicatesRule(this);
-    }
-
-    /** Defines an operand tree for the given classes. */
-    default Config withOperandFor(Class<? extends Join> joinClass) {
-      return withOperandSupplier(b -> b.operand(joinClass).anyInputs())
-          .as(Config.class);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

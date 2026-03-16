@@ -145,13 +145,8 @@ class RelCollationTest {
     }
     return RelCollations.of(list);
   }
->>>>>>> dc2f3eda0 ([CALCITE-3969] Trait keys remapping may throw exception when some tra… (#375))
 
   private static Mapping mapping(int sourceCount, int... sources) {
     return Mappings.target(ImmutableIntList.of(sources), sourceCount);
   }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> dc2f3eda0 ([CALCITE-3969] Trait keys remapping may throw exception when some tra… (#375))
 }

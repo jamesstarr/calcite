@@ -78,7 +78,3 @@ public class CountingFactory extends NullInitializerExpressionFactory {
        constructorArgs, context);
   }
 }
-
-// End CountingFactory.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

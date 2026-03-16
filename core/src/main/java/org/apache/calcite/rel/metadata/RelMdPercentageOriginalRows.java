@@ -52,10 +52,6 @@ public class RelMdPercentageOriginalRows
 
   //~ Methods ----------------------------------------------------------------
 
-  private RelMdPercentageOriginalRows() {}
-
->>>>>>> 8a612190e (DX-35420 Revert previous customization rel metadata)
-=======
   public MetadataDef<BuiltInMetadata.PercentageOriginalRows> getDef() {
     return BuiltInMetadata.PercentageOriginalRows.DEF;
   }

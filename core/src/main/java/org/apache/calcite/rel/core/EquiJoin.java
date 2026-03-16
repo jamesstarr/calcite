@@ -22,7 +22,6 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.util.ImmutableIntList;
 
->>>>>>> df3383b8b ([CALCITE-2259] Allow Java 8 syntax)
 import com.google.common.collect.ImmutableList;
 
 import java.util.Objects;
@@ -92,5 +91,3 @@ public abstract class EquiJoin extends Join {
     return rightKeys;
   }
 }
-// End EquiJoin.java
-=======

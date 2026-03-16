@@ -153,13 +153,6 @@ class AggChecker extends SqlBasicVisitor<Void> {
     case WITHIN_GROUP:
     case RESPECT_NULLS:
     case IGNORE_NULLS:
-<<<<<<< HEAD
-      call.operand(0).accept(this);
-      return null;
-    }
-    if (call.getKind() == SqlKind.WITHIN_GROUP) {
-=======
->>>>>>> cf7bf148e ([CALCITE-883] Support RESPECT NULLS, IGNORE NULLS option for LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE functions (Chunwei Lei))
       call.operand(0).accept(this);
       return null;
     }

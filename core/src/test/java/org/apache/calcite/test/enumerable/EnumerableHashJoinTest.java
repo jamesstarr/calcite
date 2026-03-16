@@ -199,7 +199,3 @@ class EnumerableHashJoinTest {
         .withSchema("s", new ReflectiveSchema(schema));
   }
 }
-
-// End EnumerableHashJoinTest.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

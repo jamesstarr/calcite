@@ -102,7 +102,3 @@ public abstract class RelEnumTypes {
     return (E) ENUM_BY_NAME.get(name);
   }
 }
-
-// End RelEnumTypes.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -64,7 +64,3 @@ public class SqlUserDefinedTypeNameSpec extends SqlTypeNameSpec {
     return litmus.succeed();
   }
 }
-
-// End SqlUserDefinedTypeNameSpec.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

@@ -26,7 +26,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.Litmus;
 import org.apache.calcite.util.Pair;
 
-=======
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
@@ -366,8 +365,6 @@ public class RexCall extends RexNode {
   public RexCall clone(RelDataType type, List<RexNode> operands) {
     return new RexCall(type, op, operands);
   }
-<<<<<<< HEAD
-=======
 
   private Pair<SqlOperator, List<RexNode>> getNormalized() {
     if (this.normalized == null) {
@@ -398,36 +395,3 @@ public class RexCall extends RexNode {
     return hash;
   }
 }
-<<<<<<< HEAD
-
-  private Pair<SqlOperator, List<RexNode>> getNormalized() {
-    if (this.normalized == null) {
-      this.normalized = RexNormalize.normalize(this.op, this.operands);
-    }
-    return this.normalized;
-  }
-
-  @Override public boolean equals(@Nullable Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Pair<SqlOperator, List<RexNode>> x = getNormalized();
-    RexCall rexCall = (RexCall) o;
-    Pair<SqlOperator, List<RexNode>> y = rexCall.getNormalized();
-    return x.left.equals(y.left)
-            && x.right.equals(y.right)
-            && type.equals(rexCall.type);
-  }
-
-  @Override public int hashCode() {
-    if (hash == 0) {
-      hash = RexNormalize.hashCode(this.op, this.operands);
-    }
-    return hash;
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

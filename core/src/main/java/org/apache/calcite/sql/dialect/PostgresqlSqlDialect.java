@@ -36,8 +36,6 @@ import org.apache.calcite.sql.type.SqlTypeName;
  * A <code>SqlDialect</code> implementation for the PostgreSQL database.
  */
 public class PostgresqlSqlDialect extends SqlDialect {
-
-=======
   /** PostgreSQL type system. */
   public static final RelDataTypeSystem POSTGRESQL_TYPE_SYSTEM =
       new RelDataTypeSystemImpl() {

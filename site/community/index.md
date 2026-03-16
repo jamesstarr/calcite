@@ -26,48 +26,20 @@ limitations under the License.
 
 # Upcoming talks
 
-* September 8th-12th, 2019
-  [ApacheCon North America 2019](https://www.apachecon.com/acna19/)
-  (Las Vegas, Nevada)
-  * Building BigData Query Optimization with Apache Calcite – Best
-    Practices from Alibaba MaxCompute (Haisheng Yuan)
-  * Combining schema-on-read and schema-provisioning in Apache Drill
-    (Aman Sinha)
-  * Simple, Portable data pipelines with Apache Beam SQL
-    (Andrew Pilloud)
-  * One SQL to Rule Them All – a Syntactically Idiomatic Approach to
-    Management of Streams and Tables (Kenneth Knowles, Julian Hyde)
-  * Unifying Batch and Stream Data Processing with Apache Calcite and
-    Apache Beam (Khai Tran)
-=======
-## Fast federated SQL with Apache Calcite (Chris Baynes)
-
-At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, October 24, 2019;
-[[summary](https://aceu19.apachecon.com/session/fast-federated-sql-apache-calcite)].
-
->>>>>>> 1ef81f97e (Site: Update upcoming talks section for ApacheCon Europe 2019)
-=======
 There are no upcoming talks at the moment. Stay tuned!
->>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 
 # Project Members
 
 Name (Apache ID) | Github | Org | Role
 :--------------- | :----- | :-- | :---
-{% for c in site.data.contributors %}{% unless c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="http://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
-=======
 {% for c in site.data.contributors %}{% unless c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="https://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
->>>>>>> 75c34cb7b ([CALCITE-3391] Insecure pages warning on Chrome)
 {% endunless %}{% endfor %}
 
 Emeritus members
 
 Name (Apache ID) | Github | Org | Role
 :--------------- | :----- | :-- | :---
-{% for c in site.data.contributors %}{% if c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="http://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
-=======
 {% for c in site.data.contributors %}{% if c.emeritus %}{% if c.homepage %}<a href="{{ c.homepage }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %} (<a href="https://people.apache.org/phonebook.html?uid={{ c.apacheId }}">{{ c.apacheId }}</a>) | <a href="https://github.com/{{ c.githubId }}"><img width="64" src="{% unless c.avatar %}https://github.com/{{ c.githubId }}.png{% else %}{{ c.avatar }}{% endunless %}"></a> | {{ c.org }} | {{ c.role }}
->>>>>>> 75c34cb7b ([CALCITE-3391] Insecure pages warning on Chrome)
 {% endif %}{% endfor %}
 
 # Mailing Lists
@@ -115,7 +87,6 @@ Want to learn more about Calcite?
 Watch some presentations and read through some slide decks about
 Calcite, or attend one of the [upcoming talks](#upcoming-talks).
 
->>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 ## Fast federated SQL with Apache Calcite
 
 At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, October 24, 2019;
@@ -123,10 +94,6 @@ At [ApacheCon Europe 2019](https://aceu19.apachecon.com/), Berlin, Germany, Octo
 [[video](https://youtu.be/4JAOkLKrcYE)].
 
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> a66b85e96 (Site: Move "Fast federated SQL with Apache Calcite" in talks section and add video link)
 ## One SQL to Rule Them All - an Efficient and Syntactically Idiomatic Approach to Management of Streams and Tables
 
 At [SIGMOD/PODS 2019](https://sigmod2019.org/sigmod_industry_list), Amsterdam, Netherlands, 2019

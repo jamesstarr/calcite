@@ -146,7 +146,3 @@ public class ListTransientTable extends AbstractQueryableTable
     return TYPE;
   }
 }
-
-// End ListTransientTable.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

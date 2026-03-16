@@ -138,7 +138,3 @@ public class EquivalenceSet<E extends Comparable<E>> {
     return new HashSet<>(parents.values()).size();
   }
 }
-
-// End EquivalenceSet.java
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

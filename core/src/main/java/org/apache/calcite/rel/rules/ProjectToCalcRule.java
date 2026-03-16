@@ -72,8 +72,6 @@ public class ProjectToCalcRule extends RelRule<ProjectToCalcRule.Config>
     final LogicalCalc calc = LogicalCalc.create(input, program);
     call.transformTo(calc);
   }
-<<<<<<< HEAD
-=======
 
   /** Rule configuration. */
   public interface Config extends RelRule.Config {
@@ -87,20 +85,3 @@ public class ProjectToCalcRule extends RelRule<ProjectToCalcRule.Config>
     }
   }
 }
-<<<<<<< HEAD
->>>>>>> 79e6848c7 (DX-34864 Add CoreRules and move static references of these rules to CoreRules)
-
-  /** Rule configuration. */
-  public interface Config extends RelRule.Config {
-    Config DEFAULT = EMPTY
-            .withOperandSupplier(b ->
-                    b.operand(LogicalProject.class).anyInputs())
-            .as(Config.class);
-
-    @Override default ProjectToCalcRule toRule() {
-      return new ProjectToCalcRule(this);
-    }
-  }
-}
-=======
->>>>>>> 8900eaa6c ([CALCITE-3623] Run autostyleApply)

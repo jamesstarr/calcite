@@ -185,16 +185,6 @@ public class RelOptCluster {
     if (mq == null) {
       mq = mqSupplier.get();
     }
-    return RelMetadataQuery.instance();
-=======
-  }
-
-  /**
-   * Returns the supplier of RelMetadataQuery.
-   */
-  public Supplier<RelMetadataQuery> getMetadataQuerySupplier() {
-    return this.mqSupplier;
-=======
     return mq;
   }
 

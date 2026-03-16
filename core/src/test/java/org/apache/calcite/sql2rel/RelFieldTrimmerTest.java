@@ -125,7 +125,6 @@ class RelFieldTrimmerTest {
         + "    LogicalTableScan(table=[[scott, EMP]])\n";
     assertThat(trimmed, hasTree(expected));
   }
->>>>>>> d110443b0 ([CALCITE-3984] Support exchange operator in RelFieldTrimmer (Xu Zhaohui) (#373))
 
   @Test public void testExchangeFieldTrimmer() {
     final RelBuilder builder = RelBuilder.create(config().build());
@@ -185,8 +184,4 @@ class RelFieldTrimmerTest {
     assertThat(trimmed, hasTree(expected));
   }
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> d110443b0 ([CALCITE-3984] Support exchange operator in RelFieldTrimmer (Xu Zhaohui) (#373))
 }
