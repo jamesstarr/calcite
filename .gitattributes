@@ -4,17 +4,10 @@
 *.cs     text diff=csharp
 *.java   text diff=java
 *.html   text diff=html
->>>>>>> 9e1b7a548 (Git: Windows line-endings)
 *.kt     text diff=kotlin
 *.kts    text diff=kotlin
 *.py     text diff=python
 *.pl     text diff=perl
-<<<<<<< HEAD
-=======
-*.py     text diff=python executable
-*.pl     text diff=perl executable
-=======
->>>>>>> 9e1b7a548 (Git: Windows line-endings)
 *.pm     text diff=perl
 *.css    text
 *.js     text

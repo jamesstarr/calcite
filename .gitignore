@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 *~
-target
-.DS_Store
-.idea
-=======
 .gradle
 /target
 .DS_Store
@@ -37,8 +33,7 @@ target
 /.idea/*
 # Icon for JetBrains Toolbox
 !/.idea/icon.png
-=======
->>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
+!/.idea/vcs.xml
 *.iml
 
 settings.xml
@@ -59,10 +54,6 @@ nb-configuration.xml
 
 .mvn/wrapper/maven-wrapper.jar
 
-# End .gitignore
-=======
 # Local configuration file (sdk path, etc)
 local.properties
->>>>>>> eb5cf8076 ([CALCITE-3749] Ignore local.proproperties in RAT, Autostyle checks, a… (#87))
-=======
->>>>>>> a209f1538 ([CALCITE-3540] FoodmartTest produces many warnings due to incorrect u… (#126))
+spark/build

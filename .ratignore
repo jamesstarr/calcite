@@ -1,7 +1,4 @@
-**/local.properties
-=======
 
->>>>>>> 17088b0f9 ([CALCITE-2905] Migrate build scripts to Gradle)
 **/.editorconfig
 **/.gitignore
 **/.gitattributes
@@ -15,11 +12,7 @@
 **/src/test/resources/*.json
 **/data.txt
 **/data2.txt
-#bu ildSrc/build
-#b uildSrc/subprojects/*/build
-=======
 .idea/vcs.xml
->>>>>>> e946e1b74 (Add JIRA links in Git in IDEA (#309))
 
 # TODO: remove when pom.xml files are removed
 src/main/config/licenses
@@ -52,12 +45,7 @@ site/js/**
 # Images
 site/img/*.png
 site/favicon.ico
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
 
 # Development and personal files
 *.txt
 *.patch
-<<<<<<< HEAD
-=======
-=======
->>>>>>> a9bf75a77 (Manually update gradle build with updated dependencies, omit babel, and spotlessApply)
