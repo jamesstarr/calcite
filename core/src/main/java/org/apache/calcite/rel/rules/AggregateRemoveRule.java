@@ -129,6 +129,7 @@ public class AggregateRemoveRule
       // aggregate functions, add a project for the same effect.
       relBuilder.project(relBuilder.fields(aggregate.getGroupSet()));
     }
+    call.getPlanner().setImportance(aggregate, 0d);
     call.transformTo(relBuilder.build());
   }
 
