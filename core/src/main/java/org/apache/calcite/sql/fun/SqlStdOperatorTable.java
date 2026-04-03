@@ -327,7 +327,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -383,7 +383,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -452,7 +452,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -465,7 +465,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED);
 
   /**
@@ -482,7 +482,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           true,
           // Return type is similar to SUMS, but allows for timestamp - timestamp/date - date
           ReturnTypes.NULLABLE_MINUS,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.MINUS_OPERATOR);
 
   /**
@@ -495,7 +495,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           60,
           true,
           ReturnTypes.PRODUCT_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.MULTIPLY_OPERATOR);
 
   /**
@@ -508,7 +508,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           30,
           true,
           ReturnTypes.BOOLEAN_NULLABLE,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED_FOR_EQUALITY);
 
   /**
@@ -534,7 +534,7 @@ public class SqlStdOperatorTable extends ReflectiveSqlOperatorTable {
           40,
           true,
           ReturnTypes.NULLABLE_SUM,
-          InferTypes.LEAST_RESTRICTIVE,
+          InferTypes.FIRST_KNOWN,
           OperandTypes.PLUS_OPERATOR);
 
   /**
